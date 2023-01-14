@@ -1,4 +1,5 @@
 $yellow:#f5bc04;
+$blue:#4287f5;
 
 @mixin border-radius($radius) {
 	-webkit-border-radius: $radius;
@@ -53,7 +54,7 @@ $yellow:#f5bc04;
 	padding-right: 20px!important;
 	margin: 0 20px!important;
 	@include transition(0.5s);
-	background: $yellow!important;
+	background: $blue!important;
 	@include clip-path(polygon(100% 0, 100% 85%, 14% 85%, 0 100%, 0% 60%, 0 0));
 }
 .navbar-light .navbar-nav .nav-link {
@@ -68,7 +69,7 @@ $yellow:#f5bc04;
 	@include clip-path(polygon(100% 0, 100% 85%, 14% 85%, 0 100%, 0% 60%, 0 0));
 
 	&:focus, &:hover {
-		background: $yellow!important;
+		background: $blue!important;
 		color: #fff!important;
 		padding-top: 12px!important;
 		padding-bottom: 15px!important;
@@ -128,7 +129,7 @@ $yellow:#f5bc04;
 }
 
 .blog-form input:focus {
-    border-color: $yellow !important;
+    border-color: $blue !important;
 }
 
 .description-box {
@@ -389,6 +390,7 @@ $yellow:#f5bc04;
 .trending-img-size {
 	height: 326px;
 	overflow: hidden;
+	border-radius: 25px;
 }
 .trending-img-size > img {
 	height: 340px;
