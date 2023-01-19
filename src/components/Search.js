@@ -6,7 +6,7 @@ const Search = ({ search, handleChange }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (search) {
+    if (search){
       navigate(`/search?searchQuery=${search}`);
     } else {
       navigate("/");
@@ -26,7 +26,7 @@ const Search = ({ search, handleChange }) => {
             onChange={handleChange}
           />
         </div>
-        <button className="btn btn-secondary search-btn">
+        <button className="btn btn-secondary search-btn ">
           <i className="fa fa-search" />
         </button>
       </form>

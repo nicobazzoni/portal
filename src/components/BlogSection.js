@@ -17,7 +17,7 @@ const BlogSection = ({
 }) => {
   return (
     <div>
-      <div className="row pb-4" key={id}>
+      <div className="row pb-4 bg border my-2 p-2" key={id}>
         <div className="col-md-5">
           <div className="hover-blogs-img">
             <div className="blogs-img">

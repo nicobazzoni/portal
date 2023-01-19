@@ -18,6 +18,8 @@ import TagBlog from "./pages/TagBlog";
 import CategoryBlog from "./pages/CategoryBlog";
 import ScrollToTop from "./components/ScrollToTop";
 import Blogs from "./pages/Blogs";
+import Lights from "./components/Lights";
+import ImageUpload from "./pages/ImageUpload";
 
 function App() {
   const [active, setActive] = useState("home");
@@ -43,8 +45,10 @@ function App() {
     });
   };
 
+
   return (
-    <div className="App">
+  
+    <div className="App bg-faded">
       <Header
         setActive={setActive}
         active={active}
@@ -86,6 +90,8 @@ function App() {
         <Route path="/tag/:tag" element={<TagBlog setActive={setActive} />} />
         <Route path="/category/:category" element={<CategoryBlog setActive={setActive}  />} />
         <Route path="/about" element={<About />} />
+        <Route path="/lights" element={<Lights />} />
+        <Route path="/images" element={<ImageUpload />} />
         <Route
           path="/auth"
           element={<Auth setActive={setActive} setUser={setUser} />}

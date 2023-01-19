@@ -79,9 +79,15 @@ $blue:#4287f5;
 		position: relative;
 	}
 }
-
+.bg{
+	background: #fffbfb
+}
 .bg-faded {
-    background-color: #f7f7f7;
+    background-color: #e7e7e7;
+  }
+
+  .bgCard{
+	background: #fff;
   }
 
 .mobile_logo_width {
@@ -193,6 +199,28 @@ $blue:#4287f5;
 	@include transition(all 0.5s);
 }
 
+.blogCard {
+    height: 1rem;
+	border-radius: 3px;
+	position: center;
+	padding: 10px 15px;
+
+	left: 10px;
+	margin: 10px 0;
+	@include box-shadow(0, 2px, 3px, 1px, rgba(0,0,0,0));
+	@include transition(all 0.5s);
+
+
+	&:hover {
+		@include box-shadow(0, 2px, 3px, 1px, rgba(0,0,0,0.3));
+	}
+
+	max-width: fit-content;
+
+	
+
+}
+
 .blogs-img > img {
     height: 260px;
 	min-width: 100%;
@@ -205,7 +233,7 @@ $blue:#4287f5;
 
 .title {
     font-size: 17px;
-	color: #222!important;
+	color: rgb(31, 30, 30)!important;
 	font-weight: 800;
     font-family: "Poppins";
     text-decoration: none;
@@ -232,7 +260,7 @@ $blue:#4287f5;
 }
 
 .fa-edit {
-	color: lightsalmon !important;
+	color: rgb(11, 15, 16) !important;
 }
 
 .meta-info {
@@ -261,9 +289,9 @@ $blue:#4287f5;
 }
 
 .btn-read {
-    background: #544e66 !important;
+    background: #f1f8f9 !important;
 	@include border-radius(0!important);
-	color: #fff!important;
+	color: rgb(8, 8, 8)!important;
 	padding: 5px 10px!important;
 	float: left;
 	margin-top: 10px;
@@ -317,7 +345,7 @@ $blue:#4287f5;
 
         > span {
             display: block;
-			color: rgba(255,255,255,.5);
+			color: rgba(255, 255, 255, 0.5);
 			text-transform: uppercase;
 			font-size: 15px;
 			letter-spacing: .05em;
@@ -348,7 +376,7 @@ $blue:#4287f5;
     text-decoration: none;
 }
 .tag {
-	background: #f1f1f1;
+	background: #b2e8fa;
 	padding: 10px 15px;
 	color: #222;
 	@include transition(0.5s);
@@ -366,8 +394,11 @@ $blue:#4287f5;
 // Most popular
 
 .most-popular-img {
-    height: 80px;
+    height: 90px;
 	width: 100%;
+	margin-bottom: 8px;
+	margin-top:5px
+	
 }
 
 .most-popular-font {
@@ -390,10 +421,10 @@ $blue:#4287f5;
 .trending-img-size {
 	height: 326px;
 	overflow: hidden;
-	border-radius: 25px;
+	border-radius: 10px;
 }
 .trending-img-size > img {
-	height: 340px;
+	height: 300px;
 	min-width: 100%;
 }
 
@@ -494,6 +525,7 @@ $blue:#4287f5;
 
 .search-btn {
 	float: left;
+	margin-left: 3px;
 }
 
 // Category
@@ -673,4 +705,62 @@ $blue:#4287f5;
 	overflow-x: hidden;
 	overflow-y: auto;
 	text-align:justify;
+}
+
+//About
+.li {
+	
+
+	margin-bottom: 20px;
+	
+
+}
+
+//lights
+
+.light {
+	
+	margin-top: 2rem;
+	flex-direction: column;
+	width: 100%;
+	
+	padding: 1rem;
+	
+
+	
+}
+
+
+//richtetx
+
+.editor {
+	position: relative;
+	height: 100%;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+
+.blogCard {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	height: 100%;
+	width: 100%;
+	padding: 1rem;
+	border-radius: 1rem;
+	background-color: rgb(226, 226, 226);
+	box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+	transition: all 0.3s;
+
+}
+
+.trendImg { 
+height: 500px;
+width: 415px;
+
+
 }

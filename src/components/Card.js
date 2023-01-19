@@ -4,8 +4,8 @@ import { excerpt } from "../utility";
 
 const Card = ({ title, description, imgUrl, id, likes, comments }) => {
   return (
-    <div className="col-sm-6 col-lg-4 mb-5">
-      <div className="related-content card text-decoration-none overflow-hidden h-100">
+    <div className="col-sm-6 col-lg-4  mb-5">
+      <div className="related-content card  text-decoration-none overflow-hidden h-100">
         <img className="related-img card-img-top" src={imgUrl} alt={title} />
         <div className="related-body card-body p-4">
           <h5 className="title text-start py-2">{title}</h5>

@@ -105,9 +105,9 @@ import {
       <div>
         <div className="container">
           <div className="row">
-            <div className="blog-heading text-center py-2 mb-4">Daily Blogs</div>
+            <div className="blog-heading text-center py-2 mb-4">Fox Lighting</div>
             {blogs?.map((blog) => (
-              <div className="col-md-6" key={blog.id}>
+              <div className="col-md-5 py-2 my-2 mx-2  justify-content space-between " key={blog.id}>
                 <BlogSection {...blog} />
               </div>
             ))}

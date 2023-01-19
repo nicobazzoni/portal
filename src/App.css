@@ -36,3 +36,55 @@
     transform: rotate(360deg);
   }
 }
+
+
+
+
+li:not(:last-child) {
+  margin-bottom: 20px;
+}
+
+
+
+.mediaFormContainer{
+  padding: 1rem 2rem;
+}
+
+.mediaFormContainer .header{
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.uploadContainer{
+  margin: 2rem 0;
+}
+
+.uploadIcon{
+  font-size: 3rem;
+  color: #A3A3A3;
+}
+
+.uploadText{
+  color: #A3A3A3;
+  font-size: 1.5rem;
+  line-height: 1.5rem;
+}
+
+.image-display-container{
+  padding: 1rem 2rem;
+}
+
+.image-display-container .header{
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.masonry-item{
+  position: relative;
+}
+
+.masonry-item .delete-btn{
+  position: absolute;
+  top: 0;
+  right: 0;
+}

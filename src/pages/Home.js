@@ -204,12 +204,12 @@ const Home = ({ setActive, user, active }) => {
   console.log("categoryCount", categoryCount);
 
   return (
-    <div className="container-fluid pb-4 pt-4 padding">
+    <div className="container-fluid pb-4 pt-4 padding  ">
       <div className="container padding">
-        <div className="row mx-0">
+        <div className="row ">
           <Trending blogs={trendBlogs} />
-          <div className="col-md-8">
-            <div className="blog-heading text-start py-2 mb-4">Daily Blogs</div>
+          <div className="col-md-8 ">
+            <div className="blog-heading text-start py-2 mb-4">Fox Lighting</div>
             {blogs.length === 0 && location.pathname !== "/" && (
               <>
                 <h4>
@@ -218,8 +218,10 @@ const Home = ({ setActive, user, active }) => {
                 </h4>
               </>
             )}
+
             {blogs?.map((blog) => (
               <BlogSection
+              
                 key={blog.id}
                 user={user}
                 handleDelete={handleDelete}
@@ -235,7 +237,7 @@ const Home = ({ setActive, user, active }) => {
           </div>
           <div className="col-md-3">
             <Search search={search} handleChange={handleChange} />
-            <div className="blog-heading text-start py-2 mb-4">Tags</div>
+            <div className="blog-heading text-star  py-2 mb-4">Tags</div>
             <Tags tags={tags} />
             <FeatureBlogs title={"Most Popular"} blogs={blogs} />
             <Category catgBlogsCount={categoryCount} />

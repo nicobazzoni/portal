@@ -13,6 +13,8 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { toast } from "react-toastify";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const initialState = {
   title: "",
@@ -25,22 +27,23 @@ const initialState = {
 };
 
 const categoryOption = [
-  "Fashion",
+  "Studio",
   "Technology",
-  "Food",
-  "Politics",
-  "Sports",
-  "Business",
+  "Projects",
+  "LookSee",
+  "Breaking News",
+  "Lights",
 ];
 
 const AddEditBlog = ({ user, setActive }) => {
   const [form, setForm] = useState(initialState);
   const [file, setFile] = useState(null);
   const [progress, setProgress] = useState(null);
-
+  const [value, setValue] = useState('');
   const { id } = useParams();
 
   const navigate = useNavigate();
+  
 
   const { title, tags, category, trending, description } = form;
 
@@ -96,7 +99,8 @@ const AddEditBlog = ({ user, setActive }) => {
   };
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+   
+    setForm({ ...form, [e.target.name]: e.target.value }).then(setValue);
   };
 
   const handleTags = (tags) => {

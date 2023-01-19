@@ -26,15 +26,15 @@ const Trending = ({ blogs }) => {
   };
   return (
     <>
-      <div>
-        <div className="blog-heading text-start py-2 mb-4">Trending</div>
+      <div className="">
+        <div className="blog-heading text-start py-2 mb-4 ">Trending</div>
       </div>
       <OwlCarousel className="owl-theme" {...options}>
         {blogs?.map((item) => (
             
-          <div className="item px-2" key={item.id}>
+          <div className="item px-4 " key={item.id}>
             <Link to={`/detail/${item.id}`}>
-              <div className="trending-img-position">
+              <div className="trending-img-position ">
                 <div className="trending-img-size">
                   <img
                     src={item.imgUrl}
