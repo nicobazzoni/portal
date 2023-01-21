@@ -31,7 +31,7 @@ const categoryOption = [
   "Technology",
   "Projects",
   "LookSee",
-  "Breaking News",
+  "Show",
   "Lights",
 ];
 

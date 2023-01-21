@@ -89,3 +89,45 @@ li:not(:last-child) {
   top: 0;
   right: 0;
 }
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.image-container img {
+  width: 400px;
+  height: 300px;
+  object-fit: cover;
+  border-style: #282c34 solid 1px;
+  border-radius: 10px;
+  margin: 4px;
+  padding: 3px;
+  
+}
+
+.images-collection {
+ display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  
+  
+}
+
+#popup-root .popup-content {
+  padding: 50px;
+  display: inline;
+}
+
+#popup-root .popup-content input {
+  color: black;
+}
+
+#popup-root .popup-content .success-msg {
+  color: rgb(53, 172, 53);
+}

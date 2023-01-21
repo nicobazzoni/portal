@@ -20,7 +20,7 @@ const About = () => {
 <li>[Shift] + [Block] assigns an Intensity Only block to the selected cue.</li>
 <li>[Shift] + [at] reselects the last channel and parameter set, leaving the command line open. This command loops five times.</li>
 </ul>
-<ul>
+<ul className="lights">
 <li>Open fader configuration for a specific fader (set) from Live by pressing [Learn] and [Load]. Load on Ion XE is the two buttons under the fader.</li>
 <li>[About] held in combination with [Park], [Patch/Address], [Live], [Label], [Mark], [Next/Last], [Park], [Part], [Time] and [Path] toggle the displays to a variety of associated channel data.</li>
 <li>[Trace] [Trace] in live during an update or blind when setting channel data forces a previously inactive light to track its intensity value to the beginning of the cue list.</li>

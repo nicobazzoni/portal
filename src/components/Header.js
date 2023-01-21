@@ -88,7 +88,7 @@ const Header = ({ active, setActive, user, handleLogout }) => {
                     }`}
                     onClick={() => setActive("images")}
                   >
-                    images
+                    Images
                   </li>
                 </Link>
               </ul>
