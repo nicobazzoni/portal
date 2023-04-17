@@ -21,6 +21,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
+    "react-firebase-hooks": "^5.1.1",
     "react-fontawesome": "^1.7.1",
     "react-owl-carousel": "^2.3.3",
     "react-quill": "^2.0.0",
@@ -31,6 +32,7 @@
     "reactjs-popup": "^2.0.5",
     "saas": "^1.0.0",
     "sass": "^1.57.1",
+    "talkjs": "^0.15.9",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

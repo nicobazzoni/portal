@@ -1,109 +1,107 @@
-import { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { db, auth } from '../firebase'
+import { collection, addDoc, serverTimestamp, onSnapshot, query, orderBy, deleteDoc, doc } from "firebase/firestore";
 
-import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
-import { MainContainer, ChatContainer, MessageList, Message, MessageInput, TypingIndicator } from '@chatscope/chat-ui-kit-react';
+import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { message } from 'antd';
 
-const API_KEY = process.env.REACT_APP_API_KEY;
-const systemMessage = { //  Explain things like you're talking to a software professional with 5 years of experience.
-    "role": "system", "content": "Explain things like you're talking to a software professional with 2 years of experience."
-  }
-const Tunes = () => {
-    const [messages, setMessages] = useState([
-        {
-          message: "Hello, I'm ChatGPT! Ask me anything!",
-          sentTime: "just now",
-          sender: "ChatGPT"
-        }
-      ]);
-      const [isTyping, setIsTyping] = useState(false);
+function Chat({user, setActive}) {
+
+    //get user id
+    const { id } = useParams();
+    const [msg, setMsg] = useState('')
+    const [messages, setMessages] = useState([])
+    const messagesRef = collection(db, "messages");
+    const { uid } = user?.uid
+    const { currentUser } = auth;
+    const [userUid, setUserUid] = useState('')
+    const [loading, setLoading] = useState(false);
     
-      const handleSend = async (message) => {
-        const newMessage = {
-          message,
-          direction: 'outgoing',
-          sender: "user"
-        };
-    
-        const newMessages = [...messages, newMessage];
-        
-        setMessages(newMessages);
-    
-        // Initial system message to determine ChatGPT functionality
-        // How it responds, how it talks, etc.
-        setIsTyping(true);
-        await processMessageToChatGPT(newMessages);
-      };
-    
-      async function processMessageToChatGPT(chatMessages) { // messages is an array of messages
-        // Format messages for chatGPT API
-        // API is expecting objects in format of { role: "user" or "assistant", "content": "message here"}
-        // So we need to reformat
-    
-        let apiMessages = chatMessages.map((messageObject) => {
-          let role = "";
-          if (messageObject.sender === "ChatGPT") {
-            role = "assistant";
-          } else {
-            role = "user";
-          }
-          return { role: role, content: messageObject.message}
-        });
-    
-    
-        // Get the request body set up with the model we plan to use
-        // and the messages which we formatted above. We add a system message in the front to'
-        // determine how we want chatGPT to act. 
-        const apiRequestBody = {
-            "model": "gpt-3.5-turbo",
-          "messages": [
-            systemMessage,  // The system message DEFINES the logic of our chatGPT
-            ...apiMessages // The messages from our chat with ChatGPT
-          ]
-        }
-    
-        await fetch("https://api.openai.com/v1/chat/completions", 
-        {
-          method: "POST",
-          headers: {
-            "Authorization": "Bearer " + API_KEY,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(apiRequestBody)
-        }).then((data) => {
-          return data.json();
-        }).then((data) => {
-          console.log(data);
-          setMessages([...chatMessages, {
-            message: data.choices[0].message.content,
-            sender: "ChatGPT"
-          }]);
-          setIsTyping(false);
-        });
-      }
-    
-      return (
-        <div className="App h-1/2">
-          <div style={{ position:"relative", height: "800px", width: "700px"  }}>
-            <MainContainer>
-              <ChatContainer>       
-                <MessageList 
-                  scrollBehavior="smooth" 
-                  typingIndicator={isTyping ? <TypingIndicator content="ChatGPT is typing" /> : null}
-                >
-                  {messages.map((message, i) => {
-                    console.log(message)
-                    return <Message key={i} model={message} />
-                  })}
-                </MessageList>
-                <MessageInput placeholder="Type message here" onSend={handleSend} />        
-              </ChatContainer>
-            </MainContainer>
-          </div>
-        </div>
-      )
+
+    useEffect(() => {
+        const unsubscribe = onSnapshot(
+            query(messagesRef, orderBy("createdAt", "desc")),
+            (snapshot) => {
+                setMessages(snapshot.docs.map((doc) => doc.data()));
+            }
+        );
+        return unsubscribe;
     }
+    , [messagesRef]);
+
+    const sendMsg = async (e) => {
+        e.preventDefault();
+        await addDoc(messagesRef, {
+            text: msg,
+            createdAt: serverTimestamp(),
+            uid: currentUser.uid,
+        })
+        setMsg('');
+    }
+//delete message if message.uid === currentUser.uid
+;
 
 
 
 
-export default Tunes
+
+return (
+        <div>
+
+            <div className="chat">
+                <div className="chat__header">  
+                    <h2>Chat</h2>
+                </div>
+                <div className="chat__footer">
+                    <form>
+                        <input className='p-2 m-2' placeholder='Message...'
+                            type="text" value={msg}
+                            onChange={(e) => setMsg(e.target.value)}
+                        />
+                        <button className='msgBtn' onClick={sendMsg}>Send</button>
+                    </form>
+                </div>
+                <div className="chat__body">
+                    {messages.map(({id, text, uid}) => (
+                        <><p key={id} className={`chat__message p-2 m-2  bg ${uid === currentUser.uid && 'chat__reciever'}`}>
+                            {text}
+                        </p> 
+                        {uid !== currentUser.uid && <span className="chat__name m-2 p2 bg">
+                              by  {user.email}
+                            </span>}
+                        <span className="chat__timestamp  msgBtn">
+                            {new Date().toLocaleDateString()}
+                            &nbsp;
+                            {new Date().toLocaleTimeString()}
+                          
+                  
+                                
+                            </span>  
+
+                            {/* <button className="btn btn-danger m-2 p2" onClick={handleDelete}>Delete</button> */}
+                            <div className='break'></div>
+                            
+                            </>
+                            
+                            
+
+
+                        ))}
+                </div>
+
+               
+            
+                
+              
+
+             
+            </div>
+        </div>
+    )
+}
+
+export default Chat
+
+
+  
