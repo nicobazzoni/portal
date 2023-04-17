@@ -20,6 +20,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import Blogs from "./pages/Blogs";
 import Lights from "./components/Lights";
 import ImageUpload from "./pages/ImageUpload";
+import Chat from "./pages/Chat";
 
 function App() {
   const [active, setActive] = useState("home");
@@ -45,6 +46,9 @@ function App() {
     });
   };
 
+  //create back button for detail page
+  
+  
 
   return (
   
@@ -76,6 +80,8 @@ function App() {
             user?.uid ? <AddEditBlog user={user} /> : <Navigate to="/" />
           }
         />
+        <Route path="/chat" element={<Chat />} />
+        
         <Route
           path="/update/:id"
           element={

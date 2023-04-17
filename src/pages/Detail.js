@@ -13,7 +13,7 @@ import {
 } from "firebase/firestore";
 import { isEmpty } from "lodash";
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import CommentBox from "../components/CommentBox";
 import Like from "../components/Like";
@@ -35,7 +35,7 @@ const Detail = ({ setActive, user }) => {
   let [likes, setLikes] = useState([]);
   const [userComment, setUserComment] = useState("");
   const [relatedBlogs, setRelatedBlogs] = useState([]);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const getRecentBlogs = async () => {
       const blogRef = collection(db, "blogs");
@@ -53,12 +53,20 @@ const Detail = ({ setActive, user }) => {
 
   useEffect(() => {
     id && getBlogDetail();
-    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   if (loading) {
     return <Spinner />;
   }
+
+
+  const handleBack = () => {
+    navigate(-1);
+  };
+
+
+
 
   const getBlogDetail = async () => {
     setLoading(true);
@@ -124,10 +132,12 @@ const Detail = ({ setActive, user }) => {
       });
     }
   };
+  
 
- 
+  console.log("relatedBlogs", relatedBlogs);
   return (
     <div className="single">
+      <button className="btn btn-primary pt-2 pb-2 m-2 p-4" onClick={handleBack}> Back </button>
       <div
         className="blog-title-box"
         style={{ backgroundImage: `url('${blog?.imgUrl}')` }}

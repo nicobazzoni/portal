@@ -91,6 +91,16 @@ const Header = ({ active, setActive, user, handleLogout }) => {
                     Images
                   </li>
                 </Link>
+                <Link to="/chat" style={{ textDecoration: "none" }}>
+                  <li
+                    className={`nav-item nav-link ${
+                      active === "images" ? "active" : ""
+                    }`}
+                    onClick={() => setActive("images")}
+                  >
+                    ChatGPT
+                  </li>
+                </Link>
               </ul>
               <div className="row g-3">
                 <ul className="navbar-nav me-auto mb-2 mb-lg-0">
