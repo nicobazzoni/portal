@@ -80,7 +80,7 @@ function App() {
             user?.uid ? <AddEditBlog user={user} /> : <Navigate to="/" />
           }
         />
-        <Route path="/chat" element={<Chat user={user} setActive={setActive} />} />
+        <Route path="/chat" element={ user?.uid ? <Chat user={user} setActive={setActive} /> : <Navigate to="/"   />} />
 
         <Route
           path="/update/:id"

@@ -6,6 +6,7 @@ import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import { useParams } from "react-router-dom";
 import ReactOwlCarousel from "react-owl-carousel";
+import { useNavigate } from "react-router-dom";
 
 const ImageUpload = () => {
   const [file, setFile] = useState("");
@@ -13,6 +14,7 @@ const ImageUpload = () => {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [uploaded, setUploaded] = useState(false);
+  const router = useNavigate();
 
   const [open, setOpen] = useState(false);
   const closeModal = () => setOpen(false);
@@ -74,10 +76,20 @@ const ImageUpload = () => {
           });
         });
         setUploaded(true);
+      
+         closeModal();
+       loadAllImages();
+        router("/images");
+       
       }
+      
     );
+
+
+    
  
   };
+
 
 
   return (
@@ -92,7 +104,7 @@ const ImageUpload = () => {
           );
         })}
         
-      {/* <button onClick={openModal}>Upload an Image</button> */}
+      <button className="msgBtn" onClick={openModal}>Upload an Image</button>
       <Popup open={open} onClose={closeModal}>
         <input type="file" accept="/image/*" onChange={handleChange}></input>
         <button onClick={handleUpload}>Save</button>

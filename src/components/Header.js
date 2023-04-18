@@ -91,14 +91,14 @@ const Header = ({ active, setActive, user, handleLogout }) => {
                     Images
                   </li>
                 </Link>
-                <Link to="/chat" style={{ textDecoration: "none" }}>
+                <Link to="/chat" style={{ textDecoration: "none",  }}>
                   <li
-                    className={`nav-item nav-link ${
-                      active === "images" ? "active" : ""
+                    className={`nav-item nav-link  ${
+                      active === "chat" ? "active" : ""
                     }`}
-                    onClick={() => setActive("images")}
+                    onClick={() => setActive("chat")}
                   >
-                    ChatGPT
+                    Chat
                   </li>
                 </Link>
               </ul>

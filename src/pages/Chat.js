@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { message } from 'antd';
 
-function Chat({user, setActive}) {
+function Chat({user, setActive, name}) {
 
     //get user id
     const { id } = useParams();
@@ -39,8 +39,11 @@ function Chat({user, setActive}) {
         })
         setMsg('');
     }
-//delete message if message.uid === currentUser.uid
+
 ;
+
+
+
 
 
 
@@ -63,23 +66,23 @@ return (
                     </form>
                 </div>
                 <div className="chat__body">
-                    {messages.map(({id, text, uid}) => (
+                    {messages.map(({id, text, uid, createdAt, name}) => (
                         <><p key={id} className={`chat__message p-2 m-2  bg ${uid === currentUser.uid && 'chat__reciever'}`}>
                             {text}
-                        </p> 
-                        {uid !== currentUser.uid && <span className="chat__name m-2 p2 bg">
-                              by  {user.email}
+                        </p>  
+                        {uid !== currentUser.uid && 
+                        <span className="chat__name m-2 p2 bg">
+                               {user.email.split('@')[0]
+                                 }
                             </span>}
-                        <span className="chat__timestamp  msgBtn">
-                            {new Date().toLocaleDateString()}
-                            &nbsp;
-                            {new Date().toLocaleTimeString()}
+                        <span className="bg p-2">
+                        <small>{createdAt.toDate().toDateString()}</small>
                           
                   
                                 
                             </span>  
-
-                            {/* <button className="btn btn-danger m-2 p2" onClick={handleDelete}>Delete</button> */}
+{/* 
+                            <button className="btn btn-danger m-2 p2" onClick={handleDelete}>Delete</button> */}
                             <div className='break'></div>
                             
                             </>
