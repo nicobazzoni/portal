@@ -75,14 +75,7 @@ return (
                                {user.email.split('@')[0]
                                  }
                             </span>}
-                        <span className="bg p-2">
-                        <small>{createdAt.toDate().toDateString()}</small>
-                          
-                  
-                                
-                            </span>  
-{/* 
-                            <button className="btn btn-danger m-2 p2" onClick={handleDelete}>Delete</button> */}
+               
                             <div className='break'></div>
                             
                             </>

@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "fir-social-bdb17"
-  }
+    "default": "fir-social-bdb17",
+    "notsure": "fir-social-bdb17"
+  },
+  "targets": {},
+  "etags": {}
 }
