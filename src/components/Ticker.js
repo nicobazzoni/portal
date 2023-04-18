@@ -9,7 +9,7 @@ import Col from 'react-bootstrap/Col';
 
 
 
-function App() {
+function Ticker() {
 
   const [newsData, setNewsData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -21,8 +21,18 @@ function App() {
     setLoading(true);
 
     //Make news api call using axios
-    const resp = await axios.get("https://newsapi.org/v2/everything?q=news&apiKey=b738ed2669c54125aae96fba7c1107d5&pageSize=10");
-    setNewsData(resp.data.articles);
+ const resp =  axios.get('https://bing-news-search1.p.rapidapi.com/news' , {
+    headers: {
+        'x-bingapis-sdk': 'true',
+        'x-rapidapi-key':  '90d9cad4aemsh0c2ae781060c8c2p1a0ee0jsna36176967a11',
+        'X-RapidAPI-Host': 'bing-news-search1.p.rapidapi.com'
+    }
+   
+})
+console.log(resp)
+
+    //Set newsData to the data returned from the api call
+    setNewsData((await resp).data.value);
 
     //Set loading boolean to false so that we know to show news articles
     setLoading(false);
@@ -36,27 +46,27 @@ function App() {
 
   return (
     //display each news article in ticker marquee format
-    <div className="ticker text-center">
-       
+    <div className='ticker '>
+        <marquee>
+            {newsData.map((news, index) => (
+                <span key={index}>
+                    <a href={news.url} target="_blank" rel="noreferrer">
 
-                        
-                            <Card.Title>News Ticker</Card.Title>
-                           
-                                <marquee className='' >
-                                    {loading ? "Loading..." : newsData.map((news, index) => {
-                                        return (
-                                            <a className='ticker'  href={news.url} target="_blank"  rel="noreferrer" key={index}>{news.title} || {news.description} ||  </a>
+                        {news.name} - {news.description}
 
 
+                    </a>
+                   
 
-  )
-})}
-                                </marquee>
-                            
-                       
-         
+                    </span>
+            ))}
+        </marquee>
     </div>
+
+
     );
+
 }
 
-export default App;
+
+export default Ticker;
