@@ -22,6 +22,7 @@ import Search from "../components/Search";
 import { isEmpty, isNull } from "lodash";
 import { useLocation } from "react-router-dom";
 import Category from "../components/Category";
+import Ticker from "../components/Ticker";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -207,6 +208,7 @@ const Home = ({ setActive, user, active }) => {
     <div className="container-fluid pb-4 pt-4 padding  ">
       <div className="container padding">
         <div className="row ">
+          <Ticker user={user} />
           <Trending blogs={trendBlogs} />
           <div className="col-md-8 ">
             <div className="blog-heading text-start py-2 mb-4">Fox Lighting</div>
@@ -236,6 +238,7 @@ const Home = ({ setActive, user, active }) => {
             )}
           </div>
           <div className="col-md-3">
+            
             <Search search={search} handleChange={handleChange} />
             <div className="blog-heading text-star  py-2 mb-4">Tags</div>
             <Tags tags={tags} />

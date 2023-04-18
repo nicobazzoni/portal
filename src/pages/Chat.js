@@ -39,6 +39,7 @@ function Chat({user, setActive, name}) {
         })
         setMsg('');
     }
+    console.log(messages)
 
 ;
 
@@ -70,11 +71,9 @@ return (
                         <><p key={id} className={`chat__message p-2 m-2  bg ${uid === currentUser.uid && 'chat__reciever'}`}>
                             {text}
                         </p>  
-                        {uid !== currentUser.uid && 
-                        <span className="chat__name m-2 p2 bg">
-                               {user.email.split('@')[0]
-                                 }
-                            </span>}
+                     
+                      
+                       
                
                             <div className='break'></div>
                             

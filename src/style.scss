@@ -246,6 +246,21 @@ $blue:#4287f5;
 
 }
 
+.ticker {
+
+	height: 75px;
+	width: 100%;
+	color : #000000 !important;
+	overflow: hidden;
+	background-color: #fff;
+	
+	
+	.a{
+		text-decoration: none;
+	}
+
+}
+
 
 .react-tag-input {
     height: 45px !important;
