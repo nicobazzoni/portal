@@ -22,6 +22,7 @@ import Lights from "./components/Lights";
 import ImageUpload from "./pages/ImageUpload";
 import Chat from "./pages/Chat";
 import Ticker from "./components/Ticker";
+import Schedule from "./components/Schedule";
 
 function App() {
   const [active, setActive] = useState("home");
@@ -87,6 +88,7 @@ function App() {
           }
         />
         <Route path="/chat" element={ user?.uid ? <Chat user={user} setActive={setActive} /> : <Navigate to="/"   />} />
+        <Route path="/schedule" element={<Schedule />} />
 
         <Route
           path="/update/:id"

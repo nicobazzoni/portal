@@ -23,6 +23,8 @@ import { isEmpty, isNull } from "lodash";
 import { useLocation } from "react-router-dom";
 import Category from "../components/Category";
 import Ticker from "../components/Ticker";
+import Stream from "../components/Stream";
+import Schedule from "../components/Schedule";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -244,6 +246,8 @@ const Home = ({ setActive, user, active }) => {
             <Tags tags={tags} />
             <FeatureBlogs title={"Most Popular"} blogs={blogs} />
             <Category catgBlogsCount={categoryCount} />
+            <Stream />
+            
           </div>
         </div>
       </div>
