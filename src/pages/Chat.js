@@ -5,6 +5,7 @@ import { collection, addDoc, serverTimestamp, onSnapshot, query, orderBy, delete
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { message } from 'antd';
+import { useId } from 'react';
 
 function Chat({user, setActive, name}) {
 
@@ -36,6 +37,7 @@ function Chat({user, setActive, name}) {
             text: msg,
             createdAt: serverTimestamp(),
             uid: currentUser.uid,
+            name: currentUser.displayName,
         })
         setMsg('');
     }
@@ -69,7 +71,7 @@ return (
                 <div className="chat__body">
                     {messages.map(({id, text, uid, createdAt, name}) => (
                         <><p key={id} className={`chat__message p-2 m-2  bg ${uid === currentUser.uid && 'chat__reciever'}`}>
-                            {text}
+                            {text} <h6 style={{color: 'blue', fontFamily: 'monospace'}}> {name}  </h6>{createdAt?.toDate().toLocaleString()}
                         </p>  
                      
                       

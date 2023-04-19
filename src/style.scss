@@ -177,6 +177,13 @@ $blue:#4287f5;
 	margin-top: auto;
 	gap: 10px;
 	justify-content: space-between;
+
+	.span{
+		background-color: #f89faa;
+		padding: 5px;
+		border-radius: 5px;
+		color: #000000 !important;
+	}
 	}
 	
 .chat__footer{
