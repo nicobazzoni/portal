@@ -8,8 +8,8 @@ const Header = ({ active, setActive, user, handleLogout }) => {
 
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
-      <div className="container-fluid bg-faded padding-media">
+    <nav className="navbar navbar-expand-lg navbar-light ">
+      <div className="container-fluid bgBlue padding-media">
         <div className="container padding-media">
           <nav className="navbar navbar-toggleable-md navbar-light">
             <button
