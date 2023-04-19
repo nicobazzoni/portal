@@ -45,17 +45,21 @@ console.log(resp)
 
 
   return (
-    //display each news article in ticker marquee format
-    <div className='ticker '>
-        <marquee>
+   
+  
+    <div className='ticker'> 
+      <marquee scrollamount="8">
             {newsData.map((news, index) => (
                 <span key={index}>
-                    <a href={news.url} target="_blank" rel="noreferrer">
+                   
+                    <a style={{textDecoration: 'none', color: 'whitesmoke'}} href={news.url} target="_blank" rel="noreferrer">
+                      
 
                         {news.name} - {news.description}
 
 
                     </a>
+                   
                    
 
                     </span>

@@ -248,16 +248,27 @@ $blue:#4287f5;
 
 .ticker {
 
-	height: 75px;
+	height: 55px;
 	width: 100%;
-	color : #000000 !important;
+	
 	overflow: hidden;
-	background-color: #fff;
+	background-color: #34a0f9;
+	justify-items: center;
+	
+	margin: 0 auto;
+	padding: 10px;
+	
 	
 	
 	.a{
+		color : #000000 !important;
 		text-decoration: none;
-		color: #000;
+
+	}
+
+	.span{
+		color : #000000 !important;
+		
 	}
 
 }
