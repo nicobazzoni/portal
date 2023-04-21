@@ -234,11 +234,13 @@ const Home = ({ setActive, user, active }) => {
             ))}
 
             {!hide && (
-              <button className="btn btn-primary" onClick={fetchMore}>
+              <button className="btn btn-primary mb-2" onClick={fetchMore}>
                 Load More
               </button>
             )}
+             <Stream autoplay />
           </div>
+         
           <div className="col-md-3">
             
             <Search search={search} handleChange={handleChange} />
@@ -246,7 +248,7 @@ const Home = ({ setActive, user, active }) => {
             <Tags tags={tags} />
             <FeatureBlogs title={"Most Popular"} blogs={blogs} />
             <Category catgBlogsCount={categoryCount} />
-            <Stream />
+           
             
           </div>
         </div>

@@ -5,10 +5,10 @@ const FeatureBlogs = ({ blogs, title }) => {
   const navigate = useNavigate();
   return (
     <div>
-      <div className="blog-heading text-start pt-3 py-2 mb-4">{title}</div>
+      <div className="  blog-heading  text-start pt-3 py-2 mb-4">{title}</div>
       {blogs?.map((item) => (
         <div
-          className="row pb-3 bg-light border-bottom border-2 my-2"
+          className="row-2  recent pb-3 featblog  bg-light border-bottom border-2 my-2"
           key={item.id}
           style={{ cursor: "pointer" }}
           onClick={() => navigate(`/detail/${item.id}`)}
