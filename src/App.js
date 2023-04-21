@@ -24,6 +24,7 @@ import Chat from "./pages/Chat";
 import Ticker from "./components/Ticker";
 import Schedule from "./components/Schedule";
 
+
 function App() {
   const [active, setActive] = useState("home");
   const [user, setUser] = useState(null);

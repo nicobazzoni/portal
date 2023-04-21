@@ -13,16 +13,16 @@ const FeatureBlogs = ({ blogs, title }) => {
           style={{ cursor: "pointer" }}
           onClick={() => navigate(`/detail/${item.id}`)}
         >
-          <div className="col-8 align-self-center padding ">
+          <div className="col-8 align-self-center recent padding ">
             <img
               src={item.imgUrl}
               alt={item.title}
               className="most-popular-img"
             />
           </div>
-          <div className="col-7 blogCard padding">
-            <div className="text-start most-popular-font">{item.title}</div>
-            <div className="text-start most-popular-font-meta">
+          <div className=" text-left justify-content-center bgRecent">
+            <div className="most-popular-font">{item.title}</div>
+            <div className=" most-popular-font-meta">
               {item.timestamp.toDate().toDateString()}
             </div>
           </div>
