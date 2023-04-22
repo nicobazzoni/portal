@@ -25,6 +25,7 @@ import Category from "../components/Category";
 import Ticker from "../components/Ticker";
 import Stream from "../components/Stream";
 import Schedule from "../components/Schedule";
+import Stock from "../components/Stock";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -248,6 +249,7 @@ const Home = ({ setActive, user, active }) => {
             <Tags tags={tags} />
             <FeatureBlogs title={"Most Popular"} blogs={blogs} />
             <Category catgBlogsCount={categoryCount} />
+            <Stock />
            
             
           </div>

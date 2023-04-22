@@ -7,6 +7,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
+//get free stock api key from https://www.alphavantage.co/support/#api-key
 
 
 function Ticker() {

@@ -26,7 +26,7 @@ const Tags = ({ tags  }) => {
         ))}
       </div>
       {tags?.length > limit && (
-        <button className="btn   btn-primary p-2 m-1" onClick={loadMore}>
+        <button className="btn btn-primary p-2 m-1" onClick={loadMore}>
           Load More
         </button>
       )}
