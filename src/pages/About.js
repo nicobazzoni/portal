@@ -39,7 +39,7 @@ const About = () => {
      
         <a className='links' href='https://www.etcconnect.com/Support/Videos/'>ETC tutorial videos</a>
 
-        <a className='links' href='https://www.desisti.it/'>ETC Downloads</a>
+        
        
 
 
