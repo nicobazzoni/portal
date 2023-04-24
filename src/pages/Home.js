@@ -243,7 +243,7 @@ const Home = ({ setActive, user, active }) => {
               </button>
             )}
              
-             <Stream autoplay />
+          
           </div>
          
           <div className="col-md-3">
