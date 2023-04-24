@@ -211,7 +211,9 @@ const Home = ({ setActive, user, active }) => {
     <div className="container-fluid pb-4 pt-4 padding  ">
       <div className="container padding">
         <div className="row ">
-          <Ticker user={user} />
+          <Ticker className='space-y-2 ' user={user} />
+        
+         
           <Trending blogs={trendBlogs} />
           <div className="col-md-8 ">
             <div className="blog-heading text-start py-2 mb-4">Fox Lighting</div>
@@ -239,6 +241,7 @@ const Home = ({ setActive, user, active }) => {
                 Load More
               </button>
             )}
+             <Stock className='' />
              <Stream autoplay />
           </div>
          
@@ -249,7 +252,7 @@ const Home = ({ setActive, user, active }) => {
             <Tags tags={tags} />
             <FeatureBlogs title={"Most Popular"} blogs={blogs} />
             <Category catgBlogsCount={categoryCount} />
-            <Stock />
+          
            
             
           </div>

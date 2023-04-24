@@ -1,6 +1,18 @@
 import React from "react";
 
+import { useMemo } from 'react';
+import { createAvatar } from '@dicebear/core';
+import { shapes } from '@dicebear/collection';
+import { floatButtonPrefixCls } from "antd/es/float-button/FloatButton";
+
+import Avatar from 'react-avatar';
+
 const UserComments = ({ name, body, createdAt, msg }) => {
+
+
+  const svg = createAvatar(shapes, { seed: name });
+
+//randominze shapes from dicebear SO EACH USER HAS A UNIQUE AVATAR
   return (
     <div>
       <div className="row">
@@ -11,12 +23,8 @@ const UserComments = ({ name, body, createdAt, msg }) => {
                 <h4 className="mt-5">{msg}</h4>
               ) : (
                 <>
-                  <div className="media-left">
-                    <img
-                      src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
-                      alt="user"
-                      className="rounded-circle"
-                    />
+                  <div className=" media-left p-2 mb-1  ">
+                  <Avatar className="" name={name} size="50" round="25px" />
                   </div>
                   <div className="media-body">
                     <h3 className="text-start media-heading user_name">

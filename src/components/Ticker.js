@@ -43,6 +43,10 @@ console.log(resp)
     getNewsData();
   }, []);
 
+//create alternative text when api is overloaded or not working properly 
+  if (loading) {
+    return <div className='ticker'><img height={30} src='/favicon.ico' /></div>;
+  }
 
 
   return (
@@ -64,8 +68,11 @@ console.log(resp)
                    
 
                     </span>
-            ))}
+            ))} 
+            
         </marquee>
+
+        
     </div>
 
 

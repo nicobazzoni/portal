@@ -36,6 +36,8 @@ const Detail = ({ setActive, user }) => {
   const [userComment, setUserComment] = useState("");
   const [relatedBlogs, setRelatedBlogs] = useState([]);
   const navigate = useNavigate();
+  
+  
   useEffect(() => {
     const getRecentBlogs = async () => {
       const blogRef = collection(db, "blogs");

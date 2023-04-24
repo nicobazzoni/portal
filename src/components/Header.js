@@ -1,8 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import transitions from "bootstrap";
+import Avatar from 'react-avatar';
 
-const Header = ({ active, setActive, user, handleLogout }) => {
+const Header = ({ active, setActive, user, name, handleLogout }) => {
   const userId = user?.uid;
  
 
@@ -116,19 +117,10 @@ const Header = ({ active, setActive, user, handleLogout }) => {
                 <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                   {userId ? (
                     <>
-                      <div className="profile-logo">
-                        <img
-                          src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
-                          alt="logo"
-                          style={{
-                            width: "30px",
-                            height: "30px",
-                            borderRadius: "50%",
-                            marginTop: "12px",
-                          }}
-                        />
+                      <div className="pt-2 p-2 mb-1 ">
+                      <Avatar name={user?.displayName} round="20px" size="25" />
                       </div>
-                      <p style={{ marginTop: "12px", marginLeft: "5px" }}>
+                      <p style={{ marginTop: "12px", marginLeft: "5px", fontSize: '12px'}}>
                         {user?.displayName}
                       </p>
                       <li className="nav-item nav-link" onClick={handleLogout}>
