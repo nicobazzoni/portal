@@ -7,6 +7,7 @@ import OwlCarousel from "react-owl-carousel";
 
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
+import { UnderlineOutlined } from '@ant-design/icons';
 
 const options = {
     loop: true,
@@ -30,7 +31,20 @@ const options = {
 
 const About = () => {
   return (
-    <div className='lights'>
+    <div className='lights '>
+      <div className='links'>
+        <h6 className=''> links</h6>
+        <a className='links' href='https://www.chauvetdj.com/chauvet-dj-dip-switch-calculator/'>Dip Switch Calculator</a>
+        <a className='links' href='https://store.marinebeam.com/beam-angle-calculator-1/'>Beam angle Calculator</a>
+     
+        <a className='links' href='https://www.etcconnect.com/Support/Videos/'>ETC tutorial videos</a>
+
+        <a className='links' href='https://www.desisti.it/'>ETC Downloads</a>
+       
+
+
+
+      </div>
       <h1 className='top-0 mb-5'>EOS TIPS</h1>
            <OwlCarousel className="owl-theme"  {...options}>
         <div className="item m-2  p-2 bg">
