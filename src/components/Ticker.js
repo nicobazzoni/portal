@@ -45,7 +45,7 @@ console.log(resp)
 
 //create alternative text when api is overloaded or not working properly 
   if (loading) {
-    return <div className='ticker'><img height={30} src='/favicon.ico' /></div>;
+    return <div className='ticker'><img height={40} width={50} src='/favicon.ico' /></div>;
   }
 
 

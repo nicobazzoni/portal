@@ -212,6 +212,7 @@ const Home = ({ setActive, user, active }) => {
       <div className="container padding">
         <div className="row ">
           <Ticker className='space-y-2 ' user={user} />
+          <Stock className='' />
         
          
           <Trending blogs={trendBlogs} />
@@ -241,7 +242,7 @@ const Home = ({ setActive, user, active }) => {
                 Load More
               </button>
             )}
-             <Stock className='' />
+             
              <Stream autoplay />
           </div>
          
