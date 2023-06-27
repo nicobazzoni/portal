@@ -6,7 +6,7 @@ import OwlCarousel from 'react-owl-carousel';
 function Ticker() {
   const [newsData, setNewsData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const newsLimit = 10;
+  const newsLimit = 20;
 
   const getNewsData = async () => {
     setLoading(true);
