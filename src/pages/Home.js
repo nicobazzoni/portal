@@ -211,7 +211,7 @@ const Home = ({ setActive, user, active }) => {
     <div className="container-fluid pb-4 pt-4 padding  ">
       <div className="container padding">
         <div className="row ">
-          <Ticker className='space-y-2 ' user={user} />
+          
           
         
          
@@ -254,7 +254,7 @@ const Home = ({ setActive, user, active }) => {
             <FeatureBlogs title={"Most Popular"} blogs={blogs} />
             <Category catgBlogsCount={categoryCount} />
           
-           
+            <Ticker className='space-y-2 ' user={user} />
             
           </div>
         </div>

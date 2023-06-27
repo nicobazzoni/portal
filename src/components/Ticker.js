@@ -1,47 +1,62 @@
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import OwlCarousel from 'react-owl-carousel';
+
 
 function Ticker() {
-
   const [newsData, setNewsData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const newsLimit = 10;  // Set limit here
+  const newsLimit = 10;
 
-  //Make api call to news api
-  async function getNewsData() {
+  const getNewsData = async () => {
     setLoading(true);
-    
-    const resp = axios.get('https://bing-news-search1.p.rapidapi.com/news' , {
+
+    const resp = await axios.get('https://bing-news-search1.p.rapidapi.com/news', {
       headers: {
-          'x-bingapis-sdk': 'true',
-          'x-rapidapi-key':  '90d9cad4aemsh0c2ae781060c8c2p1a0ee0jsna36176967a11',
-          'X-RapidAPI-Host': 'bing-news-search1.p.rapidapi.com'
+        'x-bingapis-sdk': 'true',
+        'x-rapidapi-key': '90d9cad4aemsh0c2ae781060c8c2p1a0ee0jsna36176967a11',
+        'X-RapidAPI-Host': 'bing-news-search1.p.rapidapi.com'
       }
     });
 
-    setNewsData((await resp).data.value.slice(0, newsLimit));
+    setNewsData((resp.data.value || []).slice(0, newsLimit));
     setLoading(false);
-  }
+  };
 
   useEffect(() => {
     getNewsData();
   }, []);
 
   if (loading) {
-    return <div className='ticker'><img height={40} width={50} src='/favicon.ico' /></div>;
+    return <div>Loading...</div>;
   }
 
+  const options = {
+    items: 1,
+    loop: true,
+    margin: 20,
+    autoplay: true,
+    autoplayTimeout: 3000, // adjust this to control the speed
+  };
+
   return (
-    <div className=''> 
-      <marquee scrollamount="8">
-            {newsData.map((news, index) => (
-                <span key={index}>
-                    <a style={{textDecoration: 'none', color: 'black !important'}} href={news.url} target="_blank" rel="noreferrer">
-                        {news.name} - {news.description}
-                    </a>
-                </span>
-            ))} 
-        </marquee>
+    <div>
+      <h5 style={{fontStyle: 'bold' }}>News</h5>
+    <OwlCarousel items={3} autoplay={true} loop={true} nav={true} margin={10}>
+  {newsData.slice(0,20).map((news, index) => (
+    <div key={index}>
+      <a style={{textDecoration: 'none'}} href={news.url} target="_blank" rel="noreferrer">
+        <img 
+          src={news.image?.thumbnail?.contentUrl} 
+          alt={news.name}
+          className="news-image"
+        />
+        <p className="news-text">{news.description}</p>
+      </a>
+    </div>
+  ))}
+</OwlCarousel>
+
     </div>
   );
 }
