@@ -15,9 +15,11 @@ const BlogSection = ({
   user,
   handleDelete,
 }) => {
+
+  const profileId = userId?.split("@")[0];
   return (
     <div>
-      <div className="row pb-4 bg border my-2 p-2" key={id}>
+      <div className="row postsGo pb-4 bg border my-2 p-2" key={id}>
         <div className="col-md-5">
           <div className="hover-blogs-img">
             <div className="blogs-img">
@@ -31,7 +33,7 @@ const BlogSection = ({
             <h6 className="category catg-color">{category}</h6>
             <span className="title py-2">{title}</span>
             <span className="meta-info">
-              <p className="author">{author}</p> -&nbsp;
+              <Link  to={`/profile/${profileId}`}className="author">{author}</Link> -&nbsp;
               {timestamp.toDate().toDateString()}
             </span>
           </div>

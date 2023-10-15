@@ -3,6 +3,7 @@
   overflow-x: hidden
 }
 
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -130,4 +131,18 @@ li:not(:last-child) {
 
 #popup-root .popup-content .success-msg {
   color: rgb(53, 172, 53);
+}
+
+.logo {
+  position: absolute;
+  top: 24px; /* Adjust this to align with the hamburger menu */
+  right: 10px; /* This will place the icon on the right for mobile views */
+}
+
+/* Media query for larger screens/desktops */
+@media (min-width: 768px) { /* 768px is a typical breakpoint for tablets. Adjust as needed */
+  .logo {
+      left: 10px; /* This will place the icon on the left for desktop views */
+      right: auto; 
+  }
 }

@@ -39,33 +39,45 @@ const Detail = ({ setActive, user }) => {
   
   
   useEffect(() => {
-    const getRecentBlogs = async () => {
-      const blogRef = collection(db, "blogs");
-      const recentBlogs = query(
-        blogRef,
-        orderBy("timestamp", "desc"),
-        limit(5)
-      );
-      const docSnapshot = await getDocs(recentBlogs);
-      setBlogs(docSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+    const getBlogDetail = async () => {
+      setLoading(true);
+      try {
+        const blogRef = collection(db, "blogs");
+        const docRef = doc(db, "blogs", id);
+        const blogDetail = await getDoc(docRef);
+        setBlog(blogDetail.data());
+
+        // Set tags
+        const allBlogsSnapshot = await getDocs(blogRef);
+        const allTags = allBlogsSnapshot.docs.flatMap(doc => doc.get("tags"));
+        setTags([...new Set(allTags)]);
+
+        // Related blogs
+        const blogTags = blogDetail.data().tags || [];
+        if (blogTags.length > 0) {
+          const relatedBlogsQuery = query(
+            blogRef,
+            where("tags", "array-contains-any", blogTags),
+            limit(3)
+          );
+          const relatedBlogSnapshot = await getDocs(relatedBlogsQuery);
+          setRelatedBlogs(relatedBlogSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        } else {
+          setRelatedBlogs([]);
+        }
+
+        // Set comments and likes
+        setComments(blogDetail.data().comments || []);
+        setLikes(blogDetail.data().likes || []);
+      } catch (error) {
+        console.error("Error fetching blog details:", error.message);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    getRecentBlogs();
-  }, []);
-
-  useEffect(() => {
     id && getBlogDetail();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
-
-  if (loading) {
-    return <Spinner />;
-  }
-
-
-  const handleBack = () => {
-    navigate(-1);
-  };
 
 
 
@@ -99,41 +111,52 @@ const Detail = ({ setActive, user }) => {
 
   const handleComment = async (e) => {
     e.preventDefault();
-    comments.push({
+    const newComment = {
       createdAt: Timestamp.fromDate(new Date()),
       userId,
       name: user?.displayName,
       body: userComment,
-    });
-    toast.success("Comment posted successfully");
-    await updateDoc(doc(db, "blogs", id), {
-      ...blog,
-      comments,
-      timestamp: serverTimestamp(),
-    });
-    setComments(comments);
-    setUserComment("");
+    };
+    try {
+      await updateDoc(doc(db, "blogs", id), {
+        ...blog,
+        comments: [...comments, newComment],
+        timestamp: serverTimestamp(),
+      });
+      setComments(prevComments => [...prevComments, newComment]);
+      setUserComment("");
+      toast.success("Comment posted successfully");
+    } catch (error) {
+      console.error("Error posting comment:", error.message);
+    }
   };
 
   const handleLike = async () => {
-    if (userId) {
-      if (blog?.likes) {
-        const index = likes.findIndex((id) => id === userId);
-        if (index === -1) {
-          likes.push(userId);
-          setLikes([...new Set(likes)]);
-        } else {
-          likes = likes.filter((id) => id !== userId);
-          setLikes(likes);
-        }
-      }
+    if (!userId) return;
+
+    let updatedLikes;
+    if (blog?.likes?.includes(userId)) {
+      updatedLikes = likes.filter(id => id !== userId);
+    } else {
+      updatedLikes = [...likes, userId];
+    }
+
+    try {
       await updateDoc(doc(db, "blogs", id), {
         ...blog,
-        likes,
+        likes: updatedLikes,
         timestamp: serverTimestamp(),
       });
+      setLikes(updatedLikes);
+    } catch (error) {
+      console.error("Error updating likes:", error.message);
     }
   };
+
+  const handleBack = () => { 
+    navigate(-1);
+  };
+  
   
 
   console.log("relatedBlogs", relatedBlogs);
@@ -175,9 +198,9 @@ const Detail = ({ setActive, user }) => {
                     />
                   ) : (
                     <>
-                      {comments?.map((comment) => (
-                        <UserComments {...comment} />
-                      ))}
+                      {comments?.map((comment, index) => (
+        <UserComments key={index} {...comment} />
+      ))}
                     </>
                   )}
                 </div>

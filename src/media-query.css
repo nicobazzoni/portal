@@ -15,7 +15,7 @@
 
 @media(min-width:480px) and (max-width:767px) {
 .trending-img-size {
-    height: 226px;
+    height: 200px;
 }
 
 .trending-img-size > img {

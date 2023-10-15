@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import OwlCarousel from 'react-owl-carousel';
+import '../style.scss';
 
 
 function Ticker() {
@@ -40,7 +41,7 @@ function Ticker() {
   };
 
   return (
-    <div>
+    <div className='news-container'>
       <h5 style={{fontStyle: 'bold' }}>News</h5>
     <OwlCarousel items={3} autoplay={true} loop={true} nav={true} margin={10}>
   {newsData.slice(0,20).map((news, index) => (

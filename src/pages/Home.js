@@ -217,7 +217,7 @@ const Home = ({ setActive, user, active }) => {
          
           <Trending blogs={trendBlogs} />
           <div className="col-md-8 ">
-            <div className="blog-heading text-start py-2 mb-4">Fox Lighting</div>
+            <div className="blog-heading text-start py-2 mb-4">posts</div>
             {blogs.length === 0 && location.pathname !== "/" && (
               <>
                 <h4>
@@ -254,9 +254,9 @@ const Home = ({ setActive, user, active }) => {
             <FeatureBlogs title={"Most Popular"} blogs={blogs} />
             <Category catgBlogsCount={categoryCount} />
           
-            <Ticker className='space-y-2 ' user={user} />
+          
             
-          </div>
+          </div>  <Ticker className='' user={user} />
         </div>
       </div>
     </div>

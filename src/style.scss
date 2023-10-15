@@ -1,5 +1,5 @@
-$yellow:#f5bc04;
-$blue:#4287f5;
+$yellow:#04c1f5;
+$blue:#fdfdfd;
 
 @mixin border-radius($radius) {
 	-webkit-border-radius: $radius;
@@ -47,7 +47,7 @@ $blue:#4287f5;
 // Header
 
 .navbar-light .navbar-nav .open > .nav-link, .navbar-light .navbar-nav .active > .nav-link, .navbar-light .navbar-nav .nav-link.open, .navbar-light .navbar-nav .nav-link.active {
-	color: #fff!important;
+	color: #000000!important;
 	padding-top: 12px!important;
 	padding-bottom: 15px!important;
 	padding-left: 20px!important;
@@ -56,6 +56,7 @@ $blue:#4287f5;
 	@include transition(0.5s);
 	background: $blue!important;
 	@include clip-path(polygon(100% 0, 100% 85%, 14% 85%, 0 100%, 0% 60%, 0 0));
+	;
 }
 .navbar-light .navbar-nav .nav-link {
 	color: #222!important;
@@ -67,23 +68,25 @@ $blue:#4287f5;
 	@include transition(0.5s);
 	position: relative!important;
 	@include clip-path(polygon(100% 0, 100% 85%, 14% 85%, 0 100%, 0% 60%, 0 0));
+	border-radius: 5px;
 
 	&:focus, &:hover {
 		background: $blue!important;
-		color: #fff!important;
+		color: #080101!important;
 		padding-top: 12px!important;
-		padding-bottom: 15px!important;
+		padding-bottom: 20px!important;
 		padding-left: 20px!important;
 		padding-right: 20px!important;
 		margin: 0 20px;
 		position: relative;
+		border-radius: 7px; // Adjust this value for more or less rounding
 	}
-}
+}	
 .bg{
 	background: #fffbfb
 }
 .bg-faded {
-    background-color: #e7e7e7;
+    background-color: #050213;
   }
 
   .bgCard{
@@ -150,7 +153,7 @@ $blue:#4287f5;
 }
 
 .btn-add {
-    background: #bf7034 !important;
+    background: #28b7ff !important;
 	@include border-radius(0!important);
 	color: #fff!important;
 	padding: 10px 50px!important;
@@ -326,15 +329,52 @@ $blue:#4287f5;
 	font-size: x-small;
 }
 
-.news-text {
-	color: black;
-	font-size: 10px;
-	margin-top: 10px;
-	margin-bottom: 10px;
-	text-decoration: none;
-	
+.news-container {
+	width: 100%;
+	max-width: 100%;
+	padding: 1em; // Add some padding for breathing room
+  
+	.news-header {
+	  font-weight: bold;
+	  text-align: center; // Center align the header
+	  margin-bottom: 1em; // Space between the header and the carousel
+	}
+  
+	.news-item {
+	  display: flex;
+	  flex-direction: column;
+	  justify-content: center;
+	  align-items: center;
+  
+	  a {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-decoration: none;
+		color: inherit; // Keeps the color of the text consistent
+  
+		.news-image {
+		  width: 80%; // Adjust as per your preference
+		  border-radius: 8px; // Give a slight curve to the image corners
+		  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); // Adds a shadow to the image
+		  margin-bottom: 1em; // Space between image and text
+		}
+  
+		.news-text {
+		  text-align: center;
+		  width: 80%; // You can adjust this as needed
+		  font-size: 1.1em; // Makes the font size slightly bigger
+		}
+	  }
+	}
   }
   
+  // Media query for larger screens, it can be adjusted
+  @media (min-width: 992px) {
+	.news-container {
+	  padding: 2em; // Increase padding for larger screens
+	}
+  }
 .stock {
 	display: flex;
 	justify-content: space-between;
@@ -393,9 +433,12 @@ $blue:#4287f5;
 
 .blog-heading {
 	font-size: 24px;
-	color: rgb(1, 37, 102);
+	color: rgb(216, 221, 230);
     border-bottom: 5px solid rgb(244, 243, 243);
 	font-weight: 200;
+	font-family: "Poppins";
+	text-decoration: none;
+	align-items: center;
 	
 	
 
@@ -405,7 +448,7 @@ $blue:#4287f5;
 .featblog{
 	position: relative;
 	top: 50%;
-   left: 7%;
+   left: 14%;
    
 }
 
@@ -654,6 +697,7 @@ justify-content: space-between;
 	margin-top: 5px;
 	margin-bottom: 5px;
 	display: inline-block;
+	@include border-radius(3px);
 }
 .tag:hover, .tag:focus {
 	background: $yellow;
@@ -667,7 +711,8 @@ justify-content: space-between;
     height: 90px;
 	width: 100%;
 	margin-bottom: 8px;
-	margin-top:5px
+	margin-top:5px;
+	object-fit: cover;
 	
 }
 
@@ -1065,6 +1110,10 @@ justify-content: space-between;
 	
 }
 
+.postsGo {
+	border-radius: 5px;
+}
+
 //richtetx
 
 .editor {
@@ -1098,3 +1147,6 @@ width: 415px;
 
 
 }
+
+
+
