@@ -24,6 +24,7 @@ import Chat from "./pages/Chat";
 import Ticker from "./components/Ticker";
 import Schedule from "./components/Schedule";
 import UserProfile from "./pages/UserProfile";
+import UserList from "./pages/UserList";
 
 
 function App() {
@@ -89,7 +90,13 @@ function App() {
             user?.uid ? <AddEditBlog user={user} /> : <Navigate to="/" />
           }
         />
-        <Route path="/chat" element={ user?.uid ? <Chat user={user} setActive={setActive} /> : <Navigate to="/"   />} />
+          <Route
+          path="/userlist"
+          element={
+             <UserList /> 
+          }
+        />
+        {/* <Route path="/chat" element={ user?.uid ? <Chat user={user} setActive={setActive} /> : <Navigate to="/"   />} /> */}
         {/* <Route path="/schedule" element={<Schedule />} /> */}
 
         <Route
@@ -107,7 +114,7 @@ function App() {
         <Route path="/category/:category" element={<CategoryBlog setActive={setActive}  />} />
         {/* <Route path="/about" element={<About />} /> */}
         {/* <Route path="/lights" element={<Lights />} /> */}
-        <Route path="/images" element={<ImageUpload />} />
+        {/* <Route path="/images" element={<ImageUpload />} /> */}
         <Route path="/ticker" element={<Ticker />} />
         <Route 
   path="/profile/:id" 

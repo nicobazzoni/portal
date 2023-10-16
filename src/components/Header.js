@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import Avatar from "react-avatar";
 import portal from "./assets/portal.png";
 import { useParams } from "react-router-dom";
+import {HomeOutlined, PlusCircleOutlined, GlobalOutlined,LogoutOutlined, LoginOutlined,CommentOutlined  }  from "@ant-design/icons";
+
 
 const Header = ({ active, setActive, user, handleLogout }) => {
   const userId = user?.uid;
@@ -14,56 +16,44 @@ const Header = ({ active, setActive, user, handleLogout }) => {
       <div className="container-fluid px-0 mx-auto flex flex-col">
         <nav className="bg-black text-white  p-4 navbar navbar-toggleable-md navbar-light">
           <div className="container mx-auto">
-            <div className="flex space-between items-center ">
-              <button
-                className="lg:hidden rounded-md border-none"
-                onClick={() => setActive(!active)}
-              >
-                <div className=" text-2xl  rounded-md p-1"></div>
-              </button>
+            <div className="flex  items-center ">
+          
               <div
                 className={`${
                   active ? "block" : "hidden"
-                } lg:flex lg:space-x-4 no-underline space-x-2`}
+                } lg:flex lg:space-x-4 no-underline  space-x-4`}
               >
                 <Link
                   to="/"
                   className="text-white no-underline hover:text-blue-200"
-                >
-                  Home
+                 
+
+                > <HomeOutlined /> 
+                  
                 </Link>
                 <Link
                   to="/blogs"
                   className="text-white no-underline hover:text-blue-200"
                 >
-                  Blogs
+                  < GlobalOutlined />
                 </Link>
                 <Link
                   to="/create"
                   className="text-white no-underline hover:text-blue-200"
                 >
-                  Create
+                 < PlusCircleOutlined />
+                </Link> 
+                <Link to ="/userlist" > 
+                <CommentOutlined />
+
+                
                 </Link>
-                <Link
-                  to="/images"
-                  className="text-white no-underline hover:text-blue-200"
-                >
-                  Images
-                </Link>
-                <Link
-                  to="/chat"
-                  className="text-white no-underline hover:text-blue-200"
-                >
-                  Chat
-                </Link>
+             
+            
                 {userId ? (
                   <>
                     <div className="flex items-center space-x-2 gap-2">
-                      <Avatar
-                        name={user?.displayName}
-                        round="20px"
-                        size="25"
-                      />
+                    
                       <Link
                         to={`/profile/${userId}`}
                         className="text-white hover:text-blue-200 no-underline"
@@ -73,17 +63,17 @@ const Header = ({ active, setActive, user, handleLogout }) => {
                     </div>
                     <button
                       onClick={handleLogout}
-                      className="text-black hover:text-blue-200 border rounded-md p-1"
+                      className="text-black bg-blue-400 border-none hover:text-blue-200  rounded-md p-1"
                     >
-                      Logout
+                     <LogoutOutlined />
                     </button>
                   </>
                 ) : (
                   <Link
                     to="/auth"
-                    className="text-white hover:text-blue-200"
+                    className=" text-black bg-blue-400 border-none hover:text-blue-200  rounded-md p-1"
                   >
-                    Login
+                    <LoginOutlined/>
                   </Link>
                 )}
               </div>
@@ -96,7 +86,7 @@ const Header = ({ active, setActive, user, handleLogout }) => {
           <img
             src={portal}
             alt="portal"
-            className="portal"
+            className="hidden lg:block"
             height={40}
             width={40}
           />

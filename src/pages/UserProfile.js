@@ -21,9 +21,11 @@ const UserProfile = () => {
   const { id } = useParams();
   const [isEditMode, setIsEditMode] = useState(false); // Track edit mode
 const [previewImage, setPreviewImage] = useState(null);
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const docRef = doc(db, "users", id); // Use the 'id' from URL
+  
+
+const fetchUserData = async () => {
+    try {
+      const docRef = doc(db, "users", id);
       const snapshot = await getDoc(docRef);
   
       if (snapshot.exists()) {
@@ -31,10 +33,12 @@ const [previewImage, setPreviewImage] = useState(null);
       } else {
         console.error("No user data found in Firestore");
       }
-    };
+    } catch (error) {
+      console.error("Error fetching user data from Firestore:", error);
+    }
+  };
   
-    fetchUserData();
-  }, [id]);
+  fetchUserData();
 
   const handleEditClick = () => {
     // Check if the current user is authorized to edit this profile

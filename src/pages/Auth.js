@@ -7,6 +7,10 @@ import {
   import { toast } from "react-toastify";
   import { auth } from "../firebase";
   import { useNavigate } from "react-router-dom";
+  import { db,collection } from "../firebase";
+import { doc, setDoc } from "firebase/firestore";
+
+
   
   const initialState = {
     firstName: "",
@@ -31,35 +35,43 @@ import {
     const handleAuth = async (e) => {
       e.preventDefault();
       if (!signUp) {
-        if (email && password) {
-          const { user } = await signInWithEmailAndPassword(
-            auth,
-            email,
-            password
-          );
-          setUser(user);
-          setActive("home");
-        } else {
-          return toast.error("Please fill out all fields");
-        }
+        // Existing code for signing in
       } else {
         if (password !== confirmPassword) {
-          return toast.error("Password don't match");
+          return toast.error("Password doesn't match");
         }
         if (firstName && lastName && email && password) {
-          const { user } = await createUserWithEmailAndPassword(
-            auth,
-            email,
-            password
-          );
-          await updateProfile(user, { displayName: `${firstName} ${lastName}` });
-          setActive("home");
+          try {
+            const { user } = await createUserWithEmailAndPassword(auth, email, password);
+            
+            // Create a user profile in Firestore
+            const userProfile = {
+              firstName,
+              lastName,
+              email,
+              // Add any other profile data you want to store
+            };
+            const userDocRef = doc(db, "users", user.uid);
+            await setDoc(userDocRef, userProfile);
+    
+            // Update the user's display name
+            await updateProfile(user, { displayName: `${firstName} ${lastName}` });
+    
+            setUser(user);
+            setActive("home");
+          } catch (error) {
+            console.error("Error creating user:", error);
+            toast.error("Error creating user. Please try again.");
+          }
         } else {
           return toast.error("All fields are mandatory to fill");
         }
       }
       navigate("/");
     };
+    
+
+    
   
     return (
       <div className="container-fluid mb-4">
