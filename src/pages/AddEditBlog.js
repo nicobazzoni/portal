@@ -27,12 +27,12 @@ const initialState = {
 };
 
 const categoryOption = [
-  "Studio",
-  "Technology",
-  "Projects",
-  "LookSee",
-  "Show",
-  "Lights",
+  "sports and entertainment",
+  "Cutting edge science",
+  "Art and Culture",
+  "High Fashion and Couture",
+  "Music",
+  "sex and relationships",
 ];
 
 const AddEditBlog = ({ user, setActive }) => {
@@ -125,6 +125,7 @@ const AddEditBlog = ({ user, setActive }) => {
             timestamp: serverTimestamp(),
             author: user.displayName,
             userId: user.uid,
+            
           });
           toast.success("Blog created successfully");
         } catch (err) {

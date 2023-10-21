@@ -41,16 +41,16 @@ function Ticker() {
   };
 
   return (
-    <div className='news-container'>
+    <div className='news-container text-white space-x-2'>
       <h5 style={{fontStyle: 'bold' }}>News</h5>
     <OwlCarousel items={3} autoplay={true} loop={true} nav={true} margin={10}>
   {newsData.slice(0,20).map((news, index) => (
-    <div key={index}>
-      <a style={{textDecoration: 'none'}} href={news.url} target="_blank" rel="noreferrer">
+    <div key={index} className='space-x-2 space-y-2'>
+      <a style={{textDecoration: 'none'}} href={news.url} target="_blank" className=' ' rel="noreferrer">
         <img 
           src={news.image?.thumbnail?.contentUrl} 
           alt={news.name}
-          className="news-image"
+          className="news-image rounded-md w-auto max-w-full float-right"
         />
         <p className="news-text">{news.description}</p>
       </a>
