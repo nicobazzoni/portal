@@ -50,7 +50,7 @@ function Ticker() {
         <img 
           src={news.image?.thumbnail?.contentUrl} 
           alt={news.name}
-          className="news-image rounded-md w-auto max-w-full float-right"
+          className=" rounded-md w-auto max-w-full float-right"
         />
         <p className="news-text">{news.description}</p>
       </a>

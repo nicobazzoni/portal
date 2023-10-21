@@ -156,7 +156,7 @@ const AddEditBlog = ({ user, setActive }) => {
       <div className="container">
         <div className="col-12">
           <div className="text-center heading py-2">
-            {id ? "Update Blog" : "Create Blog"}
+            {id ? "Update Portal" : "Create Portal"}
           </div>
         </div>
         <div className="row h-100 justify-content-center align-items-center">
@@ -180,7 +180,7 @@ const AddEditBlog = ({ user, setActive }) => {
                 />
               </div>
               <div className="col-12 py-3">
-                <p className="trending">get it trending?</p>
+                <p className="trending text-amber-400">make it a story?</p>
                 <div className="form-check-inline mx-2">
                   <input
                     type="radio"
@@ -190,18 +190,18 @@ const AddEditBlog = ({ user, setActive }) => {
                     checked={trending === "yes"}
                     onChange={handleTrending}
                   />
-                  <label htmlFor="radioOption" className="form-check-label">
+                  <label htmlFor="radioOption" className="form-check-label p-3 text-white">
                     Yes&nbsp;
                   </label>
                   <input
                     type="radio"
-                    className="form-check-input"
+                    className="form-check-input t"
                     value="no"
                     name="radioOption"
                     checked={trending === "no"}
                     onChange={handleTrending}
                   />
-                  <label htmlFor="radioOption" className="form-check-label">
+                  <label htmlFor="radioOption" className="form-check-label p-1 text-red-200">
                     No
                   </label>
                 </div>
@@ -220,7 +220,7 @@ const AddEditBlog = ({ user, setActive }) => {
                   ))}
                 </select>
               </div>
-              <div className="col-12 py-3">
+              <div className="col-12 py-3 mb-3">
                 <textarea
                   className="form-control description-box"
                   placeholder="Description"
@@ -229,7 +229,8 @@ const AddEditBlog = ({ user, setActive }) => {
                   onChange={handleChange}
                 />
               </div>
-              <div className="mb-3">
+              <div className="mb-3 text-white ">
+                <h1 className="text-sm">picture</h1>
                 <input
                   type="file"
                   className="form-control"

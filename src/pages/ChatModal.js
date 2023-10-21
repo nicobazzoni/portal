@@ -69,7 +69,7 @@ const ChatModal = ({ recipientName, recipientID }) => {
  
     <div className="chat-app text-white">
       <div className="header">
-        <h1>Chat with {recipientName}</h1>
+        <h1 className="bg-gray-600 rounded-md p-1 font-bold">Chat with {recipientName}</h1>
       </div>
       <div className="messages text-white">
         {messages.map((message) => (
@@ -85,10 +85,10 @@ const ChatModal = ({ recipientName, recipientID }) => {
           type="text"
           value={newMessage}
           onChange={(event) => setNewMessage(event.target.value)}
-          className="new-message-input"
-          placeholder="Type your message here..."
+          className="new-message-input font-poppins p-1 rounded-md border-none"
+          placeholder="write here..."
         />
-        <button type="submit" className="send-button">
+        <button type="submit" className="send-button p-2 m-2 rounded-md border-none">
           Send
         </button>
       </form>
