@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Avatar from "react-avatar";
-import portal from "./assets/portal.png";
+import portal from "./assets/Plogo.svg";
 import { useParams } from "react-router-dom";
 import {HomeOutlined, PlusCircleOutlined, GlobalOutlined,LogoutOutlined, LoginOutlined,CommentOutlined  }  from "@ant-design/icons";
 
@@ -10,6 +10,16 @@ const Header = ({ active, setActive, user, handleLogout }) => {
   const userId = user?.uid;
   const { id } = useParams();
   console.log("UID from URL:", id);
+
+
+  const P = <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+
+  <circle cx="50" cy="50" r="45" fill="#007BFF" />
+
+
+  <text x="30" y="60" font-family="Arial" font-size="48" fill="#FFFFFF">P</text>
+</svg>
+
 
   return (
     <nav className="bg-slate-900 no-underline navbar navbar-expand-lg navbar-light">
