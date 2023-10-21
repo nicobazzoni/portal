@@ -43,11 +43,7 @@ const Header = ({ active, setActive, user, handleLogout }) => {
                 >
                  < PlusCircleOutlined />
                 </Link> 
-                <Link to ="/userlist" > 
-                <CommentOutlined />
-
-                
-                </Link>
+              
              
             
                 {userId ? (
