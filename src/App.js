@@ -20,7 +20,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import Blogs from "./pages/Blogs";
 import Lights from "./components/Lights";
 import ImageUpload from "./pages/ImageUpload";
-import Chat from "./pages/Chat";
+import Chat from "./pages/ChatModal";
 import Ticker from "./components/Ticker";
 import Schedule from "./components/Schedule";
 import UserProfile from "./pages/UserProfile";
@@ -96,7 +96,10 @@ function App() {
              <UserList /> 
           }
         />
-        {/* <Route path="/chat" element={ user?.uid ? <Chat user={user} setActive={setActive} /> : <Navigate to="/"   />} /> */}
+  <Route
+        path="/chatmodal"
+        element= { <Chat />}
+      />
         {/* <Route path="/schedule" element={<Schedule />} /> */}
 
         <Route

@@ -10,24 +10,37 @@ import {
   getDoc,
   setDoc,
   updateDoc,
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  onSnapshot,
+  serverTimestamp,
+  where,
 } from "firebase/firestore";
-
 import { useParams } from 'react-router-dom';
-
+import Chat from "./ChatModal";
 
 const UserProfile = () => {
   const [profile, setProfile] = useState({});
   const currentUser = auth.currentUser;
   const { id } = useParams();
-  const [isEditMode, setIsEditMode] = useState(false); // Track edit mode
-const [previewImage, setPreviewImage] = useState(null);
-  
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [showChatModal, setShowChatModal] = useState(false);
+  const [recipientInfo, setRecipientInfo] = useState(null);
+  const [recipientName, setRecipientName] = useState(null);
+  const [recipientID, setRecipientID] = useState(null);
 
-const fetchUserData = async () => {
+  const [messages, setMessages] = useState([]);
+  const messagesRef = collection(db, "messages");
+
+
+  const fetchUserData = async () => {
     try {
       const docRef = doc(db, "users", id);
       const snapshot = await getDoc(docRef);
-  
+
       if (snapshot.exists()) {
         setProfile(snapshot.data());
       } else {
@@ -37,18 +50,62 @@ const fetchUserData = async () => {
       console.error("Error fetching user data from Firestore:", error);
     }
   };
-  
-  fetchUserData();
+
+  useEffect(() => {
+    fetchUserData();
+  }, [id]);
 
   const handleEditClick = () => {
-    // Check if the current user is authorized to edit this profile
     if (currentUser && currentUser.uid === id) {
       setIsEditMode(true);
     } else {
-      // User is not authorized to edit this profile
       console.log("Unauthorized to edit this profile");
     }
   };
+
+  const handleSendMessage = () => {
+    const recipientInfo = {
+      id: id,
+      displayName: profile.displayName,
+      recipientName: profile.displayName,
+      recipientID: profile.displayName, // Pass the recipient's unique ID
+    };
+
+    setShowChatModal(true);
+    setRecipientInfo(recipientInfo);
+    setRecipientName(profile.displayName);
+    setRecipientID(profile.displayName); // Pass the recipient's unique ID
+  };
+
+  useEffect(() => {
+    if (!recipientID) {
+      console.log("Recipient ID is not set.");
+      return;
+    }
+
+    const queryMessages = query(
+      messagesRef,
+      where("recipientID", "==", recipientID),
+      orderBy("createdAt")
+    );
+
+    const unsubscribe = onSnapshot(queryMessages, (snapshot) => {
+      const messages = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setMessages(messages);
+    });
+
+    return () => unsubscribe();
+  }, [recipientID]);
+
+
+
+
+
+
+
 
   const handleProfileChange = (e) => {
     setProfile({
@@ -129,8 +186,11 @@ const fetchUserData = async () => {
     }
   };
 
+
+  
+
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 text-white">
       {profile.profilePicURL && (
         <img
           src={profile.profilePicURL}
@@ -182,6 +242,20 @@ const fetchUserData = async () => {
             </button>
           )}
         </>
+      )}
+      <button
+        onClick={handleSendMessage}
+        className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+      >
+        Send Message
+      </button>
+
+      {showChatModal && recipientInfo && (
+       <Chat
+       recipientName={recipientName}
+       recipientID={id} // Pass the user's ID as the recipient's ID
+       onClose={() => setShowChatModal(false)}
+     />
       )}
     </div>
   );

@@ -1,63 +1,96 @@
-import React, { useState, useEffect } from "react";
-import { db } from "../firebase";
+import React, { useEffect, useState } from "react";
+import {
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  onSnapshot,
+  serverTimestamp,
+  where,
+  
+} from "firebase/firestore";
+import { db, auth } from "../firebase";
 
-const ChatModal = ({ chatRoomId, currentUser }) => {
+const ChatModal = ({ recipientName, recipientID }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
 
+  const messagesRef = collection(db, "messages");
+  const currentUser = auth.currentUser;
+  const [recipientIDState, setRecipientID] = useState(recipientID); // Initialize with the recipientID prop
+ // Use setRecipientID as a state setter function
+
   useEffect(() => {
-    // Set up a Firebase listener to fetch and display messages in real-time
-    const unsubscribe = db
-      .collection("chatRooms")
-      .doc(chatRoomId)
-      .collection("messages")
-      .orderBy("timestamp")
-      .onSnapshot((snapshot) => {
-        const messageData = [];
-        snapshot.forEach((doc) => {
-          const message = doc.data();
-          messageData.push(message);
-        });
-        setMessages(messageData);
-      });
+    console.log("Recipient ID State:", recipientIDState); // Debugging: Log recipientIDState
+    if (!recipientIDState) {
+      // Set the recipient ID here based on your app's logic (e.g., user selection)
+      setRecipientID(recipientID);
+      // Set the recipient's name
+    }
+  
+    const queryMessages = query(
+      messagesRef,
+      where("recipientID", "in", [recipientID, auth.currentUser.uid]), // Filter messages for both sender and recipient
+      orderBy("createdAt", "asc")
+    );
+  
+    const unsubscribe = onSnapshot(queryMessages, (snapshot) => {
+      const messages = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setMessages(messages);
+    });
+  
+    console.log("recipientName:", recipientName);
+  
+    return () => unsubscribe();
+  }, [recipientIDState]);
 
-    return () => {
-      // Unsubscribe from the listener when the component unmounts
-      unsubscribe();
-    };
-  }, [chatRoomId]);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
+    if (newMessage.trim() === "") return;
 
-    // Create a new message document and add it to the chat room
-    await db.collection("chatRooms").doc(chatRoomId).collection("messages").add({
-      sender: currentUser.uid,
-      message: newMessage,
-      timestamp: new Date(),
+    console.log("recipientName before addDoc:", recipientName);
+
+    await addDoc(messagesRef, {
+      text: newMessage,
+      createdAt: serverTimestamp(),
+      sender: auth.currentUser.displayName,
+      recipientID: recipientIDState, // Use recipientIDState here
+      recipientName: recipientName,
     });
 
-    // Clear the input field after sending the message
     setNewMessage("");
   };
 
   return (
-    <div>
-      <h2>Chat Room</h2>
-      <div className="messages">
+ 
+    <div className="chat-app text-white">
+      <div className="header">
+        <h1>Chat with {recipientName}</h1>
+      </div>
+      <div className="messages text-white">
         {messages.map((message) => (
-          <div key={message.timestamp}>
-            <p>{message.message}</p>
+          console.log("recipientName in messages.map:", message.text),
+          <div key={message.id} className="message">
+            <span className="user">{message.sender}:</span> {message.text}
+            
           </div>
         ))}
       </div>
-      <form onSubmit={handleSendMessage}>
+      <form onSubmit={handleSubmit} className="new-message-form">
         <input
           type="text"
           value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
+          onChange={(event) => setNewMessage(event.target.value)}
+          className="new-message-input"
+          placeholder="Type your message here..."
         />
-        <button type="submit">Send</button>
+        <button type="submit" className="send-button">
+          Send
+        </button>
       </form>
     </div>
   );

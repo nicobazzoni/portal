@@ -1,75 +1,86 @@
 import {
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    updateProfile,
-  } from "firebase/auth";
-  import React, { useState } from "react";
-  import { toast } from "react-toastify";
-  import { auth } from "../firebase";
-  import { useNavigate } from "react-router-dom";
-  import { db,collection } from "../firebase";
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import React, { useState } from "react";
+import { toast } from "react-toastify";
+import { auth } from "../firebase";
+import { useNavigate } from "react-router-dom";
+import { db, collection } from "../firebase";
 import { doc, setDoc } from "firebase/firestore";
 
+const initialState = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+};
 
-  
-  const initialState = {
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+const Auth = ({ setActive, setUser }) => {
+  const [state, setState] = useState(initialState);
+  const [signUp, setSignUp] = useState(false);
+
+  const { email, password, firstName, lastName, confirmPassword } = state;
+
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setState({ ...state, [e.target.name]: e.target.value });
   };
-  
-  const Auth = ({ setActive, setUser }) => {
-    const [state, setState] = useState(initialState);
-    const [signUp, setSignUp] = useState(false);
-  
-    const { email, password, firstName, lastName, confirmPassword } = state;
-  
-    const navigate = useNavigate();
-  
-    const handleChange = (e) => {
-      setState({ ...state, [e.target.name]: e.target.value });
-    };
-  
-    const handleAuth = async (e) => {
-      e.preventDefault();
-      if (!signUp) {
-        // Existing code for signing in
-      } else {
-        if (password !== confirmPassword) {
-          return toast.error("Password doesn't match");
-        }
-        if (firstName && lastName && email && password) {
-          try {
-            const { user } = await createUserWithEmailAndPassword(auth, email, password);
-            
-            // Create a user profile in Firestore
-            const userProfile = {
-              firstName,
-              lastName,
-              email,
-              // Add any other profile data you want to store
-            };
-            const userDocRef = doc(db, "users", user.uid);
-            await setDoc(userDocRef, userProfile);
-    
-            // Update the user's display name
-            await updateProfile(user, { displayName: `${firstName} ${lastName}` });
-    
-            setUser(user);
-            setActive("home");
-          } catch (error) {
-            console.error("Error creating user:", error);
-            toast.error("Error creating user. Please try again.");
-          }
-        } else {
-          return toast.error("All fields are mandatory to fill");
-        }
+
+  const handleSignIn = async () => {
+    try {
+      // Sign-in logic here
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
+      setUser(user);
+      setActive("home");
+    } catch (error) {
+      console.error("Error signing in:", error);
+      toast.error("Error signing in. Please try again.");
+    }
+  };
+
+  const handleSignUp = async () => {
+    if (password !== confirmPassword) {
+      return toast.error("Password doesn't match");
+    }
+    if (firstName && lastName && email && password) {
+      try {
+        const { user } = await createUserWithEmailAndPassword(auth, email, password);
+
+        const userProfile = {
+          firstName,
+          lastName,
+          email,
+          // Add any other profile data you want to store
+        };
+        const userDocRef = doc(db, "users", user.uid);
+        await setDoc(userDocRef, userProfile);
+
+        await updateProfile(user, { displayName: `${firstName} ${lastName}` });
+
+        setUser(user);
+        setActive("home");
+      } catch (error) {
+        console.error("Error creating user:", error);
+        toast.error("Error creating user. Please try again.");
       }
-      navigate("/");
-    };
-    
+    } else {
+      return toast.error("All fields are mandatory to fill");
+    }
+  };
+
+  const handleAuth = (e) => {
+    e.preventDefault();
+    if (!signUp) {
+      handleSignIn();
+    } else {
+      handleSignUp();
+    }
+    navigate("/");
+  };
 
     
   
@@ -178,6 +189,7 @@ import { doc, setDoc } from "firebase/firestore";
                             color: "#298af2",
                           }}
                           onClick={() => setSignUp(false)}
+                          
                         >
                           Sign In
                         </span>
