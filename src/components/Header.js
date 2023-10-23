@@ -38,20 +38,20 @@ const Header = ({ active, setActive, user, handleLogout }) => {
                   className="text-white no-underline hover:text-blue-200"
                  
 
-                > <HomeOutlined /> 
+                > <HomeOutlined  style={{ fontSize: '30px', color: '#fff' }}  /> 
                   
                 </Link>
                 <Link
                   to="/blogs"
                   className="text-white no-underline hover:text-blue-200"
                 >
-                  < GlobalOutlined />
+                  < GlobalOutlined style={{ fontSize: '30px', color: '#fff' }}  />
                 </Link>
                 <Link
                   to="/create"
                   className="text-white no-underline hover:text-blue-200"
                 >
-                 < PlusCircleOutlined />
+                 < PlusCircleOutlined style={{ fontSize: '30px', color: '#fff' }} />
                 </Link> 
               
              
@@ -69,9 +69,9 @@ const Header = ({ active, setActive, user, handleLogout }) => {
                     </div>
                     <button
                       onClick={handleLogout}
-                      className="text-black bg-blue-400 border-none hover:text-blue-200  rounded-md p-1"
+                      className="text-black bg-blue-200 border-none hover:text-blue-200  rounded-md p-1"
                     >
-                     <LogoutOutlined />
+                     <LogoutOutlined style={{ fontSize: '30px', color: '#fff' }}  />
                     </button>
                   </>
                 ) : (

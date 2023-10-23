@@ -454,13 +454,12 @@ $blue:#fdfdfd;
 
 .blogs-img {
     height: 200px;
-	@include border-radius(5px);
-	overflow: hidden;
-	position: relative;
-	top: 0;
-	@include box-shadow(0, 2px, 3px, 1px, rgba(0,0,0,0));
-	@include transition(all 0.5s);
-
+    border-radius: 5px; /* Replaced mixin */
+    overflow: hidden;
+    position: relative;
+    top: 0;
+    box-shadow: 0 2px 3px 1px rgba(0,0,0,0); /* Replaced mixin */
+    transition: all 0.5s; /* Replaced mixin */
 }
 
 .blogCard {
@@ -486,8 +485,9 @@ $blue:#fdfdfd;
 }
 
 .blogs-img > img {
-    height: 260px;
-	min-width: 100%;
+    width: 100%; /* Take the full width of the container */
+    height: 100%; /* Take the full height of the container */
+    object-fit: cover; /* Cover the container without squishing */
 }
 
 .hover-blogs-img:hover > .blogs-img {
@@ -728,37 +728,43 @@ justify-content: space-between;
 // Trending
 .trending-img-position {
 	position: relative;
-	overflow: hidden;
+	overflow: hidden; /* This will hide anything that goes outside the container */
 	z-index: 5;
 	cursor: pointer;
 }
 
+/* Specific sizing for images */
 .trending-img-size {
 	height: 280px;
+	width: auto; /* Maintain aspect ratio */
 	overflow: hidden;
 	border-radius: 3px;
+	display: flex; /* To center the image inside */
+	justify-content: center; /* Horizontal centering */
+	align-items: center; /* Vertical centering */
 }
 .trending-img-size > img {
-	height: 280px;
-	min-width: 100%;
+	max-height: 280px; /* Set a maximum height */
+	width: auto; /* Let the width adjust according to the aspect ratio */
+	max-width: 100%; /* Ensure it doesn't go beyond its container */
+	object-fit: cover; /* This ensures the image covers the entire space without being squished */
 }
 
+/* For elements that require relative positioning */
 .trending-img-relative {
 	position: relative;
 }
 
+/* The overlay gradient on images */
 .trending-img-absolute {
 	position: absolute;
 	height: 100%;
 	width: 100%;
 	top: 0;
 	right: 0;
-	background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(0,0,0,0.83) 100%);
-	background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(0,0,0,0.83) 100%);
 	background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(0,0,0,0.83) 100%);
 	z-index: 7;
 }
-
 .trending-img-absolute-1 {
 	position: absolute;
 	width: 100%;
