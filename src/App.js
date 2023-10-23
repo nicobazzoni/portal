@@ -25,6 +25,7 @@ import Ticker from "./components/Ticker";
 import Schedule from "./components/Schedule";
 import UserProfile from "./pages/UserProfile";
 import UserList from "./pages/UserList";
+import BingImage from "./pages/BingImage";
 
 
 function App() {
@@ -112,6 +113,7 @@ function App() {
             )
           }
         />
+        <Route path="/bingimage" element={<BingImage setActive={setActive} />} />
         <Route path="/blogs" element={<Blogs setActive={setActive} />} />
         <Route path="/tag/:tag" element={<TagBlog setActive={setActive} />} />
         <Route path="/category/:category" element={<CategoryBlog setActive={setActive}  />} />

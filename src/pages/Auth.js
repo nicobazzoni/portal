@@ -9,6 +9,8 @@ import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { db, collection } from "../firebase";
 import { doc, setDoc } from "firebase/firestore";
+import portal from '../components/assets/PortalLogo.png' 
+
 
 const initialState = {
   firstName: "",
@@ -87,9 +89,12 @@ const Auth = ({ setActive, setUser }) => {
     return (
       <div className="container-fluid mb-4">
         <div className="container">
+        <h2 className="text-center heading py-2 text-white bg-black"> portal </h2>
+          <img src={portal} alt="portal" className="img-fluid h-30 mt-4" />
           <div className="col-12 text-center">
             <div className="text-center heading py-2">
-              {!signUp ? "Sign-In" : "Sign-Up"}
+             
+              {!signUp ? "Sign-In" : "Create an Account"}
             </div>
           </div>
           <div className="row h-100 justify-content-center align-items-center">
@@ -172,7 +177,7 @@ const Auth = ({ setActive, setUser }) => {
                           style={{ textDecoration: "none", cursor: "pointer" }}
                           onClick={() => setSignUp(true)}
                         >
-                          Sign Up
+                          Sign Up Now
                         </span>
                       </p>
                     </div>
