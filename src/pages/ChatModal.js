@@ -30,15 +30,20 @@ const ChatModal = ({ recipientName, recipientID }) => {
   
     const queryMessages = query(
       messagesRef,
-      where("recipientID", "in", [recipientID, auth.currentUser.uid]), // Filter messages for both sender and recipient
+      where("recipientID", "==", recipientID), // Filter messages for the recipient
       orderBy("createdAt", "asc")
     );
-  
+    
     const unsubscribe = onSnapshot(queryMessages, (snapshot) => {
-      const messages = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const messages = snapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+        .filter((message) =>
+          message.sender === auth.currentUser.displayName ||
+          message.sender === recipientName
+        );
       setMessages(messages);
     });
   

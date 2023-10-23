@@ -37,7 +37,7 @@ const BlogSection = ({
             <h6 className="category catg-color">{category}</h6>
             <span className="title py-2">{title}</span>
             <span className="meta-info bg-white p-1 m-2 rounded-md">
-              <Link  to={`/profile/${profileId}`}className="author no-underline text-rose-400">{author}</Link> 
+              <Link  to={`/profile/${profileId}`}className="author no-underline text-rose-400 ">{author}</Link> 
              
             </span>
             <div className="text-xs p-1 bg-slate-100 rounded-md ">
