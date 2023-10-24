@@ -7,6 +7,7 @@ import {
   onSnapshot,
   serverTimestamp,
   where,
+  getDocs,
   
 } from "firebase/firestore";
 import { db, auth } from "../firebase";
@@ -20,37 +21,45 @@ const ChatModal = ({ recipientName, recipientID }) => {
   const [recipientIDState, setRecipientID] = useState(recipientID); // Initialize with the recipientID prop
  // Use setRecipientID as a state setter function
 
-  useEffect(() => {
-    console.log("Recipient ID State:", recipientIDState); // Debugging: Log recipientIDState
-    if (!recipientIDState) {
-      // Set the recipient ID here based on your app's logic (e.g., user selection)
-      setRecipientID(recipientID);
-      // Set the recipient's name
-    }
-  
-    const queryMessages = query(
-      messagesRef,
-      where("recipientID", "==", recipientID), // Filter messages for the recipient
-      orderBy("createdAt", "asc")
-    );
-    
-    const unsubscribe = onSnapshot(queryMessages, (snapshot) => {
-      const messages = snapshot.docs
-        .map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-        .filter((message) =>
-          message.sender === auth.currentUser.displayName ||
-          message.sender === recipientName
-        );
-      setMessages(messages);
-    });
-  
-    console.log("recipientName:", recipientName);
-  
-    return () => unsubscribe();
-  }, [recipientIDState]);
+
+const allMessagesQuery = query(
+  messagesRef,
+  orderBy("createdAt", "asc")
+);
+
+useEffect(() => {
+  // Define the query inside the useEffect
+  const allMessagesQuery = query(
+    messagesRef,
+    orderBy("createdAt", "asc")
+  );
+
+  // Set up the onSnapshot listener inside the useEffect
+  const unsubscribe = onSnapshot(allMessagesQuery, (snapshot) => {
+    const allMessages = snapshot.docs
+      .map((doc) => ({ id: doc.id, ...doc.data() }))
+      .filter(message => 
+        (message.senderID === currentUser.uid && message.recipientID === recipientIDState) || 
+        (message.recipientID === currentUser.uid && message.senderID === recipientIDState)
+      )
+      .sort((a, b) => {
+        if (!a.createdAt || !b.createdAt) return 0;  // Make sure the createdAt field exists
+        return a.createdAt.seconds - b.createdAt.seconds;
+      });
+
+    setMessages(allMessages);
+  });
+
+  // Return the cleanup function
+  return () => unsubscribe();
+}, [recipientIDState, currentUser.uid]);
+
+
+
+
+
+
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -63,12 +72,19 @@ const ChatModal = ({ recipientName, recipientID }) => {
       text: newMessage,
       createdAt: serverTimestamp(),
       sender: auth.currentUser.displayName,
-      recipientID: recipientIDState, // Use recipientIDState here
+      senderID: auth.currentUser.uid, // Save the sender's UID
+      recipientID: recipientIDState,
       recipientName: recipientName,
     });
+    
 
     setNewMessage("");
   };
+
+  useEffect(() => {
+    setRecipientID(recipientID);
+  }, [recipientID]);
+  
 
   return (
  
