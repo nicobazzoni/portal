@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { collection, getDocs } from "firebase/firestore";
+import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
+import { Link } from "react-router-dom";
 import OwlCarousel from "react-owl-carousel";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
@@ -8,37 +9,25 @@ import "owl.carousel/dist/assets/owl.theme.default.css";
 function MoodCarousel() {
     const [moods, setMoods] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [users, setUsers] = useState([]);
+    const [count, setCount] = useState(0);
+    const [lastVisible, setLastVisible] = useState(null);
     useEffect(() => {
-        const fetchMoods = async () => {
-            try {
-                const moodList = [];
-                const usersSnapshot = await getDocs(collection(db, 'users'));
-                usersSnapshot.forEach(doc => {
-                    const userData = doc.data();
-                    if (userData.mood) {
-                        moodList.push({
-                            moodUrl: userData.mood,
-                            user: userData
-                        });
-                    }
-                });
-                setMoods(moodList);
-                setLoading(false);
-// ... inside the return
- 
-
-            } catch (error) {
-                console.error("Error fetching moods:", error);
-            }
+        const getUsersData = async () => {
+          setLoading(true);
+          const usersRef = collection(db, "users");
+          const first = query(usersRef, orderBy("displayName"), limit(4));
+          const docSnapshot = await getDocs(first);
+          setUsers(docSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+          setCount(docSnapshot.size);
+          setLastVisible(docSnapshot.docs[docSnapshot.docs.length - 1]);
+          setLoading(false);
         };
-
-        fetchMoods();
-    }, []);
-    useEffect(() => {
-        console.log(moods);
-    }
-    , [moods]);
-
+    
+        getUsersData();
+       
+      }, []);
+      console.log("All Users:", users);
 
 
     const options = {
@@ -68,16 +57,23 @@ function MoodCarousel() {
     return (
    
         <OwlCarousel autoplay {...options}>
-        {loading? <p>loading </p> : moods && moods.length > 0 ? (
-           moods.map((item, index) => (
-              <div className='' key={index}>
-                 <img src={item.moodUrl} className='rounded-full' alt="Mood" />
-                 <h2 className='text-white text-center'>{item.user.displayName}</h2>
-              </div>
-           ))
-        ) : (
-           <p>Loading...</p>
-        )}
+        {users.map((user) => (
+            <li className="no-bullet   border-opacity-25 "
+              key={user.id}
+
+              
+            
+              style={{ cursor: "pointer", color: "blue", listStyleType: "none"  }}
+            >
+               <Link
+              to={`/profile/${user.id}`}
+              className="text-blue-500 no-bullet no-underline hover:lime-300"
+            >
+              {user.displayName}
+            </Link>
+            <img src={user.mood} alt={user.displayName} className="rounded-full h-48 w-10 flex items-center justify-center" />
+            </li>
+          ))}
      </OwlCarousel>
     );
 }
