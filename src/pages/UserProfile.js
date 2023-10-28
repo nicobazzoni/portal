@@ -218,7 +218,7 @@ const UserProfile = () => {
             value={profile.bio || ""}
             onChange={handleProfileChange}
             placeholder="Bio"
-            className="w-full p-2 mb-4 border rounded text-white"
+            className="w-full p-2 mb-4 border rounded text-black"
           />
           <button
             onClick={handleProfileUpdate}
@@ -236,7 +236,7 @@ const UserProfile = () => {
           {currentUser && currentUser.uid === id && (
             <button
               onClick={handleEditClick}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="px-4 py-2 bg-blue-500 text-black rounded hover:bg-blue-600"
             >
               Edit Profile
             </button>

@@ -5,7 +5,7 @@ import ChatModal from "./ChatModal";
 import { auth } from "../firebase";
 import { Link } from "react-router-dom";
 
-const UserList = ({userId,}) => {   
+const UserList = ({userId,user}) => {   
   const [users, setUsers] = useState([]);
   const [count, setCount] = useState(0);
   const [lastVisible, setLastVisible] = useState(null);
@@ -13,7 +13,9 @@ const UserList = ({userId,}) => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const { currentUser } = auth;
-  const profileId = userId?.split("@")[0];
+  const profileId = user?.split("@")[0];
+  console.log(profileId)
+  console.log("All Users:", users);
 
   useEffect(() => {
     const getUsersData = async () => {
@@ -28,10 +30,12 @@ const UserList = ({userId,}) => {
     };
 
     getUsersData();
+   
   }, []);
 
   const handleUserClick = (user) => {
     setSelectedUser(user);
+  
   };
 
   const closeChatModal = () => {
@@ -67,7 +71,7 @@ const UserList = ({userId,}) => {
               style={{ cursor: "pointer", color: "blue", listStyleType: "none"  }}
             >
                <Link
-              to={`/profile/${profileId}`}
+              to={`/profile/${user.id}`}
               className="text-blue-500 no-bullet no-underline hover:lime-300"
             >
               {user.displayName}
