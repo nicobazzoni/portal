@@ -49,7 +49,7 @@ const Trending = ({ blogs }) => {
                 <div className="trending-img-absolute"></div>
                 <div className="trending-img-absolute-1">
                   <span className="text-white text-xl font-bold mt-3 ">{item.title}</span>
-                  <div className="trending-meta-info">
+                  <div className="trending-meta-info font-poppins">
                     {item.author} - {item.timestamp.toDate().toDateString()}
                   </div>
                 </div>

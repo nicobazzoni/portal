@@ -214,7 +214,7 @@ const Home = ({ setActive, user, active }) => {
   return (
     <div className="container-fluid pb-4 pt-4 padding  ">
       <div className="container padding">
-      <h1 className="text-white mb-2 mt-3 text-left underline space-y-2"> mood</h1>
+      <div className="blog-heading text-start py-2 mb-4">moods</div>
             <MoodCarousel moods={moods} className="space-x-4 h-24" />
         <div className="row ">
        
@@ -226,7 +226,7 @@ const Home = ({ setActive, user, active }) => {
          
           <Trending blogs={trendBlogs} />
           <div className=" ">
-            <div className="blog-heading text-start py-2 mb-4">posts</div>
+            <div className="blog-heading text-start py-2 mb-4">portals</div>
             {blogs.length === 0 && location.pathname !== "/" && (
               <>
                 <h4>

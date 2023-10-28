@@ -58,7 +58,7 @@ function MoodCarousel() {
    
         <OwlCarousel autoplay {...options}>
         {users.map((user) => (
-            <li className="no-bullet   border-opacity-25 "
+            <li className="no-bullet font-poppins bg-white p-1   border-opacity-25 "
               key={user.id}
 
               
@@ -67,11 +67,11 @@ function MoodCarousel() {
             >
                <Link
               to={`/profile/${user.id}`}
-              className="text-blue-500 no-bullet no-underline hover:lime-300"
+              className="text-white font-poppins  p-2 z-10 shadow-sm  no-bullet bg-black rounded-md mt-4 no-underline hover:lime-300"
             >
               {user.displayName}
             </Link>
-            <img src={user.mood} alt={user.displayName} className="rounded-full h-48 w-10 flex items-center justify-center" />
+            <img src={user.mood} alt={user.displayName} className="rounded-full h-48 mt-2 flex items-center justify-center" />
             </li>
           ))}
      </OwlCarousel>
