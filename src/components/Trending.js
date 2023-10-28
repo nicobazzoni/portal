@@ -23,6 +23,10 @@ const Trending = ({ blogs }) => {
         items: 4,
       },
     },
+    autoplayTimeout: 5000,  // Pause for 5 seconds between transitions
+    autoplaySpeed: 1000,    // 1 second transition animation
+    smartSpeed: 1000,       // 1 second for "go to" actions
+    dragEndSpeed: 3000, 
   };
   return (
     <>
@@ -44,7 +48,7 @@ const Trending = ({ blogs }) => {
                 </div>
                 <div className="trending-img-absolute"></div>
                 <div className="trending-img-absolute-1">
-                  <span className="text-white">{item.title}</span>
+                  <span className="text-white text-xl font-bold mt-3 ">{item.title}</span>
                   <div className="trending-meta-info">
                     {item.author} - {item.timestamp.toDate().toDateString()}
                   </div>
