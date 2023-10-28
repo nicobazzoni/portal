@@ -4,13 +4,14 @@ import Avatar from "react-avatar";
 import portal from "./assets/PortalLogo.png";
 import { useParams } from "react-router-dom";
 import {HomeOutlined, PlusCircleOutlined, GlobalOutlined,LogoutOutlined, LoginOutlined,CommentOutlined  }  from "@ant-design/icons";
+import dalle from "../components/assets/brain.png";
 
-
+import DalleButton from "./Dalle";
 const Header = ({ active, setActive, user, handleLogout }) => {
   const userId = user?.uid;
   const { id } = useParams();
   console.log("UID from URL:", id);
-
+  console.log(dalle, 'dalle');
 
   const P = <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
 
@@ -24,23 +25,21 @@ const Header = ({ active, setActive, user, handleLogout }) => {
   return (
     <nav className="bg-slate-900 no-underline navbar navbar-expand-lg navbar-light">
       <div className="container-fluid px-0 mx-auto flex flex-col ">
-        <nav className="bg-black text-white  p-4 navbar rounded-md navbar-toggleable-md navbar-light">
-          <div className="container mx-auto">
-            <div className="flex  items-center ">
+        <nav className="bg-black text-white  p-4 navbar rounded-md navbar-toggleable-md navbar-light hover:text-red-400">
+          <div className="container mx-auto ">
+            <div className="flex  items-center   ">
           
               <div
                 className={`${
                   active ? "block" : "hidden"
                 } lg:flex lg:space-x-4 no-underline  space-x-4`}
               >
-                <Link
-                  to="/"
-                  className="text-white no-underline  "
-                 
-
-                > <HomeOutlined  style={{ fontSize: '30px', color: '#fff',  transition: 'stroke 0.3s', }} className="hover:outline-sky-300" /> 
-                  
-                </Link>
+            <Link to="/" className="text-white no-underline">
+   <HomeOutlined 
+      style={{ fontSize: '30px', color: '#fff', transition: 'stroke 0.3s' }} 
+      className="hover:text-red-200 hover:outline-sky-300" 
+   />
+</Link>
                 <Link
                   to="/blogs"
                   className="text-white no-underline hover:text-blue-200"
@@ -63,7 +62,7 @@ const Header = ({ active, setActive, user, handleLogout }) => {
             
                 {userId ? (
                   <>
-                    <div className="flex items-center space-x-2 gap-2">
+            <div className="flex items-center justify-center hover:text-blue-200 space-x-2 gap-2">
                     
                       <Link
                         to={`/profile/${userId}`}
@@ -87,9 +86,14 @@ const Header = ({ active, setActive, user, handleLogout }) => {
                     <LoginOutlined/>
                   </Link>
                 )}
+                 <Link to='dalle'>
+          <img  src ={dalle} alt="dalle" className=" lg:block rounded-md w-auto max-w-full h-10  float-right" height={40} width={40} />
+         </Link>
               </div>
             </div>
           </div>
+
+        
         </nav>
       </div>
       <div className="logo">

@@ -27,6 +27,7 @@ import UserProfile from "./pages/UserProfile";
 import UserList from "./pages/UserList";
 import BingImage from "./pages/BingImage";
 import MoviePage from "./pages/MoviePage";
+import Dalle from "./components/Dalle";
 
 
 function App() {
@@ -72,6 +73,7 @@ function App() {
    
       
       <ScrollToTop />
+      
       <ToastContainer position="top-center" />
       <Routes>
         <Route
@@ -98,6 +100,7 @@ function App() {
              <UserList /> 
           }
         />
+        <Route path="/dalle" element={<Dalle setActive={setActive} user={user} />} />
   <Route
         path="/chatmodal"
         element= { <Chat />}

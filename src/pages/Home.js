@@ -26,6 +26,7 @@ import Ticker from "../components/Ticker";
 import Stream from "../components/Stream";
 import Schedule from "../components/Schedule";
 import Stock from "../components/Stock";
+import MoodCarousel from "../components/Moods";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -43,7 +44,10 @@ const Home = ({ setActive, user, active }) => {
   const queryString = useQuery();
   const searchQuery = queryString.get("searchQuery");
   const location = useLocation();
+  const moods = useState([]);
 
+  
+  
   const getTrendingBlogs = async () => {
     const blogRef = collection(db, "blogs");
     const trendQuery = query(blogRef, where("trending", "==", "yes"));
@@ -100,7 +104,7 @@ const Home = ({ setActive, user, active }) => {
   };
 
   console.log("blogs", blogs);
-
+ 
   const updateState = (docSnapshot) => {
     const isCollectionEmpty = docSnapshot.size === 0;
     if (!isCollectionEmpty) {
@@ -210,13 +214,18 @@ const Home = ({ setActive, user, active }) => {
   return (
     <div className="container-fluid pb-4 pt-4 padding  ">
       <div className="container padding">
+     
         <div className="row ">
-          
+       
+        <div className="m-2 p-2 row space-y-4 space-x-2 col-md-10 " > 
+              <h1 className="text-white mb-2 mt-3"> AI Moods</h1>
+            <MoodCarousel moods={moods} className="space-x-4 h-24" />
+           </div>
           
         
          
           <Trending blogs={trendBlogs} />
-          <div className="col-md-8 ">
+          <div className=" ">
             <div className="blog-heading text-start py-2 mb-4">posts</div>
             {blogs.length === 0 && location.pathname !== "/" && (
               <>
@@ -226,6 +235,7 @@ const Home = ({ setActive, user, active }) => {
                 </h4>
               </>
             )}
+           
 
             {blogs?.map((blog) => (
               <BlogSection
@@ -246,12 +256,13 @@ const Home = ({ setActive, user, active }) => {
           
           </div>
          
+         
           <div className="col-md-3">
             
             <Search search={search} handleChange={handleChange} />
             <div className="blog-heading text-star  py-2 mb-4">Tags</div>
             <Tags tags={tags} />
-            <FeatureBlogs title={"Most Popular"} blogs={blogs} />
+            <FeatureBlogs title={"Ads"} blogs={blogs} />
             <Category catgBlogsCount={categoryCount} />
           
           

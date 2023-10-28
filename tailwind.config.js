@@ -7,6 +7,12 @@ module.exports = {
         poppins: ['Poppins', 'sans'],
       },
     },
+    resolve: {
+      fallback: {
+        "zlib": false,
+        "url": false
+      }
+    }
   },
   plugins: [],
 }
