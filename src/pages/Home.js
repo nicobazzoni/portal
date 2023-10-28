@@ -218,7 +218,7 @@ const Home = ({ setActive, user, active }) => {
         <div className="row ">
        
         <div className="m-2 p-2 row space-y-4 space-x-2 col-md-10 " > 
-              <h1 className="text-white mb-2 mt-3"> AI Moods</h1>
+              <h1 className="text-white mb-2 mt-3 text-left underline space-y-2"> mood</h1>
             <MoodCarousel moods={moods} className="space-x-4 h-24" />
            </div>
           

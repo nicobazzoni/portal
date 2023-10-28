@@ -7,6 +7,7 @@ import "owl.carousel/dist/assets/owl.theme.default.css";
 
 function MoodCarousel() {
     const [moods, setMoods] = useState([]);
+    const [loading, setLoading] = useState(true);
     useEffect(() => {
         const fetchMoods = async () => {
             try {
@@ -22,6 +23,10 @@ function MoodCarousel() {
                     }
                 });
                 setMoods(moodList);
+                setLoading(false);
+// ... inside the return
+ 
+
             } catch (error) {
                 console.error("Error fetching moods:", error);
             }
@@ -63,7 +68,7 @@ function MoodCarousel() {
     return (
    
         <OwlCarousel autoplay {...options}>
-        {moods && moods.length > 0 ? (
+        {loading? <p>loading </p> : moods && moods.length > 0 ? (
            moods.map((item, index) => (
               <div className='' key={index}>
                  <img src={item.moodUrl} className='rounded-full' alt="Mood" />
