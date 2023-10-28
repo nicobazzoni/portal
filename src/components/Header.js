@@ -53,6 +53,11 @@ const Header = ({ active, setActive, user, handleLogout }) => {
                 >
                  < PlusCircleOutlined style={{ fontSize: '30px', color: '#fff' }} />
                 </Link> 
+
+                <Link to='userlist' className="text-white no-underline hover:text-blue-200">
+                <CommentOutlined style={{ fontSize: '30px', color: '#fff' }} />
+                
+                </Link>
               
              
             

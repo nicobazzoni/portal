@@ -48,26 +48,27 @@ const UserList = ({userId,}) => {
 
   return (
     <div>
-      <h2>User List</h2>
+      <h2  className="text-white mt-2">User List</h2>
       <input
         type="text"
         placeholder="Search users"
         value={searchQuery}
         onChange={handleSearchChange}
+        className="p-2 m-2 w-full rounded-md"
       />
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <ul>
+        <ul className="no-bullet">
           {filteredUsers.map((user) => (
-            <li className="no-bullet"
+            <li className="no-bullet   border-opacity-25 "
               key={user.id}
               onClick={() => handleUserClick(user)}
-              style={{ cursor: "pointer", color: "blue" }}
+              style={{ cursor: "pointer", color: "blue", listStyleType: "none"  }}
             >
                <Link
               to={`/profile/${profileId}`}
-              className="text-blue-500 no-underline hover:lime-300"
+              className="text-blue-500 no-bullet no-underline hover:lime-300"
             >
               {user.displayName}
             </Link>
