@@ -1,9 +1,7 @@
-import React, { useEffect } from "react";
-import FontAwesome from "react-fontawesome";
+import React from "react";
 import { Link } from "react-router-dom";
 import { excerpt } from "../utility";
-import { DeleteOutlined } from "@ant-design/icons";
-import { EditOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 const BlogSection = ({
   id,
@@ -17,57 +15,59 @@ const BlogSection = ({
   timestamp,
   user,
   handleDelete,
+  profilePicURL,
 }) => {
-
   const profileId = userId?.split("@")[0];
+  const userAvatarURL = userImg || profilePicURL;
+  console.log(userAvatarURL, 'avatar');
+
+
   return (
-    console.log("BlogSection", userImg),
-    <div className=" ">
-      <div className="row  postsGo pb-4 bg border my-2 p-2 " key={id}>
-        <div className="col-md-5 ">
-          <div className="hover-blogs-img">
-            <div className="blogs-img">
-              <img src={imgUrl} alt={title} />
-              <div></div>
-            </div>
+    <div className="my-4">
+      <div className="md:flex items-center bg-black text-white shadow-lg rounded-lg p-4">
+        <div className="md:w-1/2 md:mr-4">
+          <div className="hover:opacity-75 ">
+            <img src={imgUrl} alt={title} className="w-full rounded-lg" />
           </div>
         </div>
-        <div className="col-md-7 bg-stone-100 p-1">
-          <div className="text-start">
-            <h6 className="category catg-color">{category}</h6>
-            <span className="title py-2">{title}</span>
-            <span className="meta-info bg-white p-1 m-2 rounded-md">
-              <Link  to={`/profile/${profileId}`}className="author no-underline text-rose-400 ">{author}</Link> 
-             
-            </span>
-            <div className="text-xs p-1 bg-slate-100 rounded-md ">
-          &nbsp;
-              {timestamp.toDate().toDateString()}
-          </div>
-         
-          </div>
-          <div className="short-description text-start bg-white text-black p-1 m-1 border-rounded">
+        <div className="md:w-1/2 mt-4 md:mt-0">
+          {userAvatarURL && (
+            <img src={userAvatarURL} alt={author} className="rounded-full w-20 h-20" />
+          )}
+        
+          <h2 className="text-2xl font-semibold mt-2">{title}</h2>
+        
+          <div className="text-sm text-gray-300 mb-2">
+            <Link
+              to={`/profile/${profileId}`}
+              className="text-rose-400 no-underline hover:text-white "
+            >
+              {author}
+            </Link>
+           
+           
+          </div> 
+          {timestamp.toDate().toDateString()}
+          <div className="text-sm text-black rounded-md bg-sky-200 mt-4">
             {excerpt(description, 120)}
           </div>
+          <h6 className=" text-sm mt-4 bg-slate-100 rounded-md text-black uppercase">{category}</h6>
           <Link to={`/detail/${id}`}>
-            <button className=" border-none p-2 m-2  rounded-md bg-yellow-100 font-bold hover:bg-slate-50">Read More</button>
+            <button className="mt-4 px-4 py-2 bg-rose-500 text-white border-none rounded-lg hover:bg-sky-400">
+              Read More
+            </button>
           </Link>
-         
-         
-         
           {userId && user?.uid === userId && (
-            <div style={{ float: "right" }}>
+            <div className="flex justify-end mt-4">
               <DeleteOutlined
                 name="trash"
-                style={{ margin: "15px", cursor: "pointer", fontSize: "30px" }}
-               
+                style={{ cursor: "pointer", fontSize: "30px" }}
                 onClick={() => handleDelete(id)}
               />
-              <Link to={`/update/${id}`}>
+              <Link to={`/update/${id}`} className="ml-4">
                 <EditOutlined
                   name="edit"
                   style={{ cursor: "pointer", fontSize: "30px" }}
-                
                 />
               </Link>
             </div>
@@ -76,6 +76,6 @@ const BlogSection = ({
       </div>
     </div>
   );
-};
+          };  
 
 export default BlogSection;

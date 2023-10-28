@@ -55,13 +55,7 @@ useEffect(() => {
 }, [recipientIDState, currentUser.uid]);
 
 
-
-
-
-
-
-
-  const handleSubmit = async (event) => {
+const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (newMessage.trim() === "") return;

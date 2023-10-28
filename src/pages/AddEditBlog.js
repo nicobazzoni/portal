@@ -125,6 +125,7 @@ const AddEditBlog = ({ user, setActive }) => {
             timestamp: serverTimestamp(),
             author: user.displayName,
             userId: user.uid,
+            userImg: user.photoURL,
             
           });
           toast.success("Blog created successfully");
@@ -138,6 +139,7 @@ const AddEditBlog = ({ user, setActive }) => {
             timestamp: serverTimestamp(),
             author: user.displayName,
             userId: user.uid,
+            userImg: user.photoURL,
           });
           toast.success("Blog updated successfully");
         } catch (err) {

@@ -23,8 +23,8 @@ const Header = ({ active, setActive, user, handleLogout }) => {
 
   return (
     <nav className="bg-slate-900 no-underline navbar navbar-expand-lg navbar-light">
-      <div className="container-fluid px-0 mx-auto flex flex-col">
-        <nav className="bg-black text-white  p-4 navbar navbar-toggleable-md navbar-light">
+      <div className="container-fluid px-0 mx-auto flex flex-col ">
+        <nav className="bg-black text-white  p-4 navbar rounded-md navbar-toggleable-md navbar-light">
           <div className="container mx-auto">
             <div className="flex  items-center ">
           
@@ -35,10 +35,10 @@ const Header = ({ active, setActive, user, handleLogout }) => {
               >
                 <Link
                   to="/"
-                  className="text-white no-underline hover:text-blue-200"
+                  className="text-white no-underline  "
                  
 
-                > <HomeOutlined  style={{ fontSize: '30px', color: '#fff' }}  /> 
+                > <HomeOutlined  style={{ fontSize: '30px', color: '#fff',  transition: 'stroke 0.3s', }} className="hover:outline-sky-300" /> 
                   
                 </Link>
                 <Link
@@ -88,15 +88,15 @@ const Header = ({ active, setActive, user, handleLogout }) => {
         </nav>
       </div>
       <div className="logo">
-        <div>
-          <img
-            src={portal}
-            alt="portal"
-            className="hidden lg:block"
-            height={40}
-            width={40}
-          />
-        </div>
+      <Link to="/">
+  <img
+    src={portal}
+    alt="portal"
+    className="hidden lg:block rounded-md w-auto max-w-full float-right"
+    height={40}
+    width={40}
+  />
+</Link>
       </div>
     </nav>
   );

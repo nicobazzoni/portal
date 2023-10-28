@@ -1,213 +1,43 @@
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  updateProfile,
-} from "firebase/auth";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
-import { auth } from "../firebase";
-import { useNavigate } from "react-router-dom";
-import { db, collection } from "../firebase";
 import { doc, setDoc } from "firebase/firestore";
-import portal from '../components/assets/PortalLogo.png' 
-
+import portal from '../components/assets/PortalLogo.png';
+import GoogleSignIn from "../components/GoogleSignIn"; // Import your Google sign-in component
+import { db } from "../firebase";
 
 const initialState = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  password: "",
-  confirmPassword: "",
+  username: "",
 };
 
 const Auth = ({ setActive, setUser }) => {
   const [state, setState] = useState(initialState);
-  const [signUp, setSignUp] = useState(false);
-
-  const { email, password, firstName, lastName, confirmPassword } = state;
-
-  const navigate = useNavigate();
+  const { username } = state;
 
   const handleChange = (e) => {
     setState({ ...state, [e.target.name]: e.target.value });
   };
 
-  const handleSignIn = async () => {
-    try {
-      // Sign-in logic here
-      const { user } = await signInWithEmailAndPassword(auth, email, password);
-      setUser(user);
-      setActive("home");
-    } catch (error) {
-      console.error("Error signing in:", error);
-      toast.error("Error signing in. Please try again.");
-    }
-  };
-
-  const handleSignUp = async () => {
-    if (password !== confirmPassword) {
-      return toast.error("Password doesn't match");
-    }
-    if (firstName && lastName && email && password) {
-      try {
-        const { user } = await createUserWithEmailAndPassword(auth, email, password);
-
-        const userProfile = {
-          firstName,
-          lastName,
-          email,
-          // Add any other profile data you want to store
-        };
-        const userDocRef = doc(db, "users", user.uid);
-        await setDoc(userDocRef, userProfile);
-
-        await updateProfile(user, { displayName: `${firstName} ${lastName}` });
-
-        setUser(user);
-        setActive("home");
-      } catch (error) {
-        console.error("Error creating user:", error);
-        toast.error("Error creating user. Please try again.");
-      }
-    } else {
-      return toast.error("All fields are mandatory to fill");
-    }
-  };
-
-  const handleAuth = (e) => {
-    e.preventDefault();
-    if (!signUp) {
-      handleSignIn();
-    } else {
-      handleSignUp();
-    }
-    navigate("/");
-  };
-
-    
-  
-    return (
-      <div className="container-fluid mb-4">
-        <div className="container">
+  return (
+    <div className="container-fluid mb-4">
+      <div className="container">
         <h2 className="text-center heading py-2 text-white bg-black"> portal </h2>
-          <img src={portal} alt="portal" className="img-fluid h-30 mt-4" />
-          <div className="col-12 text-center">
-            <div className="text-center heading py-2">
-             
-              {!signUp ? "Sign-In" : "Create an Account"}
-            </div>
-          </div>
-          <div className="row h-100 justify-content-center align-items-center">
-            <div className="col-10 col-md-8 col-lg-6">
-              <form className="row" onSubmit={handleAuth}>
-                {signUp && (
-                  <>
-                    <div className="col-6 py-3">
-                      <input
-                        type="text"
-                        className="form-control input-text-box"
-                        placeholder="First Name"
-                        name="firstName"
-                        value={firstName}
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div className="col-6 py-3">
-                      <input
-                        type="text"
-                        className="form-control input-text-box"
-                        placeholder="Last Name"
-                        name="lastName"
-                        value={lastName}
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </>
-                )}
-                <div className="col-12 py-3">
-                  <input
-                    type="email"
-                    className="form-control input-text-box"
-                    placeholder="Email"
-                    name="email"
-                    value={email}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="col-12 py-3">
-                  <input
-                    type="password"
-                    className="form-control input-text-box"
-                    placeholder="Password"
-                    name="password"
-                    value={password}
-                    onChange={handleChange}
-                  />
-                </div>
-                {signUp && (
-                  <div className="col-12 py-3">
-                    <input
-                      type="password"
-                      className="form-control input-text-box"
-                      placeholder="Confirm Password"
-                      name="confirmPassword"
-                      value={confirmPassword}
-                      onChange={handleChange}
-                    />
-                  </div>
-                )}
-  
-                <div className="col-12 py-3 text-center">
-                  <button
-                    className={`btn ${!signUp ? "btn-sign-in" : "btn-sign-up"}`}
-                    type="submit"
-                  >
-                    {!signUp ? "Sign-in" : "Sign-up"}
-                  </button>
-                </div>
-              </form>
-              <div>
-                {!signUp ? (
-                  <>
-                    <div className="text-center justify-content-center mt-2 pt-2">
-                      <p className="small fw-bold mt-2 pt-1 mb-0">
-                        Don't have an account ?&nbsp;
-                        <span
-                          className="link-danger"
-                          style={{ textDecoration: "none", cursor: "pointer" }}
-                          onClick={() => setSignUp(true)}
-                        >
-                          Sign Up Now
-                        </span>
-                      </p>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="text-center justify-content-center mt-2 pt-2">
-                      <p className="small fw-bold mt-2 pt-1 mb-0">
-                        Already have an account ?&nbsp;
-                        <span
-                          style={{
-                            textDecoration: "none",
-                            cursor: "pointer",
-                            color: "#298af2",
-                          }}
-                          onClick={() => setSignUp(false)}
-                          
-                        >
-                          Sign In
-                        </span>
-                      </p>
-                    </div>
-                  </>
-                )}
-              </div>
+        <img src={portal} alt="portal" className="img-fluid h-30 mt-4" />
+        <div className="col-12 text-center">
+          <div className="text-center heading py-2">Sign In</div>
+        </div>
+        <div className="row h-100 justify-content-center align-items-center">
+          <div className="col-10 col-md-8 col-lg-6">
+        
+
+            {/* Render the Google sign-in component */}
+            <div className="col-12 py-3 text-center">
+              <GoogleSignIn />
             </div>
           </div>
         </div>
       </div>
-    );
-  };
-  
-  export default Auth;
+    </div>
+  );
+};
+
+export default Auth;

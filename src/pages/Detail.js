@@ -26,6 +26,7 @@ import Spinner from "../components/Spinner";
 
 const Detail = ({ setActive, user }) => {
   const userId = user?.uid;
+  
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
   const [blog, setBlog] = useState(null);
