@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
+import { collection, query, orderBy, limit, getDocs, onSnapshot } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import OwlCarousel from "react-owl-carousel";
 import "owl.carousel/dist/assets/owl.carousel.css";
@@ -12,11 +12,15 @@ function MoodCarousel() {
     const [users, setUsers] = useState([]);
     const [count, setCount] = useState(0);
     const [lastVisible, setLastVisible] = useState(null);
+    
+    
+    
+    
     useEffect(() => {
         const getUsersData = async () => {
           setLoading(true);
           const usersRef = collection(db, "users");
-          const first = query(usersRef, orderBy("displayName"), limit(4));
+          const first = query(usersRef, orderBy("mood"), limit(4));
           const docSnapshot = await getDocs(first);
           setUsers(docSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
           setCount(docSnapshot.size);
@@ -27,7 +31,31 @@ function MoodCarousel() {
         getUsersData();
        
       }, []);
-      console.log("All Users:", users);
+      useEffect(() => {
+        const usersRef = collection(db, "users");
+        const first = query(usersRef, orderBy("mood"), limit(4));
+    
+        // This sets up the real-time listener
+        const unsubscribe = onSnapshot(first, (snapshot) => {
+            const usersList = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            setUsers(usersList);
+            setCount(snapshot.size);
+            setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
+            setLoading(false);
+        }, (error) => {
+            console.error("Error fetching real-time data:", error);
+        });
+    
+        // Cleanup function to unsubscribe from the listener when component unmounts
+        return () => unsubscribe();
+    
+    }, []);
+    
+
+     
 
 
     const options = {
