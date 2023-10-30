@@ -100,7 +100,7 @@ function App() {
              <UserList /> 
           }
         />
-        <Route path="/dalle" element={<Dalle setActive={setActive} user={user} />} />
+        <Route path="/dalle" element={<Dalle  user={user} />} />
   <Route
         path="/chatmodal"
         element= { <Chat />}
