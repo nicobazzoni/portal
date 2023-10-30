@@ -18,7 +18,7 @@ const BlogSection = ({
   profilePicURL,
 }) => {
   const profileId = userId?.split("@")[0];
-  const userAvatarURL = userImg || profilePicURL;
+  const userAvatarURL = userId?.photoURL || userId?.profilePicURL; 
   console.log(userAvatarURL, 'avatar');
 
 
@@ -31,9 +31,9 @@ const BlogSection = ({
           </div>
         </div>
         <div className="md:w-1/2 mt-4 md:mt-0">
-          {userAvatarURL && (
-            <img src={userAvatarURL} alt={author} className="rounded-full w-20 h-20" />
-          )}
+        {userAvatarURL && (
+         <img src={userAvatarURL} alt={author} className="rounded-full w-20 h-20" />
+)}
         
           <h2 className="text-2xl font-semibold mt-2">{title}</h2>
         

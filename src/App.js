@@ -101,7 +101,7 @@ function App() {
           }
         />
         <Route path="/dalle" element={<Dalle  user={user} />} />
-  <Route
+       <Route
         path="/chatmodal"
         element= { <Chat />}
       />

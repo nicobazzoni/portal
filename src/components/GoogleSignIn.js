@@ -1,9 +1,11 @@
 import React from "react";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../firebase"; // Import your Firebase auth instance
-import { Link } from "react-router-dom"; // Import Link from react-router-dom
+import { useNavigate } from "react-router-dom"; // Import useNavigate from react-router-dom
 
 const GoogleSignIn = ({ onSuccess }) => {
+  const navigate = useNavigate(); // Use the useNavigate hook
+
   const handleGoogleSignIn = async () => {
     try {
       const provider = new GoogleAuthProvider();
@@ -12,19 +14,23 @@ const GoogleSignIn = ({ onSuccess }) => {
       // The user is signed in with Google successfully
       const googleUser = result.user;
 
-      // Pass the user object to the parent component's onSuccess function
-      onSuccess(googleUser);
+      // Check if onSuccess is a function before calling it
+      if (typeof onSuccess === "function") {
+        onSuccess(googleUser);
+      }
+
+      // Navigate to the root path
+      navigate("/"); // Corrected this line
+
     } catch (error) {
       console.error("Google Sign-In Error:", error);
     }
   };
 
   return (
-    <Link to="/"> {/* Wrap the button in Link */}
-      <button onClick={handleGoogleSignIn} className="btn btn-primary">
-        Sign Up/In with Google
-      </button>
-    </Link>
+    <button onClick={handleGoogleSignIn} className="btn btn-primary">
+      Sign Up/In with Google
+    </button>
   );
 };
 

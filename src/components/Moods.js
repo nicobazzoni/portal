@@ -6,7 +6,7 @@ import OwlCarousel from "react-owl-carousel";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
 
-function MoodCarousel() {
+function MoodCarousel({ active, setActive, user, handleLogout}) {
     const [moods, setMoods] = useState([]);
     const [loading, setLoading] = useState(true);
     const [users, setUsers] = useState([]);

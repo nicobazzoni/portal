@@ -18,6 +18,7 @@ const NavbarLinks = ({user, handleLogout}) => {
     const userId = user?.uid;
   return (
     <>
+    <div className='flex justify-between items-center space-x-4'>
       <Link to="/" className="text-white hover:text-blue-200">
         <HomeOutlined style={{ fontSize: '30px' }} />
       </Link>
@@ -30,13 +31,14 @@ const NavbarLinks = ({user, handleLogout}) => {
       <Link to="/userlist" className="text-white hover:text-blue-200">
         <CommentOutlined style={{ fontSize: '30px' }} />
       </Link>
+      </div>
       {userId ? (
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center  space-x-4">
                 <Link to="/dalle">
             <img src={dalle} alt="dalle" className="w-10 h-10 rounded-full" />
           </Link>
               
-              <Link to={`/profile/${userId}`} className="text-white no-underline hover:text-blue-200">
+              <Link to={`/profile/${userId}`} className="text-white text-xs bg-black p-1 no-underline hover:text-blue-200">
                 {user?.displayName}
               </Link> 
 
