@@ -82,7 +82,7 @@ useEffect(() => {
 
       <>
       
-      <button onClick={handleRefresh} className="border-none rounded-md w-24 mx-auto mb-2 font-poppins"> Moods</button>
+      <button onClick={handleRefresh} className="border-none rounded-full p-1  w-24 mx-auto mb-3 hover:bg-sky-400 font-poppins"> Moods</button>
         <OwlCarousel autoplay {...options}>
          
         {users?.map((user) => (

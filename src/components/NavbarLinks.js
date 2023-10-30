@@ -20,28 +20,28 @@ const NavbarLinks = ({user, handleLogout}) => {
     <>
     <div className='flex justify-between items-center space-x-4'>
    
-      <Link to="/" className="text-white hover:text-blue-200">
+      <Link to="/" className="text-white hover:bg-sky-400 rounded-e-md p-2">
         <HomeOutlined style={{ fontSize: '30px' }} />
       </Link>
-      <Link to="/blogs" className="text-white hover:text-blue-200">
+      <Link to="/blogs" className="text-white hover:bg-sky-400 rounded-e-md p-2">
         <GlobalOutlined style={{ fontSize: '30px' }} />
       </Link>
-      <Link to="/create" className="text-white hover:text-blue-200">
+      <Link to="/create" className="text-white hover:bg-sky-400 rounded-e-md p-2">
         <PlusCircleOutlined style={{ fontSize: '30px' }} />
       </Link>
-      <Link to="/userlist" className="text-white hover:text-blue-200">
+      <Link to="/userlist" className="text-white hover:bg-sky-400 rounded-e-md p-2">
         <CommentOutlined style={{ fontSize: '30px' }} />
       </Link>
       
       </div>
-      <h1 className="hidden md:block lg:block lg:text-center ">portal</h1>
+      <h1 className="hidden md:block lg:block lg:text-center hover:text-sky-400 cursor-pointer hover:animate-pulse ">portal</h1>
       {userId ? (
             <div className="flex items-center  space-x-4">
                 <Link to="/dalle">
-            <img src={dalle} alt="dalle" className="w-10 h-10 rounded-full" />
+            <img src={dalle} alt="dalle" className="w-10 h-10 rounded-full hover:animate-pulse" />
           </Link>
               
-              <Link to={`/profile/${userId}`} className="text-white text-xs bg-black p-1 no-underline hover:text-blue-200">
+              <Link to={`/profile/${userId}`} className="text-white text-xs bg-black p-1 no-underline ">
                 {user?.displayName}
               </Link> 
 
