@@ -45,6 +45,8 @@ const Home = ({ setActive, user, active }) => {
   const searchQuery = queryString.get("searchQuery");
   const location = useLocation();
   const moods = useState([]);
+  const [refreshKey, setRefreshKey] = useState(0);
+
 
   
   
@@ -93,6 +95,10 @@ const Home = ({ setActive, user, active }) => {
     getBlogs();
     setHide(false);
   }, [active]);
+
+  useEffect(() => {
+    setRefreshKey(prevKey => prevKey + 1);
+  }, []);
 
   const getBlogs = async () => {
     const blogRef = collection(db, "blogs");
@@ -214,17 +220,20 @@ const Home = ({ setActive, user, active }) => {
   return (
     <div className="container-fluid pb-4 pt-4 padding  ">
       <div className="container padding">
-      <div className="blog-heading text-start py-2 mb-4">moods</div>
-            <MoodCarousel moods={moods} className="space-x-4 h-24" />
+    
         <div className="row ">
        
       
-             
+       
+        {/* <div className="blog-heading text-start py-2 mb-4">moods</div> */}
+     <MoodCarousel path='/moods' user={user}  active={active}   className=' ' />
           
           
         
          
           <Trending blogs={trendBlogs} />
+          
+          
           <div className=" ">
             <div className="blog-heading text-start py-2 mb-4">portals</div>
             {blogs.length === 0 && location.pathname !== "/" && (

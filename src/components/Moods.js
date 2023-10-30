@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import OwlCarousel from "react-owl-carousel";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
+import { useLocation } from 'react-router-dom';
 
 function MoodCarousel({ active, setActive, user, handleLogout}) {
     const [moods, setMoods] = useState([]);
@@ -13,48 +14,43 @@ function MoodCarousel({ active, setActive, user, handleLogout}) {
     const [count, setCount] = useState(0);
     const [lastVisible, setLastVisible] = useState(null);
     
-    
-    
-    
-    useEffect(() => {
-        const getUsersData = async () => {
-          setLoading(true);
-          const usersRef = collection(db, "users");
-          const first = query(usersRef, orderBy("mood"), limit(4));
-          const docSnapshot = await getDocs(first);
-          setUsers(docSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-          setCount(docSnapshot.size);
-          setLastVisible(docSnapshot.docs[docSnapshot.docs.length - 1]);
-          setLoading(false);
-        };
-    
-        getUsersData();
-       
-      }, []);
-      useEffect(() => {
-        const usersRef = collection(db, "users");
-        const first = query(usersRef, orderBy("mood"), limit(4));
-    
-        // This sets up the real-time listener
-        const unsubscribe = onSnapshot(first, (snapshot) => {
-            const usersList = snapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-            setUsers(usersList);
-            setCount(snapshot.size);
-            setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
-            setLoading(false);
-        }, (error) => {
-            console.error("Error fetching real-time data:", error);
-        });
-    
-        // Cleanup function to unsubscribe from the listener when component unmounts
-        return () => unsubscribe();
-    
-    }, []);
-    
+    const [refresh, setRefresh] = useState(false);
+    const location = useLocation();
+    const [refreshKey, setRefreshKey] = useState(0);
 
+    const [refreshCount, setRefreshCount] = useState(0);
+
+
+    useEffect(() => {
+  setRefresh(!refresh);
+  console.log("Component mounted/updated");
+}, []);
+
+
+const handleRefresh = () => {
+  setRefreshCount(prevCount => prevCount + 1);
+};
+
+    
+useEffect(() => {
+  const usersRef = collection(db, "users");
+  const first = query(usersRef, orderBy("mood"), limit(4));
+
+  // This sets up the real-time listener
+  const unsubscribe = onSnapshot(first, (snapshot) => {
+      const usersList = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data()
+      }));
+      setUsers(usersList);
+      setLoading(false);
+  }, (error) => {
+      console.error("Error fetching real-time data:", error);
+  });
+
+  // Cleanup function to unsubscribe from the listener when component unmounts
+  return () => unsubscribe();
+}, [refreshCount]);
      
 
 
@@ -83,9 +79,13 @@ function MoodCarousel({ active, setActive, user, handleLogout}) {
     };
 
     return (
-   
+
+      <>
+      
+      <button onClick={handleRefresh} className="border-none rounded-md w-24 mx-auto mb-2 font-poppins"> Moods</button>
         <OwlCarousel autoplay {...options}>
-        {users.map((user) => (
+         
+        {users?.map((user) => (
             <li className="no-bullet font-poppins bg-white p-1   border-opacity-25 "
               key={user.id}
 
@@ -99,10 +99,13 @@ function MoodCarousel({ active, setActive, user, handleLogout}) {
             >
               {user.displayName}
             </Link>
-            <img src={user.mood} alt={user.displayName} className="rounded-full h-48 mt-2 flex items-center justify-center" />
+            <img src={user.mood} alt={user.displayName} className="rounded-md h-48 mt-2 flex items-center justify-center" />
             </li>
           ))}
      </OwlCarousel>
+     
+     </>
+     
     );
 }
 

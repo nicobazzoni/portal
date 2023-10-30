@@ -28,6 +28,7 @@ import UserList from "./pages/UserList";
 import BingImage from "./pages/BingImage";
 import MoviePage from "./pages/MoviePage";
 import Dalle from "./components/Dalle";
+import MoodCarousel from "./components/Moods";
 
 
 function App() {
@@ -68,13 +69,13 @@ function App() {
         handleLogout={handleLogout}
        
       />
-     
-     
+  
    
       
       <ScrollToTop />
       
       <ToastContainer position="top-center" />
+    
       <Routes>
         <Route
           path="/"
@@ -100,7 +101,9 @@ function App() {
              <UserList /> 
           }
         />
-        <Route path="/dalle" element={<Dalle  user={user} />} />
+        <Route 
+        path="/dalle" 
+        element={<Dalle    user={user} />} />
        <Route
         path="/chatmodal"
         element= { <Chat />}

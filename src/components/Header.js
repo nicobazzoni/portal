@@ -27,8 +27,9 @@ const Header = ({ active, setActive, user, handleLogout }) => {
   return (
     <nav className="bg-slate-900">
         <div className="container-fluid px-4 py-2 mx-auto space-x-2 flex justify-between items-center">
-            
+             
             <NavbarLinks userId={userId} user={user} handleLogout={handleLogout} />
+          
         </div>
     </nav>
 );
