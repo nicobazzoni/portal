@@ -1,7 +1,6 @@
 {
   "projects": {
-    "default": "fir-social-bdb17",
-    "notsure": "fir-social-bdb17"
+    "default": "mediaman-a8ba1"
   },
   "targets": {},
   "etags": {}

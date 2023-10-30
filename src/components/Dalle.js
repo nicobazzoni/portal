@@ -1,98 +1,64 @@
 import React, { useState } from 'react';
-import OpenAI from "openai";
-import { db } from '../firebase';
-import { setDoc, doc } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from '../firebase';
+import { functions } from '../firebase'; // Adjust the path
+import { httpsCallable } from 'firebase/functions';
+import { auth } from '../firebase'; // Adjust the path
 
-function ImageGenerator({ user }) {
+function DalleGenerator() {
     const [imageUrl, setImageUrl] = useState(null);
-    const [prompt, setPrompt] = useState('A cute baby sea otter');
-    const [isLoading, setIsLoading] = useState(false);
+    const [inputValue, setInputValue] = useState('');
+    const user = auth.currentUser;
+    let userId;
+if (user) {
+    userId = user.uid; // This is the unique ID for the logged-in user
+}
 
-    const openai = new OpenAI({
-        apiKey: process.env.REACT_APP_OPENAI_API_KEY,
-        dangerouslyAllowBrowser: true
-    });
-
-    const saveToFirebase = async (url) => {
-        const userRef = doc(db, 'users', user.uid);
-        await setDoc(userRef, { mood: url }, { merge: true });
-    }
-
-    const fetchImage = async () => {
-
-        fetch(imageUrl)
-  .then(response => response.blob())
-  .then(blob => {
-    // ... rest of the code
-  })
-  .catch(error => {
-    console.error("Error fetching the image:", error);
-  });
-        setIsLoading(true);
-        try {
-            const response = await openai.images.generate({
-                prompt: prompt,
-                n: 1,
-                response_format: 'url',
-                size: '1024x1024',
-            });
-
-            if (response.data && response.data.length > 0) {
-                const moodImageUrl = response.data[0].url;
-                setImageUrl(moodImageUrl);
-                await saveToFirebase(moodImageUrl); // Save to Firebase here
-            }
+console.log("userId", userId);
+    
+    const generateImage = async () => {
+        try { if (!userId) {
+            console.error("No user is logged in.");
+            return;
+        }
+            // Calling the generateImageHttps cloud function
+            const generateFunction = httpsCallable(functions, 'generateImageHttps'); 
+            const result = await generateFunction({ prompt: inputValue, userId: userId }); // You need to provide the userId here
+            console.log("Cloud function response:", result);
+            const generatedImageUrl = result.data.imageUrl;
+        const firebaseUrl = await saveImageToFirebase(generatedImageUrl);
+        setImageUrl(firebaseUrl);
         } catch (error) {
-            console.error("Error generating image:", error);
-        } finally {
-            setIsLoading(false);  // ensure loading stops even if there's an error
+            console.error("Error generating or uploading image:", error);
         }
     }
-
-    const uploadToFirebaseStorage = async () => {
-        // Create a reference in Firebase Storage
-        const storageRef = ref(storage, `images/${user.uid}/${Date.now()}.png`);
-        
-        // Fetch the image blob from the OpenAI URL
-        const response = await fetch(imageUrl);
-        const blob = await response.blob();
-        
-        // Upload the blob to Firebase Storage
-        await uploadBytes(storageRef, blob);
+    const saveImageToFirebase = async (imageUrl) => {
+        const response = await fetch('https://us-central1-mediaman-a8ba1.cloudfunctions.net/fetchAndUploadImage', { 
+            method: 'POST', 
+            body: JSON.stringify({ imageUrl: imageUrl, userId: userId }), // include userId
+            headers: { 'Content-Type': 'application/json' },
+        });
     
-        // Get the download URL from Firebase Storage
-        const firebaseUrl = await getDownloadURL(storageRef);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
     
-        // Save the Firebase Storage URL to Firestore
-        saveToFirebase(firebaseUrl);
+        const data = await response.json();
+        const firebaseUrl = data.firebaseUrl;
+        return firebaseUrl;
     }
+    
 
     return (
-        <div>
+        <div className='h-screen'>
             <input 
                 type="text"
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder="Describe your mood with images"
-                className='p-2 m-2 w-screen rounded-md focus-ring-0 focus:outline-none focus:ring-0 focus:border-transparent '
+                value={inputValue || ''}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="Enter a description for the image..."
             />
-            <div>
-                <button className='border-none bg-lime-200 rounded-md p-2 m-2' onClick={fetchImage}>Generate Image</button>
-            </div>
-            <div className='h-screen mt-4'>
-                {isLoading ? (
-                    <div className="spinner-border text-primary mt-5 spinner" role="status">
-                        <span className="visually-hidden">Loading...</span>
-                    </div>
-                ) : (
-                    imageUrl && <img className='h-96 w-max rounded-sm' src={imageUrl} alt="Generated by DALL·E" />
-                )}
-                <button onClick={uploadToFirebaseStorage}>Upload</button>
-            </div>
+            <button onClick={generateImage}>Generate</button>
+            {imageUrl && <img src={imageUrl} alt="Generated by DALL·E" />}
         </div>
     );
 }
 
-export default ImageGenerator;
+export default DalleGenerator;
