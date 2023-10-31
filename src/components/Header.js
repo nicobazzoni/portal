@@ -17,23 +17,27 @@ import { useState } from 'react';
 
 
 
-
 const Header = ({ active, setActive, user, handleLogout }) => {
   const userId = user?.uid;
   const { id } = useParams();
-  const [isDropdownOpen, setDropdownOpen] = useState(false);
-
+  
+  const [isOpen, setIsOpen] = useState(false); // Move the state up to Header
 
   return (
     <nav className="bg-slate-900">
-        <div className="container-fluid px-4 py-2 mx-auto space-x-2 flex justify-between items-center">
+        <div className=" px-4 py-2 mx-auto space-x-2 flex justify-between items-center">
              
-            <NavbarLinks userId={userId} user={user} handleLogout={handleLogout} />
+            <NavbarLinks 
+                userId={userId} 
+                user={user} 
+                handleLogout={handleLogout} 
+                isOpen={isOpen} 
+                setIsOpen={setIsOpen} 
+            />
           
         </div>
     </nav>
-);
-
+  );
 };
 
 export default Header;
