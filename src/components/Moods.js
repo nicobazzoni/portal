@@ -6,6 +6,7 @@ import OwlCarousel from "react-owl-carousel";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
 import { useLocation } from 'react-router-dom';
+import { useRef } from 'react';
 
 function MoodCarousel({ active, setActive, user, handleLogout}) {
     const [moods, setMoods] = useState([]);
@@ -78,6 +79,24 @@ useEffect(() => {
         dragEndSpeed: 3000,
     };
 
+
+    const imgRef = useRef(null);
+
+    const handleImageClick = () => {
+        const image = imgRef.current;
+        if (image) {
+            if (image.requestFullscreen) {
+                image.requestFullscreen();
+            } else if (image.mozRequestFullScreen) { /* Firefox */
+                image.mozRequestFullScreen();
+            } else if (image.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+                image.webkitRequestFullscreen();
+            } else if (image.msRequestFullscreen) { /* IE/Edge */
+                image.msRequestFullscreen();
+            }
+        }
+    };
+
     return (
 
       <>
@@ -86,7 +105,7 @@ useEffect(() => {
         <OwlCarousel autoplay {...options}>
          
         {users?.map((user) => (
-            <li className="no-bullet font-poppins bg-white p-1   border-opacity-25 "
+            <li className="no-bullet font-poppins bg-black rounded-full p-1   border-opacity-25 "
               key={user.id}
 
               
@@ -99,7 +118,11 @@ useEffect(() => {
             >
               {user.displayName}
             </Link>
-            <img src={user.mood} alt={user.displayName} className="rounded-md h-48 mt-2 flex items-center justify-center" />
+            <img src={user.mood} alt={user.displayName} onClick={() => {
+        if (imgRef.current.requestFullscreen) {
+            imgRef.current.requestFullscreen();
+        }
+    }} className="rounded-full h-76 mt-2 w-max flex items-center justify-center" />
             </li>
           ))}
      </OwlCarousel>

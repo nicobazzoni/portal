@@ -17,6 +17,8 @@ if (user) {
 }
 
 console.log("userId", userId);
+
+
     
 const generateImage = async () => {
     setLoading(true); // Start the loading process
@@ -65,12 +67,13 @@ const generateImage = async () => {
                 placeholder="A cute turtle blowing bubbles..."
                 className='border-2 border-gray-300 p-2 w-1/2'
             />
-            <div><button className='m-2 rounded-full border p-1' onClick={generateImage}>Generate</button></div>
+            <div> 
+                <button className='m-2 rounded-full border p-1' onClick={generateImage}>Generate</button></div>
               
             {loading ? 
                 <Spinner />  // Your loading spinner component
                 : 
-                imageUrl && <img src={imageUrl} alt="Generated" /> // Display the generated image only if imageUrl exists
+                imageUrl && <img src={imageUrl} alt="Generated" style={{ borderRadius: "50%" }} className='rounded-full' /> // Display the generated image only if imageUrl exists
             }
         </div>
     );
