@@ -81,21 +81,19 @@ useEffect(() => {
 
 
     const imgRef = useRef(null);
-
-    const handleImageClick = () => {
-        const image = imgRef.current;
-        if (image) {
-            if (image.requestFullscreen) {
-                image.requestFullscreen();
-            } else if (image.mozRequestFullScreen) { /* Firefox */
-                image.mozRequestFullScreen();
-            } else if (image.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
-                image.webkitRequestFullscreen();
-            } else if (image.msRequestFullscreen) { /* IE/Edge */
-                image.msRequestFullscreen();
-            }
-        }
-    };
+    const handleImageClick = (e) => {
+      const image = e.target; // e.target gives the clicked element
+      if (image.requestFullscreen) {
+          image.requestFullscreen();
+      } else if (image.mozRequestFullScreen) { /* Firefox */
+          image.mozRequestFullScreen();
+      } else if (image.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+          image.webkitRequestFullscreen();
+      } else if (image.msRequestFullscreen) { /* IE/Edge */
+          image.msRequestFullscreen();
+      }
+  };
+  
 
     return (
 
@@ -114,15 +112,16 @@ useEffect(() => {
             >
                <Link
               to={`/profile/${user.id}`}
-              className="text-white font-poppins  p-2 z-10 shadow-sm  no-bullet bg-black rounded-md mt-4 no-underline hover:lime-300"
+              className="text-white font-poppins  p-2 z-10 shadow-sm  no-bullet bg-stone-900 rounded-md mt-4 no-underline hover:lime-300"
             >
               {user.displayName}
             </Link>
-            <img src={user.mood} alt={user.displayName} onClick={() => {
-        if (imgRef.current.requestFullscreen) {
-            imgRef.current.requestFullscreen();
-        }
-    }} className="rounded-full h-76 mt-2 w-max flex items-center justify-center" />
+            <img 
+    src={user.mood} 
+    alt={user.displayName} 
+    onClick={handleImageClick} 
+    className="rounded-full h-76 mt-2 w-max flex items-center justify-center" 
+/>
             </li>
           ))}
      </OwlCarousel>

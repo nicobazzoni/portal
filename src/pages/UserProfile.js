@@ -17,9 +17,12 @@ import {
   onSnapshot,
   serverTimestamp,
   where,
+  getDocs,
 } from "firebase/firestore";
 import { useParams } from 'react-router-dom';
 import Chat from "./ChatModal";
+import UserMoods from './UserMoods';
+
 
 const UserProfile = () => {
   const [profile, setProfile] = useState({});
@@ -34,7 +37,9 @@ const UserProfile = () => {
 
   const [messages, setMessages] = useState([]);
   const messagesRef = collection(db, "messages");
+  const [userMoods, setUserMoods] = useState([]);
 
+ 
 
   const fetchUserData = async () => {
     try {
@@ -51,9 +56,22 @@ const UserProfile = () => {
     }
   };
 
+
   useEffect(() => {
     fetchUserData();
   }, [id]);
+  useEffect(() => {
+    const fetchUserMoods = async () => {
+        const moodsRef = collection(db, "users");
+        const specificUserMoods = query(moodsRef, where("uid", "==", id));
+        
+        const moodSnapshot = await getDocs(specificUserMoods);
+        const moodsList = moodSnapshot.docs.map(doc => doc.data().mood);
+        setUserMoods(moodsList);
+    };
+
+    fetchUserMoods();
+}, [id]);
 
   const handleEditClick = () => {
     if (currentUser && currentUser.uid === id) {
@@ -88,7 +106,10 @@ const UserProfile = () => {
       where("recipientID", "==", recipientID),
       orderBy("createdAt")
     );
+    
 
+ 
+  
     const unsubscribe = onSnapshot(queryMessages, (snapshot) => {
       const messages = snapshot.docs.map((doc) => ({
         id: doc.id,
@@ -186,11 +207,11 @@ const UserProfile = () => {
     }
   };
 
-
+const userId = id;
   
 
   return (
-    <div className="container mx-auto px-4 py-8 text-white">
+    <div className="container mx-auto px-4 py-8 h-screen text-white">
       {profile.profilePicURL && (
         <img
           src={profile.profilePicURL}
@@ -256,7 +277,30 @@ const UserProfile = () => {
        recipientID={id} // Pass the user's ID as the recipient's ID
        onClose={() => setShowChatModal(false)}
      />
+
       )}
+
+      <div>moods</div>
+{profile && profile.mood ? (
+  Array.isArray(profile.mood) ? (
+    profile.mood.map((mood, index) => (
+      <div key={index}>
+        <img className="h-32 " src={mood} alt={`Mood ${index + 1}`} />
+      </div>
+    ))
+  ) : (
+    
+    <img className="h-32 " src={profile.mood} alt="User's mood" />
+  )
+) : (
+  <p>No moods available for this user.</p>
+)}
+      
+      
+
+       
+
+      
     </div>
   );
 };
