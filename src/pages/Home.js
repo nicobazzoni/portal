@@ -276,7 +276,7 @@ const Home = ({ setActive, user, active }) => {
           
           
             
-          </div>  <Ticker className='' user={user} />
+          </div>  
         </div>
       </div>
     </div>

@@ -13,7 +13,7 @@ function UserMoods({ userId }) {
     useEffect(() => {
         
         const fetchUserMoods = async () => {
-            const moodsRef = collection(db, "users");
+            const moodsRef = collection(db, "images");
             const specificUserMoods = query(moodsRef, where("uid", "==", userId));
             
             const moodSnapshot = await getDocs(specificUserMoods);

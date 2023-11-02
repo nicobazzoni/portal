@@ -75,6 +75,14 @@ exports.fetchAndUploadImage = functions.https.onRequest((req, res) => {
         }
 
         try {
+            // Fetch user's displayName from Firestore
+            const userRef = db.collection('users').doc(userId);
+            const userDoc = await userRef.get();
+            if (!userDoc.exists) {
+                throw new Error('User not found');
+            }
+            const displayName = userDoc.data().displayName;
+
             const response = await fetch(req.body.imageUrl);
             const blob = await response.buffer();
             console.log("Image fetched successfully.");
@@ -89,10 +97,14 @@ exports.fetchAndUploadImage = functions.https.onRequest((req, res) => {
 
             const firebaseUrl = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(filename)}?alt=media`;
 
-            // Save firebaseUrl to the user's document in Firestore
-            const userRef = db.collection('users').doc(userId);
-            await userRef.update({ mood: firebaseUrl });
-           
+            // Save firebaseUrl to the user's 'images' subcollection in Firestore
+            const imagesRef = db.collection('images');
+            await imagesRef.add({
+                imageUrl: firebaseUrl,
+                userId: userId,
+                displayName: displayName, // Include the displayName here
+                uploadedAt: admin.firestore.FieldValue.serverTimestamp()
+            });
 
             return res.set('Access-Control-Allow-Origin', '*').json({ firebaseUrl: firebaseUrl });
         } catch (error) {

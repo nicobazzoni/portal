@@ -3,6 +3,8 @@ import { functions } from '../firebase'; // Adjust the path
 import { httpsCallable } from 'firebase/functions';
 import { auth } from '../firebase'; // Adjust the path
 import Spinner from './Spinner';
+import { useNavigate } from 'react-router-dom';
+import { TextareaAutosize } from '@mui/material';
 
 
 
@@ -17,6 +19,8 @@ if (user) {
 }
 
 console.log("userId", userId);
+
+const navigate = useNavigate();
 
 
     
@@ -56,16 +60,23 @@ const generateImage = async () => {
         const firebaseUrl = data.firebaseUrl;
         return firebaseUrl;
     }
-    
+    const handleBack = () => { 
+        navigate(-1);
+      };
 
     return (
         <div className='h-screen'>
-            <input 
+            <div>
+
+            <button  className="btn btn-primary pt-2 pb-2 m-2 p-4" onClick={handleBack}> Back </button>
+            </div>
+            <h4 className='text-xs text-white'> Generate a Dalle AI image</h4>
+            <TextareaAutosize 
                 type="text"
                 value={inputValue || ''}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="A cute turtle blowing bubbles..."
-                className='border-2 border-gray-300 p-2 w-1/2'
+                className='border-none border-gray-300 p-2 w-1/2 rounded-md'
             />
             <div> 
                 <button className='m-2 rounded-full border p-1' onClick={generateImage}>Generate</button></div>
@@ -73,8 +84,9 @@ const generateImage = async () => {
             {loading ? 
                 <Spinner />  // Your loading spinner component
                 : 
-                imageUrl && <img src={imageUrl} alt="Generated" style={{ borderRadius: "50%" }} className='rounded-full' /> // Display the generated image only if imageUrl exists
+                imageUrl && <img src={imageUrl} alt="Generated"  className='rounded-sm h-60 ' /> // Display the generated image only if imageUrl exists
             }
+
         </div>
     );
 }

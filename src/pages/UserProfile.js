@@ -38,8 +38,10 @@ const UserProfile = () => {
   const [messages, setMessages] = useState([]);
   const messagesRef = collection(db, "messages");
   const [userMoods, setUserMoods] = useState([]);
+  const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(true);
 
- 
+  const userId = id;
 
   const fetchUserData = async () => {
     try {
@@ -60,18 +62,31 @@ const UserProfile = () => {
   useEffect(() => {
     fetchUserData();
   }, [id]);
-  useEffect(() => {
-    const fetchUserMoods = async () => {
-        const moodsRef = collection(db, "users");
-        const specificUserMoods = query(moodsRef, where("uid", "==", id));
-        
-        const moodSnapshot = await getDocs(specificUserMoods);
-        const moodsList = moodSnapshot.docs.map(doc => doc.data().mood);
-        setUserMoods(moodsList);
-    };
 
-    fetchUserMoods();
-}, [id]);
+  useEffect(() => {
+    // Updated query to filter images by userId
+    const imagesQuery = query(
+        collection(db, 'images'),
+        where('userId', '==', userId),
+        orderBy('uploadedAt')
+    );
+
+    const unsubscribe = onSnapshot(imagesQuery, (snapshot) => {
+        const fetchedImages = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+        setImages(fetchedImages);
+        setLoading(false);
+    }, (error) => {
+        console.error("Error fetching images:", error);
+        setLoading(false);
+    });
+
+    // Cleanup the listener when component is unmounted
+    return () => unsubscribe();
+
+}, [db, userId]);
 
   const handleEditClick = () => {
     if (currentUser && currentUser.uid === id) {
@@ -207,11 +222,11 @@ const UserProfile = () => {
     }
   };
 
-const userId = id;
+
   
 
   return (
-    <div className="container mx-auto px-4 py-8 h-screen text-white">
+    <div className="container mx-auto overflow-y-auto no-scrollbar scroll-m-0 px-4 py-8 h-screen text-white">
       {profile.profilePicURL && (
         <img
           src={profile.profilePicURL}
@@ -281,21 +296,18 @@ const userId = id;
       )}
 
       <div>moods</div>
-{profile && profile.mood ? (
-  Array.isArray(profile.mood) ? (
-    profile.mood.map((mood, index) => (
-      <div key={index}>
-        <img className="h-32 " src={mood} alt={`Mood ${index + 1}`} />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 p-2 gap-4 overflow-y-auto">
+  {images && images.length > 0 ? (
+    images.map((imageObj, index) => (
+      <div className="flex-col" key={imageObj.id}>
+        <img className="h-38 w-full object-cover" src={imageObj.imageUrl} alt={`Mood ${index + 1}`} />
       </div>
     ))
   ) : (
-    
-    <img className="h-32 " src={profile.mood} alt="User's mood" />
-  )
-) : (
-  <p>No moods available for this user.</p>
-)}
-      
+    <p>No moods available for this user.</p>
+  )}
+</div>
+
       
 
        
