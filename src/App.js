@@ -29,6 +29,7 @@ import BingImage from "./pages/BingImage";
 import MoviePage from "./pages/MoviePage";
 import Dalle from "./components/Dalle";
 import MoodCarousel from "./components/Moods";
+import DalleImagePage from "./pages/DalleImagePage";
 
 
 function App() {
@@ -104,6 +105,9 @@ function App() {
         <Route 
         path="/dalle" 
         element={<Dalle    user={user} />} />
+         <Route 
+        path="/dalleimagery" 
+        element={<DalleImagePage />} />
        <Route
         path="/chatmodal"
         element= { <Chat />}
