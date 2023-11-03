@@ -93,9 +93,9 @@ function MoodCarousel({  }) {
   return (
     <div key={image.id} className=''>
       <img className='rounded-sm cursor-pointer ' src={image.imageUrl} alt="Mood" onClick={handleImageClick} />
-      <Link className='no-underline ' to={`/profile/${userId}`}>
-        <p className='text-white cursor-pointer no-underline hover:bg-sky-500'> {image.displayName}</p>
-      </Link>
+   
+      <Link to={`/profile/${image.userId}`} className='no-underline' >  <p className='text-white no-underline'> {image.displayName}</p></Link>
+      
       <p className='text-white text-xs'> {image.uploadedAt.toDate().toLocaleString()}</p>
     </div>
   );

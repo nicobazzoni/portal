@@ -47,20 +47,20 @@ function DalleImagePage({ active, setActive, user, handleLogout }) {
     if (loading) {
         return <div>Loading...</div>;
     }
+    const userId = images.userId
 
     return (
         <>
             <h2 className='text-white text-center'>User Dalle AI images</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 p-2 gap-4 overflow-y-auto">
             {images.map(image => (
-              console.log(images, 'imageData'),
-              <div key={image.id}>
-              <img className='h-38 w-full object-cover' src={image.imageUrl} alt="Mood" onClick={handleImageClick} />
-              <p className='text-white'> {image.displayName}</p>
-              <p className='text-white text-xs'> {image.uploadedAt.toDate().toLocaleString()}</p>
-             
-            </div>
-                ))}
+  console.log(images, 'imageData'),
+  <div key={image.id}>
+    <img className='h-38 w-full object-cover' src={image.imageUrl} alt="Mood" onClick={handleImageClick} />
+    <Link to={`/profile/${image.userId}`} className='no-underline '  >  <p className='text-white hover:bg-slate-700'> {image.displayName}</p></Link>
+    <p className='text-white text-xs'> {image.uploadedAt.toDate().toLocaleString()}</p>
+  </div>
+))}
             </div>
         </>
     );
