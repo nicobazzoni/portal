@@ -84,7 +84,7 @@ const Auth = ({ setActive, setUser }) => {
   return (
     <div className="container-fluid mb-4 h-screen">
       <div className="container">
-        <h1 className="text-sky-400">Portal</h1>
+        
         <div className="col-12 text-center">
           <div className="text-center heading py-2">
             {signUp ? "Sign-Up" : "Sign-In"}

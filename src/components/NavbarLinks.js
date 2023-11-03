@@ -8,7 +8,7 @@ import {
   LogoutOutlined,
   LoginOutlined,
 } from "@ant-design/icons";
-import dalle from "../components/assets/brain.png";
+import dalle from "../components/assets/dalle.png";
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
 import { useEffect } from 'react';
@@ -55,15 +55,22 @@ const NavbarLinks = ({user, handleLogout, }) => {
                 <Link to='dalleimagery'className="text-white hover:bg-sky-400 rounded-e-md p-2 block no-underline"> 
                 <i class="bi bi-robot" style={{ fontSize: '30px', padding: '2px' }}> </i>
                 <h6 className='font-xs'>dalle images </h6>
+
+                
                 </Link>
+                {userId && (
+    <Link to="/dalle" className="flex flex-col items-center justify-center text-white hover:bg-sky-400 mr-2 rounded-md p-2 no-underline">
+        <img src={dalle} alt="dalle" className="h-9 rounded-full bg-white hover:animate-pulse block no-underline" />
+        <h6 className='text-xs mt-1'>create Dalle image</h6>
+    </Link>
+)}
          
 
             {userId ? (
                 <div className="flex flex-col items-center space-y-4 mt-2 lg:flex-row lg:space-y-0 lg:space-x-4">
-                    <Link to="/dalle" className='no-underline'>
-                            <img src={dalle} alt="dalle" className=" h-10 rounded-full hover:animate-pulse block no-underline" />
-                            <h6 className='text-xs'>create Dalle image </h6>
-                        </Link>
+                   
+                   
+
                         <Link to={`/profile/${userId}`} className="text-white text-xs bg-black p-1 no-underline block">
                             {user?.displayName}
                         </Link>

@@ -27,12 +27,12 @@ const initialState = {
 };
 
 const categoryOption = [
-  "sports and entertainment",
+  "sports & Entertainment",
   "Cutting edge science",
-  "Art and Culture",
-  "High Fashion and Couture",
+  "Art & Culture",
+  "Couture",
   "Music",
-  "sex and relationships",
+  "Sex & Relationships",
 ];
 
 const AddEditBlog = ({ user, setActive }) => {

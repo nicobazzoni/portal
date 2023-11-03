@@ -70,6 +70,7 @@ function App() {
         handleLogout={handleLogout}
        
       />
+      <h6 className="text-sky-500 font-bold tracking-widest">portal</h6>
   
    
       
