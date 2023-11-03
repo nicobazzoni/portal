@@ -226,7 +226,7 @@ const UserProfile = () => {
   
 
   return (
-    <div className="container mx-auto overflow-y-auto no-scrollbar scroll-m-0 px-4 py-8 h-screen text-white">
+    <div className="container mx-auto overflow-y-auto no-scrollbar space-y-2  scroll-m-0 px-4 py-8 h-screen text-white">
       {profile.profilePicURL && (
         <img
           src={profile.profilePicURL}
@@ -296,11 +296,11 @@ const UserProfile = () => {
       )}
 
       <div>moods</div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 p-2 gap-4 overflow-y-auto">
+      <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-3 p-2 gap-4 overflow-y-auto">
   {images && images.length > 0 ? (
     images.map((imageObj, index) => (
       <div className="flex-col" key={imageObj.id}>
-        <img className="h-38 w-full object-cover" src={imageObj.imageUrl} alt={`Mood ${index + 1}`} />
+        <img className="h-38 w-full object-cover rounded-sm " src={imageObj.imageUrl} alt={`Mood ${index + 1}`} />
       </div>
     ))
   ) : (

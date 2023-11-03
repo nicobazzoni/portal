@@ -1156,4 +1156,7 @@ width: 415px;
 }
 
 
-
+.trendImg:hover {
+	@include box-shadow(0, 2px, 3px, 1px, rgba(0,0,0,0.3));
+	top: -5px;
+}

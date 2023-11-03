@@ -59,10 +59,10 @@ const NavbarLinks = ({user, handleLogout, }) => {
          
 
             {userId ? (
-                <div className="flex flex-col items-center space-y-4 mt-4 lg:flex-row lg:space-y-0 lg:space-x-4">
+                <div className="flex flex-col items-center space-y-4 mt-2 lg:flex-row lg:space-y-0 lg:space-x-4">
                     <Link to="/dalle" className='no-underline'>
-                            <img src={dalle} alt="dalle" className="w-10 h-10 rounded-full hover:animate-pulse block no-underline" />
-                            <h6 className='font-xs'>create Dalle image </h6>
+                            <img src={dalle} alt="dalle" className=" h-10 rounded-full hover:animate-pulse block no-underline" />
+                            <h6 className='text-xs'>create Dalle image </h6>
                         </Link>
                         <Link to={`/profile/${userId}`} className="text-white text-xs bg-black p-1 no-underline block">
                             {user?.displayName}
