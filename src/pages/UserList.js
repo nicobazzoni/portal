@@ -51,7 +51,7 @@ const UserList = ({userId,user}) => {
   );
 
   return (
-    <div>
+    <div className="h-screen">
       <h2  className="text-white mt-2">User List</h2>
       <input
         type="text"

@@ -49,7 +49,7 @@ function MoodCarousel({ active, setActive, user, handleLogout }) {
             },
 
           1400: {
-            items: 5,
+            items: 6,
           },
         },
         autoplayTimeout: 5000,
