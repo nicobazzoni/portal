@@ -82,7 +82,7 @@ function MoodCarousel({ active, setActive, user, handleLogout }) {
             {images.map(image => (
               console.log(images, 'imageData'),
               <div key={image.id}>
-              <img className='rounded-sm' src={image.imageUrl} alt="Mood" />
+              <img className='rounded-sm' src={image.imageUrl} alt="Mood" onClick={handleImageClick} />
               <p className='text-white'> {image.displayName}</p>
               <p className='text-white text-xs'> {image.uploadedAt.toDate().toLocaleString()}</p>
              
