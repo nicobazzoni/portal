@@ -216,7 +216,7 @@ const Detail = ({ setActive, user }) => {
             <div className="col-md-3">
               <div className="blog-heading text-start py-2 mb-4">Tags</div>
               <Tags tags={tags} />
-              <FeatureBlogs title={"Recent Blogs"} blogs={blogs} />
+              <FeatureBlogs title={"Ads"} blogs={blogs} />
             </div>
           </div>
           <RelatedBlog id={id} blogs={relatedBlogs} />
