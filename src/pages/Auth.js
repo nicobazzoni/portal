@@ -82,7 +82,7 @@ const Auth = ({ setActive, setUser }) => {
 
 
   return (
-    <div className="container-fluid mb-4">
+    <div className="container-fluid mb-4 h-screen">
       <div className="container">
         <h1 className="text-sky-400">Portal</h1>
         <div className="col-12 text-center">

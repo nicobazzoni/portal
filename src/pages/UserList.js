@@ -21,7 +21,7 @@ const UserList = ({userId,user}) => {
     const getUsersData = async () => {
       setLoading(true);
       const usersRef = collection(db, "users");
-      const first = query(usersRef, orderBy("displayName"), limit(4));
+      const first = query(usersRef, orderBy("displayName"), limit(50));
       const docSnapshot = await getDocs(first);
       setUsers(docSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
       setCount(docSnapshot.size);
