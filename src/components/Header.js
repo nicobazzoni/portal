@@ -25,7 +25,7 @@ const Header = ({ active, setActive, user, handleLogout }) => {
   const [isOpen, setIsOpen] = useState(false); // Move the state up to Header
 
   return (
-    <nav className="bg-slate-900">
+    <nav className="bg-stone-950">
         <div className=" px-4 py-2 mx-auto space-x-2 flex justify-between items-center">
              
             <NavbarLinks 
