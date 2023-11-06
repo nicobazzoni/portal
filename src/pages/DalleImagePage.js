@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import OwlCarousel from "react-owl-carousel";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
+import ShareButton from '../components/ShareButton';
+import ShareComponent from '../components/ShareButton';
 
 function DalleImagePage({ active, setActive, user, handleLogout }) {
   const [images, setImages] = useState([]);
@@ -59,6 +61,7 @@ function DalleImagePage({ active, setActive, user, handleLogout }) {
     <img className='h-38 w-full object-cover' src={image.imageUrl} alt="Mood" onClick={handleImageClick} />
     <Link to={`/profile/${image.userId}`} className='no-underline '  >  <p className='text-white hover:bg-slate-700'> {image.displayName}</p></Link>
     <p className='text-white text-xs'> {image.uploadedAt.toDate().toLocaleString()}</p>
+    <ShareComponent imageUrl={image.imageUrl} quote={image.displayName} />
   </div>
 ))}
             </div>
