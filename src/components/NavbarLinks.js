@@ -53,7 +53,7 @@ const NavbarLinks = ({user, handleLogout, }) => {
                    
                 </Link>
                 <Link to='dalleimagery'className="text-white hover:bg-sky-400 rounded-e-md p-2 block no-underline"> 
-                <i class="bi bi-robot" style={{ fontSize: '30px', padding: '2px' }}> </i>
+                <i className="bi bi-robot" style={{ fontSize: '30px', padding: '2px' }}> </i>
                 <h6 className='font-xs'>dalle images </h6>
 
                 
