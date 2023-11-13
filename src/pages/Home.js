@@ -265,17 +265,17 @@ const Home = ({ setActive, user, active }) => {
           </div>
          
          
-          <div className="col-md-4">
-            
-            <Search search={search} handleChange={handleChange} />
-            <div className="blog-heading text-star  py-2 mb-4">Tags</div>
-            <Tags tags={tags} />
-            <FeatureBlogs title={"Ads"} blogs={blogs} />
-            <Category catgBlogsCount={categoryCount} />
-          
-        
-            
-          </div>  
+          <div className="lg:flex lg:space-x-4">
+  <div className="lg:w-1/3">
+    <Search search={search} handleChange={handleChange} />
+    <div className="blog-heading text-star py-2 mb-4">Tags</div>
+    <Tags tags={tags} />
+  </div>
+  <div className="lg:w-2/3">
+    <FeatureBlogs title={"Ads"} blogs={blogs} />
+  </div>
+</div>
+<Category catgBlogsCount={categoryCount} />
         </div>
       </div>
     </div>

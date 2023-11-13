@@ -33,31 +33,34 @@ const FeatureBlogs = ({ blogs, title }) => {
   };
 
   return (
-    <div>
-      <div className="blog-heading text-start">{title}</div>
-      <OwlCarousel className="owl-theme" {...options}>
-        {ads?.map((item) => (
-          <div
-            className=" items-center recent pb-3 featblog bg-black border-2 my-2"
-            key={item.id}
-            style={{ cursor: "pointer" }}
-            onClick={() => navigate(`/detail/${item.id}`)}
-          >
-            <div className="">
+ 
+      <div>
+        <div className="blog-heading text-start">{title}</div>
+        <OwlCarousel className="owl-theme" {...options}>
+          {ads?.map((item) => (
+            <div
+              key={item.id}
+              style={{ cursor: "pointer", display: "flex", justifyContent: "center" }}
+              onClick={() => navigate(`/detail/${item.id}`)}
+            >
               <img
                 src={item.imgUrl}
-                alt={item.title}
-                className="h-60 w-max object-cover"
+                alt={`Item ${item.id}`}
+                className="h-70 object-cover"
               />
             </div>
-            <div className="text-left justify-content-center bgRecent">
-              <div className="most-popular-font">{item.title}</div>
-            </div>
-          </div>
-        ))}
-      </OwlCarousel>
-    </div>
-  );
+          ))}
+        </OwlCarousel>
+
+      </div>
+
+    );
+
+
+
+
 }
+
+
 
 export default FeatureBlogs;
