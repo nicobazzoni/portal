@@ -38,7 +38,7 @@ import {
     const getBlogsData = async () => {
       setLoading(true);
       const blogRef = collection(db, "blogs");
-      const first = query(blogRef, orderBy("title"), limit(4));
+      const first = query(blogRef, orderBy("title"), limit(6));
       const docSnapshot = await getDocs(first);
       setBlogs(docSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
       setCount(docSnapshot.size);

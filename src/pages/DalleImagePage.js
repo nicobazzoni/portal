@@ -110,8 +110,8 @@ const fetchImages = async () => {
 
     
 
-    const handleImageClick = (image) => {
-       
+      const handleImageClick = (e) => {
+        const image = e.target;
         if (image.requestFullscreen) {
             image.requestFullscreen();
         } else if (image.mozRequestFullScreen) {
@@ -133,14 +133,21 @@ const fetchImages = async () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 p-2 gap-4 overflow-y-auto">
             {images.map(image => (
   <div key={image.id}>
-    <img className='h-38 w-full object-cover mb-1' src={image.imageUrl} alt="Mood" onClick={() => (handleLike(image.id))  }  />
-    <DalleLike handleLike={handleLike} likes={image.likes} userId={userId} imageId={image.id} className='mt-1' />
+    <img
+      className='h-38 w-full object-cover mb-1 cursor-pointer'
+      src={image.imageUrl}
+      alt="Mood"
+      
+      onDoubleClick={() => handleImageClick(image.id)}
+    />
+    <DalleLike handleLike={handleLike} likes={image.likes} userId={userId} imageId={image.id} className='mt-1 cursor-pointer' />
     <Link to={`/profile/${image.userId}`} className='no-underline'>
       <p className='text-white hover:bg-slate-700'>{image.displayName}</p>
     </Link>
     <p className='text-white text-xs'>{image.uploadedAt.toDate().toLocaleString()}</p>
   </div>
 ))}
+
             </div>
         </>
     );

@@ -56,7 +56,7 @@ function MoodCarousel({  }) {
             items: 6,
           },
         },
-        autoplayTimeout: 5000,
+        autoplayTimeout: 2000,
         autoplaySpeed: 500,
         smartSpeed: 1000,
         dragEndSpeed: 3000,
