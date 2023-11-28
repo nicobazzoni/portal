@@ -84,7 +84,7 @@ const generateImage = async () => {
             {loading ? 
                 <Spinner />  // Your loading spinner component
                 : 
-                imageUrl && <img src={imageUrl} alt="Generated"  className='rounded-sm h-60 ' /> // Display the generated image only if imageUrl exists
+                imageUrl && <img src={imageUrl} alt="Generated"  className='rounded-sm h-72 ' /> // Display the generated image only if imageUrl exists
             }
 
         </div>

@@ -10,6 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { addDoc, doc, setDoc  } from "firebase/firestore";
 import { collection } from "firebase/firestore";
 import portal from '../components/assets/PortalLogo.png';
+
+
 const initialState = {
   username: "",
   email: "",
@@ -82,7 +84,15 @@ const Auth = ({ setActive, setUser }) => {
 
 
   return (
-    <div className="container-fluid mb-4 h-screen">
+    <div className="container-fluid mb-4 h-screen relative">
+  
+    <div className="text-white">
+      <h1 className="text-blue-400 text-xs font-bold tracking-widest hover:text-slate-300">create Dalle AI images</h1>
+      <hr />
+      <span className="text-yellow-200 hover:text-slate-300 tracking-widest font-bold">with your own text prompts</span>
+      <hr />
+      <h1 className="text-red-300 hover:text-slate-300 tracking-widest font-bold">share with friends! </h1>
+    </div>
       <div className="container">
         
         <div className="col-12 text-center">
@@ -92,7 +102,7 @@ const Auth = ({ setActive, setUser }) => {
         </div>
         <div className="row h-100 justify-content-center align-items-center">
           <div className="col-10 col-md-8 col-lg-6">
-            <img src={portal} alt="portal" className="img-fluid h-24 mb-2" />
+            <img src={portal} alt="portal" className="img-fluid h-24 mb-2 rounded-full" />
             <form className="row" onSubmit={handleAuth}>
               {signUp && (
                 <input

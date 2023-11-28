@@ -1,23 +1,16 @@
 import React from 'react';
-import {
-  FacebookShareButton,
-  FacebookIcon,
-  TwitterShareButton,
-    TwitterIcon,
-} from 'react-share';
 
-const ShareButton = ({ imageUrl, description }) => {
+const ShareButton = ({ imageId, imageUrl, caption }) => {
+  const handleShare = () => {
+    const instagramShareUrl = `https://www.instagram.com/share?url=${encodeURIComponent(imageUrl)}&caption=${encodeURIComponent(caption)}`;
+    window.open(instagramShareUrl, '_blank');
+  };
+
   return (
-    <div className="share-buttons">
-      <FacebookShareButton url={imageUrl} quote={description}>
-        <FacebookIcon size={32} round={true} />
-      </FacebookShareButton>
-        <TwitterShareButton url={imageUrl} title={description}> 
-        <TwitterIcon size={32} round={true} />
-        </TwitterShareButton>
-      {/* Add other social share buttons as needed */}
-    </div>
+    <button onClick={handleShare} className='bg-blue-500 text-white p-1 mt-1 cursor-pointer'>
+      Share on Instagram
+    </button>
   );
-}
+};
 
 export default ShareButton;

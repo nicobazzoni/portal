@@ -3,8 +3,10 @@ import { db, auth } from '../firebase';
 import { collection, query, orderBy, onSnapshot, doc, getDoc, getDocs, updateDoc,  serverTimestamp,} from "firebase/firestore";
 import { Link } from "react-router-dom";
 import { useParams } from 'react-router-dom';
+import ShareButton from '../components/ShareButton';
 
 import DalleLike from "../components/DalleLike";
+import { InstagramEmbed } from 'react-social-media-embed';
 
 
 function DalleImagePage({ active, setActive, handleLogout }) {
@@ -120,7 +122,10 @@ const fetchImages = async () => {
             image.webkitRequestFullscreen();
         } else if (image.msRequestFullscreen) {
             image.msRequestFullscreen();
+        } else if (image.oRequestFullscreen) {
+            image.oRequestFullscreen();
         }
+
     };
 
     if (loading) {
@@ -141,10 +146,16 @@ const fetchImages = async () => {
       onDoubleClick={() => handleImageClick(image.id)}
     />
     <DalleLike handleLike={handleLike} likes={image.likes} userId={userId} imageId={image.id} className='mt-1 cursor-pointer' />
+    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                
+</div> 
+            
+
     <Link to={`/profile/${image.userId}`} className='no-underline'>
       <p className='text-white hover:bg-slate-700'>{image.displayName}</p>
     </Link>
     <p className='text-white text-xs'>{image.uploadedAt.toDate().toLocaleString()}</p>
+ 
   </div>
 ))}
 
