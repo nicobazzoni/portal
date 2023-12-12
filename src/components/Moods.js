@@ -59,7 +59,7 @@ function MoodCarousel({  }) {
         autoplayTimeout: 2000,
         autoplaySpeed: 500,
         smartSpeed: 1000,
-        dragEndSpeed: 3000,
+        dragEndSpeed: 1000,
     };
 
     const handleImageClick = (e) => {
@@ -85,14 +85,14 @@ function MoodCarousel({  }) {
         <>
             <h2 className='text-white text-center'>User Dalle AI images</h2>
             
-            <OwlCarousel className='owl-next bg:sky-400'  autoplay {...options}>
+            <OwlCarousel className='owl-next bg:sky-400'   {...options}>
               
             {images.map(image => {
               
 
   return (
     <div key={image.id} className=''>
-      <img className='rounded-sm cursor-pointer ' src={image.imageUrl} alt="Mood" onClick={handleImageClick} />
+      <img className='rounded-full cursor-pointer ' src={image.imageUrl} alt="Mood" onClick={handleImageClick} />
    
       <Link to={`/profile/${image.userId}`} className='no-underline' >  <p className='text-white no-underline'> {image.displayName}</p></Link>
       

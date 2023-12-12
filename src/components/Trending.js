@@ -25,15 +25,15 @@ const Trending = ({ blogs }) => {
     },
     autoplayTimeout: 5000,  // Pause for 5 seconds between transitions
     autoplaySpeed: 1000,    // 1 second transition animation
-    smartSpeed: 1000,       // 1 second for "go to" actions
-    dragEndSpeed: 3000, 
+    smartSpeed: 2000,       // 1 second for "go to" actions
+    dragEndSpeed: 500, 
   };
   return (
     <>
       <div className="">
         <div className="blog-heading text-start py-2 mb-4 ">Stories</div>
       </div>
-      <OwlCarousel className="owl-theme owl-carousel" autoplay {...options} >
+      <OwlCarousel className="owl-theme owl-carousel" {...options} >
         {blogs?.map((item) => (
             
           <div className="item px-4 " key={item.id}>
