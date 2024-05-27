@@ -576,7 +576,7 @@ $blue:#fdfdfd;
 
     .single & {
 		position: relative;
-		height: 700px;
+		height: 500px;
 		width: 100%;
 	}
 
@@ -689,7 +689,7 @@ justify-content: space-between;
     text-decoration: none;
 }
 .tag {
-	background: #b2e8fa;
+	background: #f1f4f6;
 	padding: 10px 15px;
 	color: #222;
 	@include transition(0.5s);

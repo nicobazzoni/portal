@@ -138,9 +138,9 @@ const Detail = ({ setActive, user }) => {
   console.log("relatedBlogs", relatedBlogs);
   return (
     <div className="single">
-      <button className="btn btn-primary pt-2 pb-2 m-2 p-4" onClick={handleBack}> Back </button>
+      <button className=" border-none rounded-md bg-slate-100 pt-2 pb-2 m-2 p-4" onClick={handleBack}> Back </button>
       <div
-        className="blog-title-box"
+        className="blog-title-box "
         style={{ backgroundImage: `url('${blog?.imgUrl}')` }}
       >
         <div className="overlay"></div>
@@ -153,10 +153,10 @@ const Detail = ({ setActive, user }) => {
         <div className="container padding">
           <div className="row mx-0">
             <div className="col-md-8">
-              <span className="meta-info text-start">
-                By <p className="author">{blog?.author}</p> -&nbsp;
+              <span className="meta-info text-start p-1 space-x-2 ">
+                By <p className="author p-1">{blog?.author}</p> -&nbsp;
                 {blog?.timestamp.toDate().toDateString()}
-                <Like handleLike={handleLike} likes={likes} userId={userId} />
+                <Like  handleLike={handleLike} likes={likes} userId={userId} />
               </span>
               <p className="text-start">{blog?.description}</p>
               <div className="text-start">
