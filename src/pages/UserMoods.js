@@ -26,13 +26,13 @@ function UserMoods({ userId }) {
     }, [userId]);
 
     return (
-        <div className="user-moods-container">
+        <div className="user-moods-container ">
             {userMoods.map((mood, index) => (
                 <img 
                     key={index} 
                     src={mood} 
                     alt={`Mood ${index}`} 
-                    className="rounded-full h-76 mt-2 w-max" 
+                    className="rounded-full h-76 text-black mt-2 w-max" 
                 />
             ))}
         </div>

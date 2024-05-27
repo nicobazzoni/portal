@@ -83,7 +83,7 @@ function MoodCarousel({  }) {
 
     return (
         <>
-            <h2 className='text-white text-center'>User Dalle AI images</h2>
+            <h2 className='text-black text-center'>User Dalle AI images</h2>
             
             <OwlCarousel className='owl-next bg:sky-400'   {...options}>
               
@@ -91,12 +91,12 @@ function MoodCarousel({  }) {
               
 
   return (
-    <div key={image.id} className=''>
+    <div key={image.id} className='text-black'>
       <img className='rounded-full cursor-pointer ' src={image.imageUrl} alt="Mood" onClick={handleImageClick} />
    
-      <Link to={`/profile/${image.userId}`} className='no-underline' >  <p className='text-white no-underline'> {image.displayName}</p></Link>
+      <Link to={`/profile/${image.userId}`} className='no-underline' >  <p className='text-black no-underline'> {image.displayName}</p></Link>
       
-      <p className='text-white text-xs'> {image.uploadedAt.toDate().toLocaleString()}</p>
+      <p className='text-black text-xs'> {image.uploadedAt.toDate().toLocaleString()}</p>
     </div>
   );
 })}

@@ -24,7 +24,7 @@ const BlogSection = ({
 
   return (
     <div className="my-4">
-      <div className="md:flex items-center bg-black text-white shadow-lg rounded-lg p-4">
+      <div className="md:flex items-center bg-white text-white shadow-lg rounded-lg p-4">
         <div className="md:w-1/2 md:mr-4">
           <div className="hover:opacity-75 ">
             <img src={imgUrl} alt={title} className="w-full rounded-lg" />

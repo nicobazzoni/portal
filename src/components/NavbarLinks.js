@@ -35,31 +35,31 @@ const NavbarLinks = ({user, handleLogout, }) => {
 
     const renderLinks = () => (
         <>
-            <Link to="/" className="text-white hover:bg-sky-400 rounded-e-md p-2 block">
+            <Link to="/" className="text-black hover:bg-sky-400 rounded-e-md p-2 block">
                 <HomeOutlined style={{ fontSize: '30px' }} />
             </Link>
             
-            <Link to="/blogs" className="text-white hover:bg-sky-400 rounded-md p-2 block no-underline">
+            <Link to="/blogs" className="text-black hover:bg-sky-400 rounded-md p-2 block no-underline">
     <GlobalOutlined style={{ fontSize: '30px', padding: '2px' }}  />
                 <h6 className='font-xs'>portals</h6>
             </Link>
-                <Link to="/create" className="text-white hover:bg-sky-400 rounded-e-md p-2 block no-underline">
+                <Link to="/create" className="text-black hover:bg-sky-400 rounded-e-md p-2 block no-underline">
                     <PlusCircleOutlined style={{ fontSize: '30px' , padding: '2px' }} />
                    <h6 className='font-xs'> create portal</h6>
                 </Link>
-                <Link to="/userlist" className="text-white hover:bg-sky-400 rounded-e-md p-2 block no-underline">
+                <Link to="/userlist" className="text-black hover:bg-sky-400 rounded-e-md p-2 block no-underline">
                     <CommentOutlined style={{ fontSize: '30px', padding: '2px' }} />
                     <h6 className='font-xs'> people</h6>
                    
                 </Link>
-                <Link to='dalleimagery'className="text-white hover:bg-sky-400 rounded-e-md p-2 block no-underline"> 
+                <Link to='dalleimagery'className="text-black hover:bg-sky-400 rounded-e-md p-2 block no-underline"> 
                 <i className="bi bi-robot" style={{ fontSize: '30px', padding: '2px' }}> </i>
                 <h6 className='font-xs'>dalle images </h6>
 
                 
                 </Link>
                 {userId && (
-    <Link to="/dalle" className="flex flex-col items-center justify-center text-white hover:bg-sky-400 mr-2 rounded-md p-2 no-underline">
+    <Link to="/dalle" className="flex flex-col items-center justify-center text-black hover:bg-sky-400 mr-2 rounded-md p-2 no-underline">
         <img src={dalle} alt="dalle" className="h-9 rounded-full bg-white hover:animate-pulse block no-underline" />
         <h6 className='text-xs mt-1'>create Dalle image</h6>
     </Link>

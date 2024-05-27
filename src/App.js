@@ -28,7 +28,7 @@ import UserList from "./pages/UserList";
 import Dalle from "./components/Dalle";
 
 import DalleImagePage from "./pages/DalleImagePage";
-
+import Landing from "./pages/Landing";
 
 function App() {
   const [active, setActive] = useState("home");
@@ -50,7 +50,7 @@ function App() {
     signOut(auth).then(() => {
       setUser(null);
       setActive("login");
-      navigate("/auth");
+      navigate("/landing");
     });
   };
 
@@ -60,7 +60,7 @@ function App() {
 
   return (
   
-    <div className="App bg-faded overflow-y-hidden ">
+    <div className="App bg-white text-black overflow-y-hidden ">
       <Header
         setActive={setActive}
         active={active}
@@ -68,7 +68,7 @@ function App() {
         handleLogout={handleLogout}
        
       />
-      <h6 className="text-sky-500 font-bold tracking-widest hover:bg-white bg-stone-900 cursor-pointer p-2">portal</h6>
+
   
    
       
@@ -77,6 +77,10 @@ function App() {
       <ToastContainer position="top-center" />
     
       <Routes>
+
+        <Route 
+        path = "/landing"
+        element = {<Landing />} />
         <Route
           path="/"
           element={<Home setActive={setActive} active={active} user={user} />}

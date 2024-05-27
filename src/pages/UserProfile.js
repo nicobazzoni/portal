@@ -226,7 +226,7 @@ const UserProfile = () => {
   
 
   return (
-    <div className="container mx-auto overflow-y-auto no-scrollbar space-y-2  scroll-m-0 px-4 py-8 h-screen text-white">
+    <div className="container mx-auto overflow-y-auto no-scrollbar space-y-2  scroll-m-0 px-4 py-8 h-screen text-black">
       {profile.profilePicURL && (
         <img
           src={profile.profilePicURL}
