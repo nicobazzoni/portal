@@ -19,7 +19,7 @@ const DalleLike = ({ handleLike, likes, userId, imageId }) => {
 
     return (
       <>
-        <i className="bi bi-hand-thumbs-up" />
+        <i className=" bi bi-hand-thumbs-up" />
       
       </>
     );

@@ -112,8 +112,8 @@ const fetchImages = async () => {
 
     
 
-      const handleImageClick = (e) => {
-        const image = e.target;
+      const handleImageClick = (imageId) => {
+        const image = document.getElementById(imageId);
         if (image.requestFullscreen) {
             image.requestFullscreen();
         } else if (image.mozRequestFullScreen) {
@@ -122,39 +122,36 @@ const fetchImages = async () => {
             image.webkitRequestFullscreen();
         } else if (image.msRequestFullscreen) {
             image.msRequestFullscreen();
-        } else if (image.oRequestFullscreen) {
-            image.oRequestFullscreen();
         }
-
     };
 
     if (loading) {
         return <div>Loading...</div>;
     }
-
+  
     return (
         <>
-            <h2 className='text-white text-center'>User Dalle AI images</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 p-2 gap-4 overflow-y-auto">
+            <h2 className='text-black text-center'>User Dalle AI images</h2>
+            <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 p-2 gap-4 overflow-y-auto">
             {images.map(image => (
   <div key={image.id}>
-    <img
-      className='h-38 w-full object-cover mb-1 cursor-pointer'
-      src={image.imageUrl}
-      alt="Mood"
-      
-      onDoubleClick={() => handleImageClick(image.id)}
-    />
-    <DalleLike handleLike={handleLike} likes={image.likes} userId={userId} imageId={image.id} className='mt-1 cursor-pointer' />
+   <img
+    id={image.id}
+    className='h-38 w-full object-cover mb-1 cursor-pointer'
+    src={image.imageUrl }
+    alt="Mood"
+    onClick={() => handleImageClick(image.id)}
+/>
+    <DalleLike handleLike={handleLike} likes={image.likes} userId={userId} imageId={image.id} className='mt-1 bg-slate-300 cursor-pointer' />
     <div style={{ display: 'flex', justifyContent: 'center' }}>
                 
 </div> 
             
 
     <Link to={`/profile/${image.userId}`} className='no-underline'>
-      <p className='text-white hover:bg-slate-700'>{image.displayName}</p>
+      <p className='text-black hover:bg-slate-700'>{image.displayName}</p>
     </Link>
-    <p className='text-white text-xs'>{image.uploadedAt.toDate().toLocaleString()}</p>
+    <p className='text-black text-xs'>{image.uploadedAt.toDate().toLocaleString()}</p>
  
   </div>
 ))}
