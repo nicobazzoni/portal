@@ -158,7 +158,7 @@ const AddEditBlog = ({ user, setActive }) => {
       <div className="container">
         <div className="col-12">
           <div className="text-center heading py-2">
-            {id ? "Update Portal" : "Create Portal"}
+            {id ? "Update Story" : "Create Story"}
           </div>
         </div>
         <div className="row h-100 justify-content-center align-items-center">
@@ -182,7 +182,7 @@ const AddEditBlog = ({ user, setActive }) => {
                 />
               </div>
               <div className="col-12 py-3">
-                <p className="trending text-amber-400">make it a story?</p>
+                <p className="trending text-amber-400">make it special?</p>
                 <div className="form-check-inline mx-2">
                   <input
                     type="radio"
