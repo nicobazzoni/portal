@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
-import ChatModal from "./ChatModal";
 import { auth } from "../firebase";
 import { Link } from "react-router-dom";
+import defaultProfilePic from '../components/assets/portal.png';
 
-const UserList = ({userId,user}) => {   
+const UserList = ({ userId, user }) => {
   const [users, setUsers] = useState([]);
   const [count, setCount] = useState(0);
   const [lastVisible, setLastVisible] = useState(null);
@@ -14,7 +14,7 @@ const UserList = ({userId,user}) => {
   const [searchQuery, setSearchQuery] = useState("");
   const { currentUser } = auth;
   const profileId = user?.split("@")[0];
-  console.log(profileId)
+  console.log(profileId);
   console.log("All Users:", users);
 
   useEffect(() => {
@@ -30,12 +30,10 @@ const UserList = ({userId,user}) => {
     };
 
     getUsersData();
-   
   }, []);
 
   const handleUserClick = (user) => {
     setSelectedUser(user);
-  
   };
 
   const closeChatModal = () => {
@@ -52,7 +50,7 @@ const UserList = ({userId,user}) => {
 
   return (
     <div className="h-screen">
-      <h2  className="text-white mt-2">User List</h2>
+      <h2 className="text-white mt-2">User List</h2>
       <input
         type="text"
         placeholder="Search users"
@@ -65,23 +63,27 @@ const UserList = ({userId,user}) => {
       ) : (
         <ul className="no-bullet">
           {filteredUsers.map((user) => (
-            <li className="no-bullet   border-opacity-25 "
+            <li
+              className="no-bullet border-opacity-25 flex items-center"
               key={user.id}
               onClick={() => handleUserClick(user)}
-              style={{ cursor: "pointer", color: "blue", listStyleType: "none"  }}
+              style={{ cursor: "pointer", listStyleType: "none" }}
             >
-               <Link
-              to={`/profile/${user.id}`}
-              className="text-blue-500 no-bullet no-underline hover:lime-300"
-            >
-              {user.displayName}
-            </Link>
+              <Link
+                to={`/profile/${user.id}`}
+                className="text-blue-500 no-underline hover:lime-300 flex items-center"
+              >
+                  <img
+                  src={user.profilePicURL || defaultProfilePic}
+                  alt={`${user.displayName}'s profile`}
+                  className="h-10 w-10 rounded-full mr-2"
+                />
+                {user.displayName}
+              </Link>
             </li>
           ))}
         </ul>
       )}
-
-  
     </div>
   );
 };

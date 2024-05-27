@@ -16,9 +16,9 @@ const Tags = ({ tags  }) => {
   
   return (
     <div>
-      <div className="tags">
+      <div className="tags ">
         {tags?.slice(0, limit).map((tag, index) => (
-          <p className="tag" key={index}>
+          <p className="tag " key={index}>
           <Link  to={`/tag/${tag}`} style={{ textDecoration: "none", color: "black" }}>
             <span className="">{tag}</span>
           </Link>

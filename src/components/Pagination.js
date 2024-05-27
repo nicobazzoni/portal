@@ -6,7 +6,7 @@ const Pagination = ({ currentPage, handlePageChange, noOfPages }) => {
       <div className="row mx-0">
         <div className="col-12 text-center pb-4 pt-4">
           <button
-            className="btn_mange_pagging"
+            className="p-1 border-none"
             disabled={currentPage === 1}
             onClick={() => handlePageChange("Prev")}
           >
@@ -14,7 +14,7 @@ const Pagination = ({ currentPage, handlePageChange, noOfPages }) => {
           </button>
           <span className="btn_pagging">{currentPage}</span>
           <button
-            className="btn_mange_pagging"
+            className="p-1 border-none"
             disabled={currentPage === noOfPages}
             onClick={() => handlePageChange("Next")}
           >

@@ -233,7 +233,7 @@ const Home = ({ setActive, user, active }) => {
           <Trending blogs={trendBlogs} />
           
           
-          <div className=" ">
+          {/* <div className=" ">
             <div className="blog-heading text-start py-2 mb-4">portals</div>
             {blogs.length === 0 && location.pathname !== "/" && (
               <>
@@ -262,7 +262,7 @@ const Home = ({ setActive, user, active }) => {
             )}
              
           
-          </div>
+          </div> */}
          
          
           <div className="lg:flex lg:space-x-4">
@@ -271,9 +271,9 @@ const Home = ({ setActive, user, active }) => {
     <div className="blog-heading text-star py-2 mb-4">Tags</div>
     <Tags tags={tags} />
   </div>
-  <div className="lg:w-2/3">
+  {/* <div className="lg:w-2/3">
     <FeatureBlogs title={"Ads"} blogs={blogs} />
-  </div>
+  </div> */}
 </div>
 <Category catgBlogsCount={categoryCount} />
         </div>

@@ -57,9 +57,10 @@ function MoodCarousel({  }) {
           },
         },
         autoplayTimeout: 2000,
-        autoplaySpeed: 500,
-        smartSpeed: 1000,
+        autoplaySpeed: 1000,
+        smartSpeed: 500,
         dragEndSpeed: 1000,
+        
     };
 
     const handleImageClick = (e) => {
@@ -83,7 +84,7 @@ function MoodCarousel({  }) {
 
     return (
         <>
-            <h2 className='text-black text-center'>User Dalle AI images</h2>
+            <h2 className='text-black text-xs text-center'>AI images</h2>
             
             <OwlCarousel className='owl-next bg:sky-400'   {...options}>
               
