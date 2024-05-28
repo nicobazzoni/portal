@@ -132,7 +132,7 @@ const fetchImages = async () => {
     return (
         <>
             <h2 className='text-black text-center'>User Dalle AI images</h2>
-            <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 p-2 gap-4 overflow-y-auto">
+            <div className="grid grid-cols-4 md:grid-cols-2 lg:grid-cols-3 p-2 gap-4 overflow-y-auto">
             {images.map(image => (
   <div key={image.id}>
    <img

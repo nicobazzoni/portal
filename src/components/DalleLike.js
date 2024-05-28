@@ -10,7 +10,7 @@ const DalleLike = ({ handleLike, likes, userId, imageId }) => {
       if (likesCount > 0) {
         return (
           <>
-            <i className={`bi ${userLiked ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up'}`} />
+            <i className={` text-sm  bi ${userLiked ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up'}`} />
             &nbsp;{likesCount} 
           </>
         );
@@ -19,7 +19,7 @@ const DalleLike = ({ handleLike, likes, userId, imageId }) => {
 
     return (
       <>
-        <i className=" bi bi-hand-thumbs-up" />
+        <i className="  bi bi-hand-thumbs-up" />
       
       </>
     );
@@ -29,7 +29,7 @@ const DalleLike = ({ handleLike, likes, userId, imageId }) => {
     <span>
       <button
         type="button"
-        className="btn btn-primary"
+        className="border-none h-8 rounded-md p-1 mt-1"
         onClick={() => handleLike(imageId)}
         title={userId ? 'Like' : 'Please Login to like post'}
       >
