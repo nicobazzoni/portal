@@ -37,7 +37,7 @@ const BlogSection = ({
         
           <h2 className="text-2xl font-semibold mt-2">{title}</h2>
         
-          <div className="text-sm text-gray-300 mb-2">
+          <div className="text-sm text-gray-300 mb-1">
             <Link
               to={`/profile/${profileId}`}
               className="text-rose-400 no-underline hover:text-white "
@@ -48,7 +48,7 @@ const BlogSection = ({
            
           </div> 
           {timestamp.toDate().toDateString()}
-          <div className="text-sm text-black rounded-md bg-sky-200 mt-4">
+          <div className="text-sm text-black rounded-md bg-slate-100 mt-1">
             {excerpt(description, 120)}
           </div>
           <h6 className=" text-sm mt-4 bg-slate-100 rounded-md text-black uppercase">{category}</h6>

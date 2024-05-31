@@ -46,7 +46,7 @@ const FeatureBlogs = ({ blogs, title }) => {
               <img
                 src={item.imgUrl}
                 alt={`Item ${item.id}`}
-                className="h-36 object-cover"
+                className="h-46 object-cover"
               />
             </div>
           ))}
