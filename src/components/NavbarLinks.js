@@ -7,6 +7,7 @@ import {
   CommentOutlined,
   LogoutOutlined,
   LoginOutlined,
+ DeploymentUnitOutlined, 
 } from "@ant-design/icons";
 import dalle from "../components/assets/dalle.png";
 import { auth } from '../firebase';
@@ -58,11 +59,19 @@ const NavbarLinks = ({user, handleLogout, }) => {
 
                 
                 </Link>
+                <Link to='theatre'className="text-black hover:bg-slate-200 rounded-e-md p-2 block no-underline"> 
+                < DeploymentUnitOutlined style={{ fontSize: '30px', padding: '2px' }}> </ DeploymentUnitOutlined>
+                <h6 className='font-xs'>Maelstrom </h6>
+
+                
+                </Link>
                 {userId && (
     <Link to="/dalle" className="flex flex-col items-center justify-center text-black hover:bg-slate-200 mr-2 rounded-md p-2 no-underline">
         <img src={dalle} alt="dalle" className="h-9 rounded-full bg-white hover:animate-pulse block no-underline" />
         <h6 className='text-xs mt-1'>create AI Image</h6>
     </Link>
+    
+    
 )}
          
 

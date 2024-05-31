@@ -8,8 +8,10 @@ import {
   query,
   orderBy,
   where,
+  
   startAfter,
 } from "firebase/firestore";
+import { auth } from "../firebase";
 import React, { useState, useEffect } from "react";
 import BlogSection from "../components/BlogSection";
 import Spinner from "../components/Spinner";
@@ -22,7 +24,7 @@ import Search from "../components/Search";
 import { isEmpty, isNull } from "lodash";
 import { useLocation } from "react-router-dom";
 import Category from "../components/Category";
-
+import SpecialModal from "../components/SpecialModal";
 
 
 import MoodCarousel from "../components/Moods";
@@ -45,6 +47,8 @@ const Home = ({ setActive, user, active }) => {
   const location = useLocation();
   const moods = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [showSpecialModal, setShowSpecialModal] = useState(false);
+  const currentUser = auth.currentUser;
 
 
   
@@ -266,16 +270,35 @@ const Home = ({ setActive, user, active }) => {
          
          
           <div className="lg:flex lg:space-x-4">
-  <div className="lg:w-1/3">
+            <div>
+          {currentUser && (
+        <button
+          onClick={() => setShowSpecialModal(true)}
+          className="px-4 py-2 bg-blue-300 border-none  rounded hover:bg-blue-600"
+        >
+          View Special People Activity
+        </button>
+      )}
+      {showSpecialModal && (
+        <SpecialModal
+          userId={currentUser.uid}
+          onClose={() => setShowSpecialModal(false)}
+        />
+      )}
+      </div>
+ 
+  
+</div>
+<div className="items-center justify-between">
     <Search search={search} handleChange={handleChange} />
     <div className="blog-heading text-star py-2 mb-4">Tags</div>
     <Tags tags={tags} />
   </div>
-  {/* <div className="lg:w-2/3">
+<div className="lg:w-3/3">
     <FeatureBlogs title={"Ads"} blogs={blogs} />
-  </div> */}
-</div>
+  </div>
 <Category catgBlogsCount={categoryCount} />
+
         </div>
       </div>
     </div>

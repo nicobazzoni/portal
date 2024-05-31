@@ -29,6 +29,7 @@ import Dalle from "./components/Dalle";
 
 import DalleImagePage from "./pages/DalleImagePage";
 import Landing from "./pages/Landing";
+import Theatre from "./components/Theatre";
 
 function App() {
   const [active, setActive] = useState("home");
@@ -77,6 +78,8 @@ function App() {
       <ToastContainer position="top-center" />
     
       <Routes>
+        <Route path = "/theatre"
+        element = { <Theatre />}  />
 
         <Route 
         path = "/landing"

@@ -82,11 +82,11 @@ const handleSubmit = async (event) => {
 
   return (
  
-    <div className="chat-app text-white">
+    <div className="chat-app text-black">
       <div className="header">
         <h1 className="bg-gray-600 rounded-md p-1 font-bold">Chat with {recipientName}</h1>
       </div>
-      <div className="messages text-white">
+      <div className="messages">
         {messages.map((message) => (
           console.log("recipientName in messages.map:", message.text),
           <div key={message.id} className="message">

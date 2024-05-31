@@ -86,7 +86,7 @@ function MoodCarousel({  }) {
         <>
             <h2 className='text-black text-xs text-center'>AI images</h2>
             
-            <OwlCarousel className='owl-next bg:sky-400'   {...options}>
+            <OwlCarousel className=" owl-carousel" {...options} >
               
             {images.map(image => {
               
