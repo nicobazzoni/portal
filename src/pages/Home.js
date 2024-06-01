@@ -218,8 +218,9 @@ const Home = ({ setActive, user, active }) => {
       
        
         {/* <div className="blog-heading text-start py-2 mb-4">moods</div> */}
-     <MoodCarousel path='/moods' user={user}  active={active}   className=' ' />
-          
+        <div className='hidden md:block ' >
+     <MoodCarousel path='/moods' user={user}  active={active}   />
+          </div>
           
         
          
