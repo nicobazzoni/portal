@@ -177,18 +177,7 @@ const Home = ({ setActive, user, active }) => {
     return <Spinner />;
   }
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure wanted to delete that blog ?")) {
-      try {
-        setLoading(true);
-        await deleteDoc(doc(db, "blogs", id));
-        toast.success("Blog deleted successfully");
-        setLoading(false);
-      } catch (err) {
-        console.log(err);
-      }
-    }
-  };
+ 
 
   const handleChange = (e) => {
     const { value } = e.target;
