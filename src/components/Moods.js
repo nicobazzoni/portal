@@ -74,9 +74,9 @@ function MoodCarousel() {
 
   return (
     <div className='container mx-auto'>
-      <h2 className='text-black text-xs text-center'>AI images</h2>
+      <h2 className='text-black text-xs font-bold font-mono  text-center'>AI Images</h2>
       {loading ? (
-        <div>Loading...</div>
+        <div className='text-lg font-bold font-mono'>Loading...</div>
       ) : (
         <OwlCarousel className='owl-carousel' {...options}>
           {images.map((image) => (

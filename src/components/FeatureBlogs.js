@@ -38,7 +38,7 @@ const FeatureBlogs = ({ blogs, title }) => {
         <div className="blog-heading text-start">{title}</div>
         <OwlCarousel className="owl-theme" {...options}>
           {ads?.map((item) => (
-            <div
+     <div 
               key={item.id}
               style={{ cursor: "pointer", display: "flex", justifyContent: "center" }}
               onClick={() => navigate(`/detail/${item.id}`)}
@@ -46,7 +46,7 @@ const FeatureBlogs = ({ blogs, title }) => {
               <img
                 src={item.imgUrl}
                 alt={`Item ${item.id}`}
-                className="h-46 object-cover"
+                className="h-46 md:h-60 lg:h-60 lg:max-h-screen"
               />
             </div>
           ))}
