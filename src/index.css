@@ -16,6 +16,17 @@ code {
 	
 
 }
+
+.slick-slide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slick-prev:before,
+.slick-next:before {
+  color: black;
+}
 @base utilities;
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';

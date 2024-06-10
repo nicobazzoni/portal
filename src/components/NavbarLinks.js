@@ -101,7 +101,7 @@ const NavbarLinks = ({user, handleLogout, }) => {
         <>
             {/* Mobile Menu Button */}
             <button
-                className="lg:hidden text-white border-none hover:bg-slate-400 rounded-e-md p-2"
+                className="lg:hidden text-black border-none hover:bg-slate-400 rounded-e-md p-2"
                 onClick={() => setIsOpen(!isOpen)}
             >
                 ☰

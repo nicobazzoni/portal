@@ -30,6 +30,8 @@ import Dalle from "./components/Dalle";
 import DalleImagePage from "./pages/DalleImagePage";
 import Landing from "./pages/Landing";
 import Theatre from "./components/Theatre";
+import VideoUploader from "./components/VideoUploader";
+import VideoSlider from "./components/VideoSlider";
 
 function App() {
   const [active, setActive] = useState("home");
@@ -108,6 +110,12 @@ function App() {
              <UserList /> 
           }
         />
+        <Route 
+        path = "/video"
+        element={<VideoUploader />} />
+        <Route 
+        path = "/videoslider"
+        element={<VideoSlider />} />
         <Route 
         path="/dalle" 
         element={<Dalle    user={user} />} />

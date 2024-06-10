@@ -35,7 +35,7 @@ const Theatre = () => {
 
     const interval = setInterval(() => {
       setCurrentImageIndex(prevIndex => (prevIndex + 1) % images.length);
-    }, 5000);
+    }, 2500);
 
     return () => clearInterval(interval);
   }, [loading, images]);
@@ -48,7 +48,12 @@ const Theatre = () => {
       ) : images.length < 1 ? (
         <p className='text-white'>Not enough images to display</p>
       ) : (
-        <div className='w-full h-full flex justify-center items-center'>
+        <div className='w-full h-full flex flex-col justify-center items-center'>
+          {images[currentImageIndex].prompt && (
+            <div className='mb-4 p-2 bg-white bg-opacity-50 rounded'>
+              <p className='text-black text-center'>{images[currentImageIndex].prompt}</p>
+            </div>
+          )}
           <img
             src={images[currentImageIndex].imageUrl}
             alt={`Image ${currentImageIndex}`}

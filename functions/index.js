@@ -5,7 +5,6 @@ const fetch = require('node-fetch');
 const { Storage } = require('@google-cloud/storage');
 const cors = require('cors');
 
-
 const corsHandler = cors({ origin: true });
 
 const openaiApiKey = functions.config().openai.key;
@@ -23,11 +22,7 @@ exports.generateImageHttps = functions.https.onRequest((req, res) => {
         const prompt = req.body.data && req.body.data.prompt;
         const userId = req.body.data && req.body.data.userId;
 
-      
-
-
-
-        if(!prompt || prompt.trim() === "") {
+        if (!prompt || prompt.trim() === "") {
             console.error("Prompt is empty or undefined");
             return res.status(400).send("Prompt is required");
         }
@@ -47,12 +42,24 @@ exports.generateImageHttps = functions.https.onRequest((req, res) => {
                 size: '1024x1024',
             });
             console.log("Image generated successfully. Response:", response);
+
+            const imageUrl = response.data && response.data[0] && response.data[0].url;
+
+            // Save imageUrl and prompt to Firestore
+            const imageRef = db.collection('images').doc();
+            await imageRef.set({
+                imageUrl: imageUrl,
+                prompt: prompt,
+                userId: userId,
+                uploadedAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+
             return res.set('Access-Control-Allow-Origin', '*').json({
                 data: {
-                    imageUrl: response.data && response.data[0] && response.data[0].url
+                    imageUrl: imageUrl
                 }
             });
-            
+
         } catch (error) {
             console.error("Error in generateImageHttps function:", error);
             return res.status(500).set('Access-Control-Allow-Origin', '*').send(error.message);
@@ -70,6 +77,7 @@ exports.fetchAndUploadImage = functions.https.onRequest((req, res) => {
         }
 
         const userId = req.body.userId; // Get user ID from the request body
+        const prompt = req.body.prompt; // Get prompt from the request body
         if (!userId) {
             return res.status(400).set('Access-Control-Allow-Origin', '*').send('User ID is required');
         }
@@ -97,12 +105,13 @@ exports.fetchAndUploadImage = functions.https.onRequest((req, res) => {
 
             const firebaseUrl = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(filename)}?alt=media`;
 
-            // Save firebaseUrl to the user's 'images' subcollection in Firestore
+            // Save firebaseUrl and prompt to the user's 'images' subcollection in Firestore
             const imagesRef = db.collection('images');
             await imagesRef.add({
                 imageUrl: firebaseUrl,
                 userId: userId,
                 displayName: displayName, // Include the displayName here
+                prompt: prompt,
                 uploadedAt: admin.firestore.FieldValue.serverTimestamp()
             });
 
@@ -114,4 +123,3 @@ exports.fetchAndUploadImage = functions.https.onRequest((req, res) => {
         
     });
 });
-

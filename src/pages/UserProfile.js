@@ -299,8 +299,10 @@ const UserProfile = () => {
       )}
 
 <div>moods</div>
-      <div className="grid grid-cols-4 md:grid-cols-2 lg:grid-cols-3 p-2 gap-4 overflow-y-auto">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 p-2 gap-4 overflow-y-auto">
+      
         {images.map(image => (
+           
           <div key={image.id} className='image-tile'>
             <img
               className='h-38 w-full object-cover mb-1 cursor-pointer'
@@ -308,9 +310,7 @@ const UserProfile = () => {
               alt="Mood"
             />
             <div className="image-info">
-              <Link to={`/profile/${image.userId}`} className='no-underline'>
-                <p className='text-black no-underline'>{image.displayName}</p>
-              </Link>
+            
               <p className='text-black text-xs'>
                 {image.uploadedAt.toDate().toLocaleString()}
               </p>
