@@ -9,58 +9,29 @@ const corsHandler = cors({ origin: true });
 
 const openaiApiKey = functions.config().openai.key;
 
-const openai = new OpenAIApi({ apiKey: openaiApiKey });
+const openai = new OpenAIApi({
+    apiKey: openaiApiKey,
+});
 
 admin.initializeApp();
 const db = admin.firestore();
-db.settings({ ignoreUndefinedProperties: true });
 
-// Helper function to fetch and upload image
-const fetchImageAndUpload = async (imageUrl, bucketName, filename) => {
-    try {
-        console.log("[fetchImageAndUpload] Fetching image from URL:", imageUrl);
-        const response = await fetch(imageUrl);
-        if (!response.ok) {
-            throw new Error(`Failed to fetch image. Status: ${response.status}`);
-        }
-
-        const blob = await response.buffer();
-        const storage = new Storage();
-        const file = storage.bucket(bucketName).file(filename);
-
-        await file.save(blob, { contentType: 'image/png' });
-        console.log("[fetchImageAndUpload] Image uploaded to Firebase Storage");
-
-        return `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(filename)}?alt=media`;
-    } catch (error) {
-        console.error("[fetchImageAndUpload] Error:", error.message);
-        throw error;
-    }
-};
-
-// Cloud Function: Generate image using OpenAI and upload to Firebase Storage
 exports.generateImageHttps = functions.https.onRequest((req, res) => {
     return corsHandler(req, res, async () => {
         try {
             console.log("[generateImageHttps] Request received:", req.body);
 
-            const prompt = req.body.data?.prompt;
-            const userId = req.body.data?.userId;
+            const { prompt, userId } = req.body.data;
 
-            if (!prompt || typeof prompt !== 'string') {
-                console.error("[generateImageHttps] Missing or invalid 'prompt'");
-                return res.status(400).json({ error: "A valid 'prompt' is required" });
-            }
-
-            if (!userId || typeof userId !== 'string') {
-                console.error("[generateImageHttps] Missing or invalid 'userId'");
-                return res.status(400).json({ error: "A valid 'userId' is required" });
+            if (!prompt || !userId) {
+                console.error("[generateImageHttps] Missing required fields.");
+                return res.status(400).json({ error: "Prompt and userId are required." });
             }
 
             console.log(`[generateImageHttps] Generating image for prompt: "${prompt}"`);
 
             const openaiResponse = await openai.images.generate({
-                prompt: prompt,
+                prompt,
                 n: 1,
                 response_format: 'url',
                 size: '1024x1024',
@@ -68,95 +39,51 @@ exports.generateImageHttps = functions.https.onRequest((req, res) => {
 
             const imageUrl = openaiResponse.data?.[0]?.url;
             if (!imageUrl) {
-                throw new Error("Failed to generate image: No URL returned");
+                throw new Error("Failed to generate image: No URL returned from OpenAI.");
             }
 
-            console.log("[generateImageHttps] Image generated successfully:", imageUrl);
+            console.log("[generateImageHttps] Generated Image URL:", imageUrl);
 
+            // Check if the image already exists in Firestore
+            const existingImage = await db
+                .collection('images')
+                .where('imageUrl', '==', imageUrl)
+                .get();
+
+            if (!existingImage.empty) {
+                console.log("[generateImageHttps] Duplicate image detected. Skipping save.");
+                return res.status(200).json({ imageUrl, alreadySaved: true });
+            }
+
+            // Upload the image to Firebase Storage
+            console.log("[generateImageHttps] Uploading image to Firebase Storage...");
             const bucketName = 'mediaman-a8ba1.appspot.com';
             const filename = `moods/${Date.now()}.png`;
-            const firebaseUrl = await fetchImageAndUpload(imageUrl, bucketName, filename);
+            const storage = new Storage();
+            const response = await fetch(imageUrl);
+            const buffer = await response.buffer();
+            const file = storage.bucket(bucketName).file(filename);
 
-            console.log("[generateImageHttps] Image uploaded to Firebase Storage. URL:", firebaseUrl);
+            await file.save(buffer, { contentType: 'image/png' });
+            const firebaseUrl = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(filename)}?alt=media`;
 
-            const userRef = db.collection('users').doc(userId);
-            const userDoc = await userRef.get();
+            console.log("[generateImageHttps] Image uploaded to Firebase Storage:", firebaseUrl);
 
-            if (!userDoc.exists) {
-                console.warn(`[generateImageHttps] User not found for userId: ${userId}`);
-                return res.status(404).json({ error: "User not found" });
-            }
-
-            const displayName = userDoc.data().displayName;
-
+            // Save metadata in Firestore
+            console.log("[generateImageHttps] Saving metadata...");
             await db.collection('images').add({
                 imageUrl: firebaseUrl,
-                userId: userId,
-                displayName: displayName,
-                prompt: prompt,
+                userId,
+                prompt,
                 uploadedAt: admin.firestore.FieldValue.serverTimestamp(),
             });
 
-            console.log("[generateImageHttps] Image metadata saved successfully");
-
-            return res.set('Access-Control-Allow-Origin', '*').json({
-                data: { imageUrl: firebaseUrl },
-            });
+            console.log("[generateImageHttps] Metadata saved successfully.");
+            return res.status(200).json({ imageUrl: firebaseUrl, alreadySaved: false });
 
         } catch (error) {
             console.error("[generateImageHttps] Error:", error.message);
-            return res.status(500).json({ error: error.message || "Internal server error" });
-        }
-    });
-});
-
-// Cloud Function: Fetch image from URL and upload to Firebase Storage
-exports.fetchAndUploadImage = functions.https.onRequest((req, res) => {
-    return corsHandler(req, res, async () => {
-        try {
-            console.log("[fetchAndUploadImage] Request received:", req.body);
-
-            const { imageUrl, userId, prompt } = req.body;
-
-            if (!imageUrl || !userId || !prompt) {
-                console.error("[fetchAndUploadImage] Missing fields:", {
-                    imageUrl: !!imageUrl,
-                    userId: !!userId,
-                    prompt: !!prompt,
-                });
-                return res.status(400).json({
-                    error: "Missing required fields",
-                    missingFields: { imageUrl: !imageUrl, userId: !userId, prompt: !prompt },
-                });
-            }
-
-            console.log("[fetchAndUploadImage] Fetching image...");
-
-            const bucketName = 'mediaman-a8ba1.appspot.com';
-            const filename = `moods/${Date.now()}.png`;
-            const firebaseUrl = await fetchImageAndUpload(imageUrl, bucketName, filename);
-
-            console.log("[fetchAndUploadImage] Image uploaded successfully:", firebaseUrl);
-
-            const userRef = db.collection('users').doc(userId);
-            const userDoc = await userRef.get();
-
-            const displayName = userDoc.exists ? userDoc.data().displayName : "Unknown User";
-
-            await db.collection('images').add({
-                imageUrl: firebaseUrl,
-                userId: userId,
-                displayName: displayName,
-                prompt: prompt,
-                uploadedAt: admin.firestore.FieldValue.serverTimestamp(),
-            });
-
-            console.log("[fetchAndUploadImage] Image metadata saved successfully");
-
-            return res.set('Access-Control-Allow-Origin', '*').json({ firebaseUrl });
-        } catch (error) {
-            console.error("[fetchAndUploadImage] Error:", error.message);
-            return res.status(500).json({ error: error.message || "Internal server error" });
+            return res.status(500).json({ error: error.message });
         }
     });
 });

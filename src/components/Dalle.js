@@ -6,17 +6,15 @@ import { useNavigate } from 'react-router-dom';
 import { TextareaAutosize } from '@mui/material';
 
 function DalleGenerator() {
-    const [imageUrl, setImageUrl] = useState(null); // For previewing the generated image
-    const [uploadedUrl, setUploadedUrl] = useState(null); // For the uploaded Firebase image URL
-    const [inputValue, setInputValue] = useState('');
+    const [imageUrl, setImageUrl] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [inputValue, setInputValue] = useState(''); // Add this to fix the error
     const navigate = useNavigate();
 
     // Get current user ID
     const user = auth.currentUser;
     const userId = user ? user.uid : null;
 
-    // Log userId for debugging
     console.log("Logged-in user ID:", userId);
 
     // Generate Image Function
@@ -31,93 +29,41 @@ function DalleGenerator() {
             return;
         }
 
-        setLoading(true); // Start the loading spinner
+        setLoading(true);
 
         try {
-            // Call Firebase Cloud Function
+            console.log("Generating image...");
             const generateFunction = httpsCallable(functions, 'generateImageHttps');
             const result = await generateFunction({ prompt: inputValue, userId });
-            console.log("Cloud Function Response:", result);
+
+            if (result.data.alreadySaved) {
+                console.log("Image already saved in the backend.");
+            }
 
             const generatedImageUrl = result.data.imageUrl;
-
             if (!generatedImageUrl) {
                 throw new Error("No image URL returned from the cloud function.");
             }
 
             // Show the preview of the generated image
             setImageUrl(generatedImageUrl);
-
-            // Automatically save to Firebase after preview
-            const firebaseUrl = await saveImageToFirebase(generatedImageUrl);
-            setUploadedUrl(firebaseUrl); // Store the uploaded URL for further actions or display
         } catch (error) {
-            console.error("Error generating image:", error);
+            console.error("Error generating image:", error.message);
             alert(`Error generating image: ${error.message}`);
         } finally {
-            setLoading(false); // Stop the loading spinner
+            setLoading(false);
         }
-    };
-
-    // Save image to Firebase function
-    const saveImageToFirebase = async (imageUrl) => {
-        try {
-            console.log("[saveImageToFirebase] Attempting to upload:", imageUrl);
-    
-            const response = await fetch(
-                'https://us-central1-mediaman-a8ba1.cloudfunctions.net/fetchAndUploadImage',
-                {
-                    method: 'POST',
-                    body: JSON.stringify({ imageUrl, userId, prompt: "Auto-generated" }),
-                    headers: { 'Content-Type': 'application/json' },
-                }
-            );
-    
-            const data = await response.json();
-    
-            // Log the response even if it throws a 400 status
-            console.log("[saveImageToFirebase] Server Response:", {
-                status: response.status,
-                data,
-            });
-    
-            if (!response.ok) {
-                // Handle specific cases of 400 gracefully
-                if (response.status === 400) {
-                    console.warn(
-                        "[saveImageToFirebase] Warning: Upload returned 400 but might have succeeded."
-                    );
-                    if (data.firebaseUrl) {
-                        console.log("[saveImageToFirebase] Firebase URL provided despite error.");
-                        return data.firebaseUrl; // Handle gracefully
-                    }
-                }
-                throw new Error(`Failed to upload image. Status: ${response.status}`);
-            }
-    
-            console.log("[saveImageToFirebase] Image uploaded successfully:", data);
-            return data.firebaseUrl;
-        } catch (error) {
-            console.error("[saveImageToFirebase] Error:", error.message);
-            throw error; // Still rethrow error if critical
-        }
-    };
-
-    // Navigate Back
-    const handleBack = () => {
-        navigate(-1);
     };
 
     return (
         <div className="h-screen">
             <div>
-                <button className="btn btn-primary pt-2 pb-2 m-2 p-4" onClick={handleBack}>
+                <button className="btn btn-primary pt-2 pb-2 m-2 p-4" onClick={() => navigate(-1)}>
                     Back
                 </button>
             </div>
             <h4 className="text-xs text-white">Generate a DALL·E AI Image</h4>
             <TextareaAutosize
-                type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="A cute turtle blowing bubbles..."
@@ -132,29 +78,16 @@ function DalleGenerator() {
                     {loading ? "Generating..." : "Generate"}
                 </button>
             </div>
-    
-            {loading && <Spinner />} {/* Display spinner during loading */}
-    
-            {/* Preview generated image */}
-            {imageUrl && (
+
+            {loading && <Spinner />}
+            {!loading && imageUrl && (
                 <div className="mt-4">
                     <h4 className="text-white">Preview Generated Image:</h4>
                     <img src={imageUrl} alt="Generated" className="rounded-sm h-72" />
                 </div>
             )}
-    
-            {/* Show uploaded Firebase URL */}
-            {uploadedUrl && (
-                <div className="mt-4">
-                    
-                    <a href={uploadedUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500">
-                        View Uploaded Image
-                    </a>
-                </div>
-            )}
         </div>
     );
 }
- 
 
 export default DalleGenerator;
