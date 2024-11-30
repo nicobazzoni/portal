@@ -11,7 +11,7 @@ const LandingPage = () => {
         loop
         muted
       >
-        <source src="/yikes-visual.mp4" type="video/mp4" />
+        <source src="https://storage.googleapis.com/new-music/yikes%20visual%20.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
 

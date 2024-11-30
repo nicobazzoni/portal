@@ -35,7 +35,7 @@ const NavbarLinks = ({user, handleLogout, }) => {
 
     const renderLinks = () => (
         <>
-            <Link to="/" className="text-white hover:bg-sky-400 rounded-e-md p-2 block">
+            <Link to="/home" className="text-white hover:bg-sky-400 rounded-e-md p-2 block">
                 <HomeOutlined style={{ fontSize: '30px' }} />
             </Link>
             
