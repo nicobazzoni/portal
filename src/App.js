@@ -90,9 +90,9 @@ function App() {
   />
         
         <Route
-          path="/"
-          element={<Home setActive={setActive} active={active} user={user} />}
-        />
+  path="/home"
+  element={<Home setActive={setActive} active={active} user={user} />}
+/>
         <Route
           path="/search"
           element={<Home setActive={setActive} user={user} />}
