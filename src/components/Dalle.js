@@ -62,25 +62,44 @@ function DalleGenerator() {
     // Save image to Firebase function
     const saveImageToFirebase = async (imageUrl) => {
         try {
+            console.log("[saveImageToFirebase] Attempting to upload:", imageUrl);
+    
             const response = await fetch(
                 'https://us-central1-mediaman-a8ba1.cloudfunctions.net/fetchAndUploadImage',
                 {
                     method: 'POST',
-                    body: JSON.stringify({ imageUrl, userId }),
+                    body: JSON.stringify({ imageUrl, userId, prompt: "Auto-generated" }),
                     headers: { 'Content-Type': 'application/json' },
                 }
             );
-
+    
+            const data = await response.json();
+    
+            // Log the response even if it throws a 400 status
+            console.log("[saveImageToFirebase] Server Response:", {
+                status: response.status,
+                data,
+            });
+    
             if (!response.ok) {
+                // Handle specific cases of 400 gracefully
+                if (response.status === 400) {
+                    console.warn(
+                        "[saveImageToFirebase] Warning: Upload returned 400 but might have succeeded."
+                    );
+                    if (data.firebaseUrl) {
+                        console.log("[saveImageToFirebase] Firebase URL provided despite error.");
+                        return data.firebaseUrl; // Handle gracefully
+                    }
+                }
                 throw new Error(`Failed to upload image. Status: ${response.status}`);
             }
-
-            const data = await response.json();
-            console.log("Image uploaded to Firebase:", data);
+    
+            console.log("[saveImageToFirebase] Image uploaded successfully:", data);
             return data.firebaseUrl;
         } catch (error) {
-            console.error("Error saving image to Firebase:", error);
-            throw error;
+            console.error("[saveImageToFirebase] Error:", error.message);
+            throw error; // Still rethrow error if critical
         }
     };
 
@@ -113,21 +132,21 @@ function DalleGenerator() {
                     {loading ? "Generating..." : "Generate"}
                 </button>
             </div>
-
+    
             {loading && <Spinner />} {/* Display spinner during loading */}
-
+    
             {/* Preview generated image */}
-            {!loading && imageUrl && (
+            {imageUrl && (
                 <div className="mt-4">
                     <h4 className="text-white">Preview Generated Image:</h4>
                     <img src={imageUrl} alt="Generated" className="rounded-sm h-72" />
                 </div>
             )}
-
+    
             {/* Show uploaded Firebase URL */}
-            {!loading && uploadedUrl && (
+            {uploadedUrl && (
                 <div className="mt-4">
-                    <h4 className="text-white">Image Uploaded to Firebase:</h4>
+                    
                     <a href={uploadedUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500">
                         View Uploaded Image
                     </a>
@@ -136,5 +155,6 @@ function DalleGenerator() {
         </div>
     );
 }
+ 
 
 export default DalleGenerator;

@@ -37,6 +37,7 @@ const Home = ({ setActive, user, active }) => {
   const queryString = useQuery();
   const searchQuery = queryString.get("searchQuery");
   const location = useLocation();
+  
 
   // Fetch trending blogs
   const getTrendingBlogs = async () => {

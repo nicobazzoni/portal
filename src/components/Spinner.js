@@ -1,9 +1,13 @@
 import React from "react";
+import "../Spinner.css"; // Include the custom styles
 
 const Spinner = () => {
   return (
-    <div className="spinner-border text-primary mt-5 spinner" role="status">
-      <span className="visually-hidden">Loading...</span>
+    <div className="spinner-container">
+      <div className="spinner-line"></div>
+      <div className="spinner-line"></div>
+      <div className="spinner-line"></div>
+      <div className="spinner-line"></div>
     </div>
   );
 };

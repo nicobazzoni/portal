@@ -120,7 +120,7 @@ function DalleImagePage() {
 
   return (
     <>
-      <h2 className="text-white text-center">User Dalle AI Images</h2>
+      <h2 className="text-white text-center">User Images</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 p-2 gap-4 overflow-y-auto">
         {images
           .filter((image) => !invalidImages.has(image.id)) // Exclude invalid images

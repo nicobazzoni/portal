@@ -119,8 +119,15 @@ exports.fetchAndUploadImage = functions.https.onRequest((req, res) => {
             const { imageUrl, userId, prompt } = req.body;
 
             if (!imageUrl || !userId || !prompt) {
-                console.error("[fetchAndUploadImage] Missing required fields");
-                return res.status(400).json({ error: "Image URL, userId, and prompt are required" });
+                console.error("[fetchAndUploadImage] Missing fields:", {
+                    imageUrl: !!imageUrl,
+                    userId: !!userId,
+                    prompt: !!prompt,
+                });
+                return res.status(400).json({
+                    error: "Missing required fields",
+                    missingFields: { imageUrl: !imageUrl, userId: !userId, prompt: !prompt },
+                });
             }
 
             console.log("[fetchAndUploadImage] Fetching image...");
@@ -146,7 +153,7 @@ exports.fetchAndUploadImage = functions.https.onRequest((req, res) => {
 
             console.log("[fetchAndUploadImage] Image metadata saved successfully");
 
-            return res.set('Access-Control-Allow-Origin', '*').json({ firebaseUrl: firebaseUrl });
+            return res.set('Access-Control-Allow-Origin', '*').json({ firebaseUrl });
         } catch (error) {
             console.error("[fetchAndUploadImage] Error:", error.message);
             return res.status(500).json({ error: error.message || "Internal server error" });
