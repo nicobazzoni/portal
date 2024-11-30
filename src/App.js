@@ -47,11 +47,16 @@ function App() {
   }, []);
 
   const handleLogout = () => {
-    signOut(auth).then(() => {
-      setUser(null);
-      setActive("login");
-      navigate("/auth");
-    });
+    signOut(auth)
+      .then(() => {
+        setUser(null);
+        setActive("login");
+        console.log("User signed out");
+        navigate("/landing");
+      })
+      .catch((error) => {
+        console.error("Error signing out:", error);
+      });
   };
 
   //create back button for detail page
@@ -77,6 +82,13 @@ function App() {
       <ToastContainer position="top-center" />
     
       <Routes>
+
+      <Route
+    path="/"
+    element={user?.uid ? <Navigate to="/home" /> : <Navigate to="/landing" />}
+  
+  />
+        
         <Route
           path="/"
           element={<Home setActive={setActive} active={active} user={user} />}
@@ -92,7 +104,7 @@ function App() {
         <Route
           path="/create"
           element={
-            user?.uid ? <AddEditBlog user={user} /> : <Navigate to="/" />
+            user?.uid ? <AddEditBlog user={user} /> : <Navigate to="/landing" />
           }
         />
           <Route
