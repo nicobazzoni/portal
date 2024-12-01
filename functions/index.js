@@ -1,89 +1,133 @@
-const functions = require('firebase-functions');
-const OpenAIApi = require('openai');
-const admin = require('firebase-admin');
-const fetch = require('node-fetch');
-const { Storage } = require('@google-cloud/storage');
-const cors = require('cors');
+import { onRequest } from "firebase-functions/v2/https";
+import { getFirestore } from "firebase-admin/firestore";
+import { getStorage } from "firebase-admin/storage";
+import { initializeApp } from "firebase-admin/app";
+import fetch from "node-fetch";
+import { v4 as uuidv4 } from "uuid";
+import { defineSecret } from "firebase-functions/params";
 
-const corsHandler = cors({ origin: true });
+// Initialize Firebase Admin SDK
+initializeApp();
+const db = getFirestore();
+const storage = getStorage();
 
-const openaiApiKey = functions.config().openai.key;
+// Define secrets (if you're using Firebase Secrets Manager)
+const OPENAI_API_KEY = defineSecret("OPENAI_API_KEY");
 
-const openai = new OpenAIApi({
-    apiKey: openaiApiKey,
-});
+export const generateImageHttps = onRequest(
+  {
+    secrets: [OPENAI_API_KEY], // Add secrets here if using Firebase Secrets
+  },
+  async (req, res) => {
+    // Set CORS headers
+    res.set("Access-Control-Allow-Origin", "*");
+    res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-admin.initializeApp();
-const db = admin.firestore();
+    // Handle preflight requests
+    if (req.method === "OPTIONS") {
+      return res.status(204).send("");
+    }
 
-exports.generateImageHttps = functions.https.onRequest((req, res) => {
-    return corsHandler(req, res, async () => {
-        try {
-            console.log("[generateImageHttps] Request received:", req.body);
+    try {
+      // Extract request data
+      const { prompt, userId } = req.body;
 
-            const { prompt, userId } = req.body.data;
+      if (!prompt || !userId) {
+        return res.status(400).json({
+          error: "Missing required fields: 'prompt' or 'userId'",
+        });
+      }
 
-            if (!prompt || !userId) {
-                console.error("[generateImageHttps] Missing required fields.");
-                return res.status(400).json({ error: "Prompt and userId are required." });
-            }
+      console.log(`[generateImage] UserID: ${userId}, Prompt: "${prompt}"`);
 
-            console.log(`[generateImageHttps] Generating image for prompt: "${prompt}"`);
+      // Retrieve OpenAI API key
+      const openaiApiKey =
+        process.env.OPENAI_API_KEY || OPENAI_API_KEY.value();
 
-            const openaiResponse = await openai.images.generate({
-                prompt,
-                n: 1,
-                response_format: 'url',
-                size: '1024x1024',
-            });
+      if (!openaiApiKey) {
+        return res.status(500).json({
+          error: "OpenAI API key is missing",
+        });
+      }
 
-            const imageUrl = openaiResponse.data?.[0]?.url;
-            if (!imageUrl) {
-                throw new Error("Failed to generate image: No URL returned from OpenAI.");
-            }
-
-            console.log("[generateImageHttps] Generated Image URL:", imageUrl);
-
-            // Check if the image already exists in Firestore
-            const existingImage = await db
-                .collection('images')
-                .where('imageUrl', '==', imageUrl)
-                .get();
-
-            if (!existingImage.empty) {
-                console.log("[generateImageHttps] Duplicate image detected. Skipping save.");
-                return res.status(200).json({ imageUrl, alreadySaved: true });
-            }
-
-            // Upload the image to Firebase Storage
-            console.log("[generateImageHttps] Uploading image to Firebase Storage...");
-            const bucketName = 'mediaman-a8ba1.appspot.com';
-            const filename = `moods/${Date.now()}.png`;
-            const storage = new Storage();
-            const response = await fetch(imageUrl);
-            const buffer = await response.buffer();
-            const file = storage.bucket(bucketName).file(filename);
-
-            await file.save(buffer, { contentType: 'image/png' });
-            const firebaseUrl = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(filename)}?alt=media`;
-
-            console.log("[generateImageHttps] Image uploaded to Firebase Storage:", firebaseUrl);
-
-            // Save metadata in Firestore
-            console.log("[generateImageHttps] Saving metadata...");
-            await db.collection('images').add({
-                imageUrl: firebaseUrl,
-                userId,
-                prompt,
-                uploadedAt: admin.firestore.FieldValue.serverTimestamp(),
-            });
-
-            console.log("[generateImageHttps] Metadata saved successfully.");
-            return res.status(200).json({ imageUrl: firebaseUrl, alreadySaved: false });
-
-        } catch (error) {
-            console.error("[generateImageHttps] Error:", error.message);
-            return res.status(500).json({ error: error.message });
+      // Call OpenAI API to generate image
+      const openaiResponse = await fetch(
+        "https://api.openai.com/v1/images/generations",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${openaiApiKey}`,
+          },
+          body: JSON.stringify({
+            prompt,
+            n: 1,
+            size: "1024x1024",
+          }),
         }
-    });
-});
+      );
+
+      if (!openaiResponse.ok) {
+        throw new Error(`OpenAI API Error: ${openaiResponse.statusText}`);
+      }
+
+      const data = await openaiResponse.json();
+      const imageUrl = data.data[0]?.url;
+
+      if (!imageUrl) {
+        throw new Error("Image generation failed, no URL received");
+      }
+
+      console.log("[generateImage] Generated Image URL:", imageUrl);
+
+      // Fetch the generated image and upload to Firebase Storage
+      const response = await fetch(imageUrl);
+      if (!response.ok) {
+        throw new Error("Failed to fetch generated image from OpenAI");
+      }
+
+      const buffer = await response.buffer();
+      const bucket = storage.bucket("mediaman-a8ba1.appspot.com");
+      const fileName = `moods/${uuidv4()}.png`;
+      const file = bucket.file(fileName);
+
+      await file.save(buffer, {
+        metadata: {
+          contentType: "image/png",
+        },
+      });
+
+      // Generate a public URL for the uploaded file
+      const [publicUrl] = await file.getSignedUrl({
+        action: "read",
+        expires: "03-01-2500", // Adjust expiration as needed
+      });
+
+      console.log("[generateImage] Uploaded image to Storage:", publicUrl);
+
+      // Retrieve user display name from Firestore
+      const userDoc = await db.collection("users").doc(userId).get();
+      const displayName = userDoc.exists
+        ? userDoc.data()?.displayName || "Anonymous"
+        : "Anonymous";
+
+      console.log(`[generateImage] Retrieved Display Name: ${displayName}`);
+
+      // Save metadata to Firestore
+      await db.collection("images").add({
+        userId,
+        prompt,
+        imageUrl: publicUrl, // Use Firebase Storage URL
+        displayName,
+        timestamp: new Date(),
+      });
+
+      // Send response
+      res.status(200).json({ imageUrl: publicUrl });
+    } catch (error) {
+      console.error("[generateImage] Error:", error.message);
+      res.status(500).json({ error: error.message });
+    }
+  }
+);

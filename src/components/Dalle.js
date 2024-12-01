@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { functions, auth } from '../firebase'; // Ensure these paths are correct
-import { httpsCallable } from 'firebase/functions';
+import React, { useState, useEffect } from 'react';
+import { auth } from '../firebase'; // Ensure proper initialization in firebase.js
 import Spinner from './Spinner';
 import { useNavigate } from 'react-router-dom';
 import { TextareaAutosize } from '@mui/material';
@@ -8,82 +7,120 @@ import { TextareaAutosize } from '@mui/material';
 function DalleGenerator() {
     const [imageUrl, setImageUrl] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [inputValue, setInputValue] = useState(''); // Add this to fix the error
+    const [inputValue, setInputValue] = useState('');
+    const [userId, setUserId] = useState(null);
+    const [authChecked, setAuthChecked] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
 
-    // Get current user ID
-    const user = auth.currentUser;
-    const userId = user ? user.uid : null;
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            if (user) {
+                console.log("[Auth State] User signed in:", user.uid);
+                setUserId(user.uid);
+            } else {
+                console.error("[Auth State] No user signed in.");
+                setUserId(null);
+            }
+            setAuthChecked(true);
+        });
 
-    console.log("Logged-in user ID:", userId);
+        return () => unsubscribe();
+    }, []);
 
-    // Generate Image Function
-    const generateImage = async () => {
-        if (!inputValue.trim()) {
-            alert("Please enter a prompt to generate an image.");
-            return;
+    const generateImage = async (prompt) => {
+        try {
+            setErrorMessage('');
+            if (!userId) {
+                throw new Error("User not authenticated");
+            }
+
+            const user = auth.currentUser;
+            const idToken = await user.getIdToken();
+
+            const response = await fetch(
+                "https://us-central1-mediaman-a8ba1.cloudfunctions.net/generateImageHttps",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${idToken}`,
+                    },
+                    body: JSON.stringify({ prompt, userId }),
+                }
+            );
+
+            if (!response.ok) {
+                let errorResponse;
+                try {
+                    errorResponse = await response.json();
+                } catch {
+                    errorResponse = { error: "Unexpected error occurred" };
+                }
+                throw new Error(errorResponse.error || `Request failed with status ${response.status}`);
+            }
+
+            const data = await response.json();
+            if (!data.imageUrl) {
+                throw new Error("The response did not contain an image URL");
+            }
+            console.log("[Generate Image] Success:", data);
+            return data;
+        } catch (error) {
+            console.error("[Generate Image] Error:", error.message);
+            setErrorMessage(error.message);
+            throw error;
         }
+    };
 
-        if (!userId) {
-            console.error("No user is logged in. Cannot generate image.");
+    const handleGenerateClick = async () => {
+        if (!inputValue.trim()) {
+            setErrorMessage("Please enter a prompt to generate an image.");
             return;
         }
 
         setLoading(true);
-
         try {
-            console.log("Generating image...");
-            const generateFunction = httpsCallable(functions, 'generateImageHttps');
-            const result = await generateFunction({ prompt: inputValue, userId });
-
-            if (result.data.alreadySaved) {
-                console.log("Image already saved in the backend.");
-            }
-
-            const generatedImageUrl = result.data.imageUrl;
-            if (!generatedImageUrl) {
-                throw new Error("No image URL returned from the cloud function.");
-            }
-
-            // Show the preview of the generated image
-            setImageUrl(generatedImageUrl);
+            const data = await generateImage(inputValue);
+            setImageUrl(data.imageUrl);
         } catch (error) {
-            console.error("Error generating image:", error.message);
-            alert(`Error generating image: ${error.message}`);
+            // Error already handled in generateImage
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="h-screen">
-            <div>
-                <button className="btn btn-primary pt-2 pb-2 m-2 p-4" onClick={() => navigate(-1)}>
-                    Back
-                </button>
-            </div>
-            <h4 className="text-xs text-white">Generate a DALL·E AI Image</h4>
+        <div className="h-screen p-4 bg-gray-900 text-white">
+            <button className="btn btn-primary mb-4" onClick={() => navigate(-1)}>
+                Back
+            </button>
+            <h4 className="text-lg font-semibold mb-2">Generate a DALL·E AI Image</h4>
             <TextareaAutosize
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="A cute turtle blowing bubbles..."
-                className="border-none border-gray-300 p-2 w-1/2 rounded-md"
+                className="w-full max-w-lg p-2 mb-4 border border-gray-300 rounded-md"
             />
             <div>
                 <button
-                    className="m-2 rounded-full border p-1"
-                    onClick={generateImage}
-                    disabled={loading}
+                    className="btn btn-success px-4 py-2 rounded-lg disabled:opacity-50"
+                    onClick={handleGenerateClick}
+                    disabled={loading || !authChecked || !userId || !inputValue.trim()}
                 >
                     {loading ? "Generating..." : "Generate"}
                 </button>
             </div>
-
+            {errorMessage && (
+                <div className="mt-4 text-red-600 bg-red-100 p-2 rounded-md">
+                    <p>Error: {errorMessage}</p>
+                </div>
+            )}
             {loading && <Spinner />}
             {!loading && imageUrl && (
                 <div className="mt-4">
-                    <h4 className="text-white">Preview Generated Image:</h4>
-                    <img src={imageUrl} alt="Generated" className="rounded-sm h-72" />
+                    <h4 className="font-medium">Preview Generated Image:</h4>
+                    <img src={imageUrl} alt="Generated" className="rounded-md mt-2 h-72" />
                 </div>
             )}
         </div>

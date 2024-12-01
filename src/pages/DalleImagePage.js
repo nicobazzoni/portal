@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { db, auth } from '../firebase';
-import { collection, query, orderBy, getDocs } from "firebase/firestore";
+import React, { useState, useEffect } from "react";
+import { db, auth } from "../firebase";
+import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import DalleLike from "../components/DalleLike";
 
@@ -9,44 +9,49 @@ function DalleImagePage() {
   const [loading, setLoading] = useState(true);
   const [invalidImages, setInvalidImages] = useState(new Set()); // Track invalid images
   const user = auth.currentUser;
-  const userId = user ? user.uid : null;
+  const userId = user?.uid || null;
 
-  console.log(user);
+  // Real-time Firestore listener
+  useEffect(() => {
+    const imagesRef = collection(db, "images");
 
-  // Fetch images from Firestore
-  const fetchImages = async () => {
-    try {
-      const querySnapshot = await getDocs(
-        query(collection(db, 'images'), orderBy('uploadedAt', 'desc'))
-      );
+    const q = query(imagesRef, orderBy("timestamp", "desc")); // Adjust the field to match Firestore
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const fetchedImages = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
 
-      const fetchedImages = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+        console.log("Fetched Images: ", fetchedImages);
 
-      console.log("Fetched Images:", fetchedImages); // Debug fetched images
+        setImages(fetchedImages);
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Error fetching images: ", error);
+        setLoading(false);
+      }
+    );
 
-      setImages(fetchedImages);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching images:", error);
-      setLoading(false);
-    }
+    return () => unsubscribe(); // Clean up the listener
+  }, []);
+
+  const handleImageError = (imageId) => {
+    console.warn(`Image failed to load for post with ID: ${imageId}`);
+    setInvalidImages((prevInvalidImages) => new Set([...prevInvalidImages, imageId]));
   };
 
-  useEffect(() => {
-    fetchImages();
-  }, []); // Fetch images only once
-
   const handleLike = async (imageId) => {
-    // Like logic goes here
+    console.log(`Liked image ID: ${imageId}`);
+    // Placeholder for like logic
   };
 
   const LazyImage = ({ src, alt, onError }) => {
     const [isVisible, setIsVisible] = useState(false);
     const imgRef = React.useRef();
-  
+
     useEffect(() => {
       const observer = new IntersectionObserver(
         (entries) => {
@@ -57,14 +62,12 @@ function DalleImagePage() {
         },
         { threshold: 0.1 }
       );
-  
-      if (imgRef.current) {
-        observer.observe(imgRef.current);
-      }
-  
+
+      if (imgRef.current) observer.observe(imgRef.current);
+
       return () => observer.disconnect();
     }, []);
-  
+
     const handleImageClick = () => {
       if (imgRef.current) {
         if (imgRef.current.requestFullscreen) {
@@ -80,7 +83,7 @@ function DalleImagePage() {
         }
       }
     };
-  
+
     return (
       <div ref={imgRef} style={{ minHeight: "150px", backgroundColor: "#333" }}>
         {isVisible && (
@@ -89,33 +92,19 @@ function DalleImagePage() {
             alt={alt}
             onError={onError}
             className="h-38 w-full object-cover mb-1 cursor-pointer"
-            onClick={handleImageClick} // Expand image on click
+            onClick={handleImageClick}
           />
         )}
       </div>
     );
   };
 
-  const handleImageClick = (e) => {
-    const image = e.target;
-    if (image.requestFullscreen) {
-      image.requestFullscreen();
-    } else if (image.mozRequestFullScreen) {
-      image.mozRequestFullScreen();
-    } else if (image.webkitRequestFullscreen) {
-      image.webkitRequestFullscreen();
-    } else if (image.msRequestFullscreen) {
-      image.msRequestFullscreen();
-    }
-  };
-
-  const handleImageError = (imageId) => {
-    console.warn(`Image failed to load for post with ID: ${imageId}`);
-    setInvalidImages((prevInvalidImages) => new Set(prevInvalidImages).add(imageId));
-  };
-
   if (loading) {
     return <div className="text-white text-center">Loading images...</div>;
+  }
+
+  if (images.length === 0) {
+    return <div className="text-white text-center">No images found.</div>;
   }
 
   return (
@@ -127,27 +116,26 @@ function DalleImagePage() {
           .map((image) => (
             <div key={image.id} className="p-2 border border-gray-700 rounded-lg bg-gray-800">
               <LazyImage
-                className="h-38 w-full object-cover mb-1 cursor-pointer"
                 src={image.imageUrl}
                 alt={image.prompt || "Generated image"}
-                onClick={handleImageClick}
-                onError={() => handleImageError(image.id)} // Handle image load error
+                onError={() => handleImageError(image.id)}
               />
               <DalleLike
-                handleLike={handleLike}
-                likes={image.likes}
+                handleLike={() => handleLike(image.id)}
+                likes={image.likes || 0}
                 userId={userId}
                 imageId={image.id}
-                className="mt-1 cursor-pointer"
               />
               <p className="text-white text-sm italic mt-2 text-center">
                 {image.prompt || "No prompt available"}
               </p>
               <Link to={`/profile/${image.userId}`} className="no-underline">
-                <p className="text-white hover:bg-slate-700">{image.displayName || "Anonymous User"}</p>
+                <p className="text-white hover:bg-slate-700">
+                  {image.displayName || "Anonymous User"}
+                </p>
               </Link>
               <p className="text-white text-xs">
-                {image.uploadedAt?.toDate().toLocaleString() || "Unknown date"}
+                {image.timestamp?.toDate().toLocaleString() || "Unknown date"}
               </p>
             </div>
           ))}
