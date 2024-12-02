@@ -15,8 +15,8 @@ const Footer = () => {
           </div>
           {/* Navigation */}
           <div>
-            <h4 className="text-white text-lg font-semibold">Quick Links</h4>
-            <ul className="mt-4 space-y-2 list-none ">
+            <h4 className="text-white text-lg font-semibold">  Quick Links</h4>
+            <ul className=" list-none  ">
               <li>
                 <a href="/" className="hover:text-gray-100 transition no-underline">
                   Home
@@ -42,10 +42,10 @@ const Footer = () => {
           {/* Social Media */}
           <div>
             <h4 className="text-white text-lg font-semibold">Follow Portl on Instagram</h4>
-            <div className="flex space-x-4 mt-4">
+            <div className=" mt-4">
             
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/portl.world/"
                 className="hover:text-gray-100 transition no-underline"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -58,9 +58,9 @@ const Footer = () => {
         </div>
         {/* Bottom Section */}
         <div className="mt-6 flex justify-between items-center text-sm">
-          <p>&copy; {new Date().getFullYear()} YourApp. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Portl. All rights reserved.</p>
           <p>
-            Built with <span className="text-red-500">&hearts;</span> by Your Team.
+            Built with <span className="text-red-500">&hearts;</span> by Portl.
           </p>
         </div>
       </div>

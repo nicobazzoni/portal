@@ -74,6 +74,7 @@ function App() {
         <Route path="/auth" element={<Auth setActive={setActive} setUser={setUser} />} />
         <Route path="/landing" element={<LandingPage />} />
         <Route path="*" element={<NotFound />} />
+        <Route path='about' element={<About />} />
       </Routes>
       
     </div>
