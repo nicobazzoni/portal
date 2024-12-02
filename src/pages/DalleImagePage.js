@@ -3,6 +3,7 @@ import { db, auth } from "../firebase";
 import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import DalleLike from "../components/DalleLike";
+import FullscreenImage from "../components/FullScreenImage.js";
 
 function DalleImagePage() {
   const [images, setImages] = useState([]);
@@ -87,7 +88,7 @@ function DalleImagePage() {
     return (
       <div ref={imgRef} style={{ minHeight: "150px", backgroundColor: "#333" }}>
         {isVisible && (
-          <img
+          <FullscreenImage
             src={src}
             alt={alt}
             onError={onError}
@@ -110,17 +111,18 @@ function DalleImagePage() {
   return (
     <>
       <h2 className="text-white text-center">User Images</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 p-2 gap-4 overflow-y-auto">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 p-2 gap-4 overflow-y-auto">
         {images
           .filter((image) => !invalidImages.has(image.id)) // Exclude invalid images
           .map((image) => (
-            <div key={image.id} className="p-2 border border-gray-700 rounded-lg bg-gray-800">
+            <div key={image.id} className="p-2 border border-gray-700 rounded-lg  bg-gray-800">
               <LazyImage
                 src={image.imageUrl}
                 alt={image.prompt || "Generated image"}
                 onError={() => handleImageError(image.id)}
               />
               <DalleLike
+              className="mt-2"
                 handleLike={() => handleLike(image.id)}
                 likes={image.likes || 0}
                 userId={userId}

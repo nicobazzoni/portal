@@ -1,41 +1,53 @@
-import React from "react";
+import React, { useState } from "react";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
-const DalleLike = ({ handleLike, likes, userId, imageId }) => {
-  const LikeStatus = () => {
-    // Ensure 'likes' is an object before performing any operation
-    if (likes && typeof likes === 'object') {
-      const userLiked = userId && likes[userId];
-      const likesCount = Object.values(likes).filter(like => like).length;
+const DalleLike = ({ likes = {}, userId, imageId }) => {
+  const [isLiked, setIsLiked] = useState(likes[userId] || false);
+  const [likesCount, setLikesCount] = useState(
+    Object.values(likes).filter((like) => like).length
+  );
+  const [loading, setLoading] = useState(false);
 
-      if (likesCount > 0) {
-        return (
-          <>
-            <i className={`bi ${userLiked ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up'}`} />
-            &nbsp;{likesCount} 
-          </>
-        );
-      }
+  const handleLike = async () => {
+    if (!userId) {
+      alert("Please log in to like this image.");
+      return;
     }
 
-    return (
-      <>
-        <i className="bi bi-hand-thumbs-up" />
-      
-      </>
-    );
+    setLoading(true); // Set loading state
+    try {
+      const imageRef = doc(db, "images", imageId);
+      const updatedLikes = { ...likes, [userId]: !isLiked };
+
+      // Update Firestore
+      await setDoc(imageRef, { likes: updatedLikes }, { merge: true });
+
+      // Update local state
+      setIsLiked(!isLiked);
+      setLikesCount(Object.values(updatedLikes).filter((like) => like).length);
+    } catch (error) {
+      console.error("Error updating likes:", error);
+      alert("Failed to update like. Please try again.");
+    } finally {
+      setLoading(false); // Reset loading state
+    }
   };
 
   return (
-    <span>
-      <button
-        type="button"
-        className="btn btn-primary"
-        onClick={() => handleLike(imageId)}
-        title={userId ? 'Like' : 'Please Login to like post'}
-      >
-        <LikeStatus />
-      </button>
-    </span>
+    <button
+      type="button"
+      className="btn btn-primary mt-2"
+      onClick={handleLike}
+      disabled={loading} // Disable button when loading
+    >
+      <i
+        className={`bi ${
+          isLiked ? "bi-hand-thumbs-up-fill" : "bi-hand-thumbs-up"
+        }`}
+      />
+      &nbsp;{likesCount > 0 ? likesCount : ""}
+    </button>
   );
 };
 

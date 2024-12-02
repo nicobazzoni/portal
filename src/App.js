@@ -7,6 +7,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { auth } from "./firebase";
 import { signOut } from "firebase/auth";
+import { Link } from "react-router-dom";
 
 import Home from "./pages/Home";
 import Detail from "./pages/Detail";
@@ -53,7 +54,7 @@ function App() {
   return (
     <div className="App bg-faded overflow-y-hidden">
       <Header setActive={setActive} active={active} user={user} handleLogout={handleLogout} />
-      <h6 className="text-sky-500 font-bold tracking-widest hover:bg-white bg-stone-900 cursor-pointer p-2">portal</h6>
+
       <ScrollToTop />
       <ToastContainer position="top-center" />
       <Routes>

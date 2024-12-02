@@ -39,14 +39,7 @@ const NavbarLinks = ({user, handleLogout, }) => {
                 <HomeOutlined style={{ fontSize: '30px' }} />
             </Link>
             
-            <Link to="/blogs" className="text-white hover:bg-sky-400 rounded-md p-2 block no-underline">
-    <GlobalOutlined style={{ fontSize: '30px', padding: '2px' }}  />
-                <h6 className='font-xs'>portals</h6>
-            </Link>
-                <Link to="/create" className="text-white hover:bg-sky-400 rounded-e-md p-2 block no-underline">
-                    <PlusCircleOutlined style={{ fontSize: '30px' , padding: '2px' }} />
-                   <h6 className='font-xs'> create portal</h6>
-                </Link>
+        
                 <Link to="/userlist" className="text-white hover:bg-sky-400 rounded-e-md p-2 block no-underline">
                     <CommentOutlined style={{ fontSize: '30px', padding: '2px' }} />
                     <h6 className='font-xs'> people</h6>
