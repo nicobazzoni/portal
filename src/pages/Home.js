@@ -4,6 +4,7 @@ import { db } from "../firebase";
 import { toast } from "react-toastify";
 import MoodCarousel from "../components/Moods";
 import DalleImagePage from "./DalleImagePage";
+import Footer from "../components/Footer";
 
 const Home = ({ setActive, user }) => {
 
@@ -31,10 +32,12 @@ const Home = ({ setActive, user }) => {
 
   return (
     <div className="container-fluid pb-4 pt-4 padding">
-      <div className="container padding">
+      <main className="container padding">
         <MoodCarousel path="/moods"  />
        
-      </div>
+      </main>
+      <Footer />
+     
     </div>
   );
 };
