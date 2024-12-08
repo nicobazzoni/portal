@@ -1,6 +1,8 @@
+// /Users/nico/Desktop/apps/portal/src/pages/DalleImagePage.js
+
 import React, { useState, useEffect } from "react";
 import { db, auth } from "../firebase";
-import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import DalleLike from "../components/DalleLike";
 import FullscreenImage from "../components/FullScreenImage.js";
@@ -8,25 +10,23 @@ import FullscreenImage from "../components/FullScreenImage.js";
 function DalleImagePage() {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [invalidImages, setInvalidImages] = useState(new Set()); // Track invalid images
+  const [invalidImages, setInvalidImages] = useState(new Set());
   const user = auth.currentUser;
   const userId = user?.uid || null;
 
   // Real-time Firestore listener
   useEffect(() => {
     const imagesRef = collection(db, "images");
+    const q = query(imagesRef, orderBy("timestamp", "desc"));
 
-    const q = query(imagesRef, orderBy("timestamp", "desc")); // Adjust the field to match Firestore
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
-        const fetchedImages = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        console.log("Fetched Images: ", fetchedImages);
-
+        const fetchedImages = snapshot.docs.map((doc) => {
+          const data = { id: doc.id, ...doc.data() };
+          console.log("Fetched Image:", data); // Add this line for debugging
+          return data;
+        });
         setImages(fetchedImages);
         setLoading(false);
       },
@@ -36,11 +36,10 @@ function DalleImagePage() {
       }
     );
 
-    return () => unsubscribe(); // Clean up the listener
+    return () => unsubscribe();
   }, []);
 
   const handleImageError = (imageId) => {
-    console.warn(`Image failed to load for post with ID: ${imageId}`);
     setInvalidImages((prevInvalidImages) => new Set([...prevInvalidImages, imageId]));
   };
 
@@ -69,22 +68,6 @@ function DalleImagePage() {
       return () => observer.disconnect();
     }, []);
 
-    const handleImageClick = () => {
-      if (imgRef.current) {
-        if (imgRef.current.requestFullscreen) {
-          imgRef.current.requestFullscreen();
-        } else if (imgRef.current.webkitRequestFullscreen) {
-          imgRef.current.webkitRequestFullscreen(); // Safari
-        } else if (imgRef.current.mozRequestFullScreen) {
-          imgRef.current.mozRequestFullScreen(); // Firefox
-        } else if (imgRef.current.msRequestFullscreen) {
-          imgRef.current.msRequestFullscreen(); // IE/Edge
-        } else {
-          console.warn("Fullscreen API is not supported by this browser.");
-        }
-      }
-    };
-
     return (
       <div ref={imgRef} style={{ minHeight: "150px", backgroundColor: "#333" }}>
         {isVisible && (
@@ -93,7 +76,6 @@ function DalleImagePage() {
             alt={alt}
             onError={onError}
             className="h-38 w-full object-cover mb-1 cursor-pointer"
-            onClick={handleImageClick}
           />
         )}
       </div>
@@ -113,34 +95,43 @@ function DalleImagePage() {
       <h2 className="text-white text-center">User Images</h2>
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 p-2 gap-4 overflow-y-auto">
         {images
-          .filter((image) => !invalidImages.has(image.id)) // Exclude invalid images
-          .map((image) => (
-            <div key={image.id} className="p-2 border border-gray-700 rounded-lg  bg-gray-800">
-              <LazyImage
-                src={image.imageUrl}
-                alt={image.prompt || "Generated image"}
-                onError={() => handleImageError(image.id)}
-              />
-              <DalleLike
-              className="mt-2"
-                handleLike={() => handleLike(image.id)}
-                likes={image.likes || 0}
-                userId={userId}
-                imageId={image.id}
-              />
-              <p className="text-white text-sm italic mt-2 text-center">
-                {image.prompt || "No prompt available"}
-              </p>
-              <Link to={`/profile/${image.userId}`} className="no-underline">
-                <p className="text-white hover:bg-slate-700">
-                  {image.displayName || "Anonymous User"}
+          .filter((image) => !invalidImages.has(image.id))
+          .map((image) => {
+            // Sanitize fields
+            const prompt = typeof image.prompt === "string" ? image.prompt : "No prompt available";
+            const displayName = typeof image.displayName === "string" ? image.displayName : "Anonymous User";
+            const imageUrl = typeof image.imageUrl === "string" ? image.imageUrl : "https://via.placeholder.com/300";
+
+            return (
+              <div key={image.id} className="p-2 border border-gray-700 rounded-lg bg-gray-800">
+                <Link to={`/image/${image.id}`}>
+                  <LazyImage
+                    src={imageUrl}
+                    alt={prompt}
+                    onError={() => handleImageError(image.id)}
+                  />
+                </Link>
+                <DalleLike
+                  className="mt-2"
+                  handleLike={() => handleLike(image.id)}
+                  likes={typeof image.likes === "number" ? image.likes : 0}
+                  userId={userId}
+                  imageId={image.id}
+                />
+                <p className="text-white text-sm italic mt-2 text-center">
+                  {prompt}
                 </p>
-              </Link>
-              <p className="text-white text-xs">
-                {image.timestamp?.toDate().toLocaleString() || "Unknown date"}
-              </p>
-            </div>
-          ))}
+                <Link to={`/profile/${image.userId}`}>
+                  <p className="text-white hover:bg-slate-700">
+                    {displayName}
+                  </p>
+                </Link>
+                <p className="text-white text-xs">
+                  {image.timestamp?.toDate().toLocaleString() || "Unknown date"}
+                </p>
+              </div>
+            );
+          })}
       </div>
     </>
   );

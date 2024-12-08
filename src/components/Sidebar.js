@@ -1,3 +1,5 @@
+// /Users/nico/Desktop/apps/portal/src/components/Sidebar.js
+
 import React, { useState, useEffect } from "react";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { db, auth } from "../firebase";
@@ -49,37 +51,51 @@ const Sidebar = ({ onSelectChat }) => {
   };
 
   return (
-    <div className="relative z-50  bg-black bg-opacity-5 ">
-      <button
-        onClick={toggleSidebar}
-        className="fixed top-20 left-4 bg-gray-600 bg-transparent text-white p-2 rounded-md z-50"
-      >
-        {isOpen ? "Close" : "Chat"}
-      </button>
+    <div className="relative z-50">
+      {/* Toggle Tab */}
       <div
-        className={`fixed top-20 left-0 h-full bg-gray-800 text-white shadow-lg transition-all duration-300 ${
+        className={`absolute top-1/2 transform -translate-y-1/2 -right-0 bg-transparent text-white p-2 rounded-r-md cursor-pointer shadow-lg ${
+          isOpen ? "rotate-180" : "rotate-0"
+        } transition-transform duration-300`}
+        onClick={toggleSidebar}
+      >
+        {/* Icon or Text for Toggle */}
+        {/* You can replace this with an icon from a library like FontAwesome or Heroicons */}
+        {isOpen ? "<<" : "chat"}
+      </div>
+
+      {/* Sidebar Panel */}
+      <div
+        className={`fixed top-20 left-0 h-full bg-gray-800 text-white shadow-lg transition-width duration-300 ${
           isOpen ? "w-64" : "w-0 overflow-hidden"
         }`}
       >
+        {/* Optional: Overlay to close sidebar when clicking outside */}
         {isOpen && (
-          <div className="p-4 bg-black bg-opacity-75">
-            <h2 className="text-xl font-bold mb-4">Your Chats</h2>
-            <ul>
-              {conversations.map((chat) => (
-                <li
-                  key={chat.id}
-                  className="cursor-pointer p-2 bg-gray-700 rounded-md hover:bg-gray-600 mb-2"
-                  onClick={() => onSelectChat(chat)}
-                >
-                  <p className="font-bold">{chat.name}</p>
-                  <p className="text-sm text-gray-400 truncate">
-                    {chat.lastMessage || "No messages yet"}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <div
+            className="fixed inset-0 bg-black opacity-25"
+            onClick={toggleSidebar}
+          ></div>
         )}
+
+        {/* Sidebar Content */}
+        <div className="p-4">
+          <h2 className="text-xl font-bold mb-4">Your Chats</h2>
+          <ul>
+            {conversations.map((chat) => (
+              <li
+                key={chat.id}
+                className="cursor-pointer p-2 bg-gray-700 rounded-md hover:bg-gray-600 mb-2"
+                onClick={() => onSelectChat(chat)}
+              >
+                <p className="font-bold">{chat.name}</p>
+                <p className="text-sm text-gray-400 truncate">
+                  {chat.lastMessage || "No messages yet"}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );

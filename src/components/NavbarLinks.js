@@ -35,24 +35,24 @@ const NavbarLinks = ({user, handleLogout, }) => {
 
     const renderLinks = () => (
         <>
-            <Link to="/home" className="text-white hover:bg-sky-400 rounded-e-md p-2 block">
+            <Link to="/home" className="text-white hover:bg-slate-400 rounded-e-md p-2 block">
                 <HomeOutlined style={{ fontSize: '30px' }} />
             </Link>
             
         
-                <Link to="/userlist" className="text-white hover:bg-sky-400 rounded-e-md p-2 block no-underline">
+                <Link to="/userlist" className="text-white hover:bg-slate-400 rounded-e-md p-2 block no-underline">
                     <CommentOutlined style={{ fontSize: '30px', padding: '2px' }} />
                     <h6 className='font-xs'> people</h6>
                    
                 </Link>
-                <Link to='dalleimagery'className="text-white hover:bg-sky-400 rounded-e-md p-2 block no-underline"> 
+                <Link to='dalleimagery'className="text-white hover:bg-slate-400 rounded-e-md p-2 block no-underline"> 
                 <i className="bi bi-robot" style={{ fontSize: '30px', padding: '2px' }}> </i>
                 <h6 className='font-xs'>dalle images </h6>
 
                 
                 </Link>
                 {userId && (
-    <Link to="/dalle" className="flex flex-col items-center justify-center text-white hover:bg-sky-400 mr-2 rounded-md p-2 no-underline">
+    <Link to="/dalle" className="flex flex-col items-center justify-center text-white hover:bg-slate-400 mr-2 rounded-md p-2 no-underline">
         <img src={dalle} alt="dalle" className="h-9 rounded-full bg-white hover:animate-pulse block no-underline" />
         <h6 className='text-xs mt-1'>create Dalle image</h6>
     </Link>
@@ -85,7 +85,7 @@ const NavbarLinks = ({user, handleLogout, }) => {
         <>
             {/* Mobile Menu Button */}
             <button
-                className="lg:hidden text-xl z-51 border-none hover:bg-sky-400 bg-transparent text-white rounded-e-md p-2"
+                className="lg:hidden text-xl z-51 border-none hover:bg-slate-400 bg-transparent text-white rounded-e-md p-2"
                 onClick={() => setIsOpen(!isOpen)}
             >
                 ☰
@@ -95,7 +95,7 @@ const NavbarLinks = ({user, handleLogout, }) => {
             {isOpen && (
                 <div ref={menuRef} className="transition-transform transform translate-x-0 fixed top-0 left-0 h-full w-64 bg-black z-10">
                     <button
-                        className="text-black hover:bg-sky-400 border-none rounded-e-md p-2 absolute top-0 right-0"
+                        className="text-black hover:bg-slate-400 border-none rounded-e-md p-2 absolute top-0 right-0"
                         onClick={() => setIsOpen(false)}
                     >
                         X

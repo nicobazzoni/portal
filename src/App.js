@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { auth } from "./firebase";
 import { signOut } from "firebase/auth";
 import { Link } from "react-router-dom";
+import DalleImageDetail from "./pages/DalleImageDetail";
 
 import Home from "./pages/Home";
 
@@ -68,6 +69,7 @@ function App() {
         <Route path="/userlist" element={<UserList />} />
         <Route path="/dalle" element={<Dalle user={user} />} />
         <Route path="/dalleimagery" element={<DalleImagePage />} />
+        <Route path="/image/:id"element={<DalleImageDetail />} />
         <Route path="/chatmodal" element={<Chat />} />
 
 
