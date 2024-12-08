@@ -52,12 +52,12 @@ const Sidebar = ({ onSelectChat }) => {
     <div className="relative z-50  bg-black bg-opacity-5 ">
       <button
         onClick={toggleSidebar}
-        className="fixed top-4 left-4 bg-gray-600 bg-transparent text-white p-2 rounded-md z-50"
+        className="fixed top-20 left-4 bg-gray-600 bg-transparent text-white p-2 rounded-md z-50"
       >
-        {isOpen ? "Close" : "Open"}
+        {isOpen ? "Close" : "Chat"}
       </button>
       <div
-        className={`fixed top-0 left-0 h-full bg-gray-800 text-white shadow-lg transition-all duration-300 ${
+        className={`fixed top-20 left-0 h-full bg-gray-800 text-white shadow-lg transition-all duration-300 ${
           isOpen ? "w-64" : "w-0 overflow-hidden"
         }`}
       >

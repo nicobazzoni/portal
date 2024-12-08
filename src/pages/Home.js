@@ -62,7 +62,7 @@ const Home = ({ setActive, user }) => {
         }`}
       >
         <MoodCarousel path="/moods" />
-        <h1>Welcome to the Chat App</h1>
+      
       </div>
 
       {/* Footer */}

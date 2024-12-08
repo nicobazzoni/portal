@@ -18,7 +18,7 @@ const LandingPage = () => {
       {/* Content Overlay */}
       <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center text-center text-white">
         <h1 className="text-4xl md:text-6xl font-bold mb-4">
-          Welcome to Portl.life
+          Welcome to Portl
         </h1>
         <p className="text-lg md:text-2xl mb-6">
           Step into the world of creativity and innovation
