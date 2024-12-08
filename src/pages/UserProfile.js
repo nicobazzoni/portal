@@ -21,8 +21,9 @@ import {
 } from "firebase/firestore";
 import { useParams } from 'react-router-dom';
 import Chat from "./ChatModal";
-import UserMoods from './UserMoods';
+import FullscreenImage from "../components/FullScreenImage";
 
+import { Link } from "react-router-dom";
 
 const UserProfile = () => {
   const [profile, setProfile] = useState({});
@@ -71,6 +72,8 @@ const UserProfile = () => {
         orderBy('uploadedAt')
     );
 
+    
+
     const unsubscribe = onSnapshot(imagesQuery, (snapshot) => {
         const fetchedImages = snapshot.docs.map(doc => ({
             id: doc.id,
@@ -88,6 +91,7 @@ const UserProfile = () => {
 
 }, [db, userId]);
 
+
   const handleEditClick = () => {
     if (currentUser && currentUser.uid === id) {
       setIsEditMode(true);
@@ -96,19 +100,36 @@ const UserProfile = () => {
     }
   };
 
-  const handleSendMessage = () => {
-    const recipientInfo = {
-      id: id,
-      displayName: profile.displayName,
-      recipientName: profile.displayName,
-      recipientID: profile.displayName, // Pass the recipient's unique ID
-    };
+  // Function to handle "Send Message"
+const handleSendMessage = () => {
+  if (!profile || !profile.displayName) {
+    console.error("Recipient information is missing.");
+    return;
+  }
 
-    setShowChatModal(true);
-    setRecipientInfo(recipientInfo);
-    setRecipientName(profile.displayName);
-    setRecipientID(profile.displayName); // Pass the recipient's unique ID
+  const recipientInfo = {
+    id: id, // Recipient's unique ID
+    displayName: profile.displayName,
   };
+
+  setRecipientInfo(recipientInfo);
+  setRecipientName(profile.displayName);
+  setRecipientID(id); // Set the recipient's ID
+  setShowChatModal(true); // Open the chat modal
+};
+
+// Render the Chat modal when showChatModal is true
+{showChatModal && recipientInfo && (
+  <Chat
+    senderName={currentUser.displayName}
+    senderID={currentUser.uid}
+    recipientName={recipientName || recipientInfo.displayName}
+    recipientID={recipientID || recipientInfo.id}
+    recipientPhotoURL={profile.profilePicURL} // Optional: Profile picture of the recipient
+    conversationID={`${currentUser.uid}_${recipientID}`} // Unique conversation ID
+    onClose={() => setShowChatModal(false)} // Close the modal
+  />
+)}
 
   useEffect(() => {
     if (!recipientID) {
@@ -221,12 +242,14 @@ const UserProfile = () => {
       console.log("Unauthorized to edit this profile");
     }
   };
+  
 
 
   
 
   return (
     <div className="container mx-auto overflow-y-auto no-scrollbar space-y-2  scroll-m-0 px-4 py-8 h-screen text-white">
+    <Link to={`/messages/${userId}`}>Go to Room</Link>
       {profile.profilePicURL && (
         <img
           src={profile.profilePicURL}
@@ -280,27 +303,30 @@ const UserProfile = () => {
         </>
       )}
       <button
-        onClick={handleSendMessage}
-        className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 border-none mb-2"
-      >
-        Send Message
-      </button>
+  onClick={handleSendMessage}
+  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 border-none mb-2"
+>
+  Send Message
+</button>
 
-      {showChatModal && recipientInfo && (
-       <Chat
-       recipientName={recipientName}
-       recipientID={id} // Pass the user's ID as the recipient's ID
-       onClose={() => setShowChatModal(false)}
-     />
-
-      )}
+{showChatModal && recipientInfo && (
+  <Chat
+    senderName={currentUser.displayName}
+    senderID={currentUser.uid}
+    recipientName={recipientName}
+    recipientID={recipientID}
+    recipientPhotoURL={profile.profilePicURL} // Optional: Pass recipient's profile pic
+    conversationID={`${currentUser.uid}_${recipientID}`} // Unique conversation ID
+    onClose={() => setShowChatModal(false)}
+  />
+)}
 
       <div>moods</div>
       <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-3 p-2 gap-4 overflow-y-auto">
   {images && images.length > 0 ? (
     images.map((imageObj, index) => (
       <div className="flex-col" key={imageObj.id}>
-        <img className="h-38 w-full object-cover rounded-sm " src={imageObj.imageUrl} alt={`Mood ${index + 1}`} />
+        <FullscreenImage className="h-38 w-full object-cover rounded-sm " src={imageObj.imageUrl} alt={`Mood ${index + 1}`} />
       </div>
     ))
   ) : (

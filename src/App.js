@@ -17,6 +17,7 @@ import NotFound from "./pages/NotFound";
 import Header from "./components/Header";
 import Auth from "./pages/Auth";
 import Footer from "./components/Footer"
+import MessageRoom from "./components/MessageRoom"; 
 
 
 import ScrollToTop from "./components/ScrollToTop";
@@ -75,6 +76,7 @@ function App() {
         <Route path="/landing" element={<LandingPage />} />
         <Route path="*" element={<NotFound />} />
         <Route path='about' element={<About />} />
+        <Route path="/messages/:roomId" element={<MessageRoom />} />
       </Routes>
       
     </div>

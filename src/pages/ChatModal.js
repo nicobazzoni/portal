@@ -1,112 +1,117 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   collection,
-  addDoc,
   query,
-  orderBy,
-  onSnapshot,
-  serverTimestamp,
   where,
-  getDocs,
-  
+  onSnapshot,
+  addDoc,
+  serverTimestamp,
+  orderBy,
 } from "firebase/firestore";
-import { db, auth } from "../firebase";
+import { db } from "../firebase";
 
-const ChatModal = ({ recipientName, recipientID }) => {
+const ChatModal = ({
+  senderName,
+  senderID,
+  recipientName,
+  recipientID,
+  onClose,
+}) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
 
-  const messagesRef = collection(db, "messages");
-  const currentUser = auth.currentUser;
-  const [recipientIDState, setRecipientID] = useState(recipientID); // Initialize with the recipientID prop
- // Use setRecipientID as a state setter function
+  useEffect(() => {
+    if (!senderID || !recipientID) {
+      console.error(
+        "Missing senderID or recipientID. Cannot run Firestore query."
+      );
+      return;
+    }
 
+    const q = query(
+      collection(db, "messages"),
+      where("participants", "array-contains", senderID),
+      orderBy("createdAt", "desc") // Order by createdAt in descending order
+    );
 
-const allMessagesQuery = query(
-  messagesRef,
-  orderBy("createdAt", "asc")
-);
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const filteredMessages = snapshot.docs
+        .map((doc) => ({ id: doc.id, ...doc.data() }))
+        .filter(
+          (msg) =>
+            msg.participants.includes(senderID) &&
+            msg.participants.includes(recipientID)
+        );
+      setMessages(filteredMessages);
+    });
 
-useEffect(() => {
-  // Define the query inside the useEffect
-  const allMessagesQuery = query(
-    messagesRef,
-    orderBy("createdAt", "asc")
-  );
+    return () => unsubscribe();
+  }, [senderID, recipientID]);
 
-  // Set up the onSnapshot listener inside the useEffect
-  const unsubscribe = onSnapshot(allMessagesQuery, (snapshot) => {
-    const allMessages = snapshot.docs
-      .map((doc) => ({ id: doc.id, ...doc.data() }))
-      .filter(message => 
-        (message.senderID === currentUser.uid && message.recipientID === recipientIDState) || 
-        (message.recipientID === currentUser.uid && message.senderID === recipientIDState)
-      )
-      .sort((a, b) => {
-        if (!a.createdAt || !b.createdAt) return 0;  // Make sure the createdAt field exists
-        return a.createdAt.seconds - b.createdAt.seconds;
-      });
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!newMessage.trim()) return;
 
-    setMessages(allMessages);
-  });
+    if (!senderID || !recipientID) {
+      console.error("Cannot send message without senderID or recipientID.");
+      return;
+    }
 
-  // Return the cleanup function
-  return () => unsubscribe();
-}, [recipientIDState, currentUser.uid]);
-
-
-const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    if (newMessage.trim() === "") return;
-
-    console.log("recipientName before addDoc:", recipientName);
-
-    await addDoc(messagesRef, {
+    await addDoc(collection(db, "messages"), {
       text: newMessage,
       createdAt: serverTimestamp(),
-      sender: auth.currentUser.displayName,
-      senderID: auth.currentUser.uid, // Save the sender's UID
-      recipientID: recipientIDState,
-      recipientName: recipientName,
+      senderName,
+      senderID,
+      recipientName,
+      recipientID,
+      participants: [senderID, recipientID],
     });
-    
 
     setNewMessage("");
   };
 
-  useEffect(() => {
-    setRecipientID(recipientID);
-  }, [recipientID]);
-  
-
   return (
- 
-    <div className="chat-app text-white">
-      <div className="header">
-        <h1 className="bg-gray-600 rounded-md p-1 font-bold">Chat with {recipientName}</h1>
-      </div>
-      <div className="messages text-white">
-        {messages.map((message) => (
-          console.log("recipientName in messages.map:", message.text),
-          <div key={message.id} className="message">
-            <span className="user">{message.sender}:</span> {message.text}
-            
-          </div>
-        ))}
-      </div>
-      <form onSubmit={handleSubmit} className="new-message-form">
-        <input
-          type="text"
-          value={newMessage}
-          onChange={(event) => setNewMessage(event.target.value)}
-          className="new-message-input font-poppins p-1 rounded-md border-none"
-          placeholder="write here..."
-        />
-        <button type="submit" className="send-button p-2 m-2 rounded-md border-none">
-          Send
+    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+      <div className="bg-white rounded-lg p-4 w-full max-w-md shadow-lg relative">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 text-gray-500 hover:text-black"
+        >
+          ✖
         </button>
-      </form>
+        <h2 className="text-xl font-bold mb-4">Chat with {recipientName}</h2>
+
+        {/* Messages */}
+        <div className="h-64 overflow-y-auto mb-4 bg-gray-100 p-2 rounded-md">
+          {messages.map((msg) => (
+            <div key={msg.id} className="mb-2">
+              <strong>{msg.senderID === senderID ? "You" : recipientName}:</strong>{" "}
+              {msg.text}
+            </div>
+          ))}
+        </div>
+
+        {/* Input Box */}
+        <form
+          onSubmit={handleSendMessage}
+          className="flex space-x-2"
+        >
+          <input
+            type="text"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            className="flex-grow border p-2 rounded-md"
+            placeholder="Type a message"
+          />
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-4 py-2 rounded-md"
+          >
+            Send
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

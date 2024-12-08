@@ -26,7 +26,7 @@ const Header = ({ active, setActive, user, handleLogout }) => {
 
   return (
     <nav className="bg-stone-950">
-        <div className=" px-4 py-2 mx-auto space-x-2 flex justify-between items-center">
+        <div className="  px-4 py-2 mx-auto space-x-2 flex justify-between items-center">
              
             <NavbarLinks 
                 userId={userId} 
