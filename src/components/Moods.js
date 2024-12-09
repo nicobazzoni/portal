@@ -14,6 +14,7 @@ function DynamicMoodCarousel() {
   const DISPLAY_COUNT = 4; // Number of images to display at a time
   const INTERVAL_MS = 5000; // Interval in milliseconds for image changes
 
+  // Fetch images on mount
   useEffect(() => {
     const imagesRef = collection(db, "images");
     const q = query(imagesRef, orderBy("timestamp", "desc"), limit(12)); // Fetch 12 latest images
@@ -35,9 +36,9 @@ function DynamicMoodCarousel() {
     return () => unsubscribe();
   }, []);
 
+  // Handle carousel interval
   useEffect(() => {
     if (images.length > 0) {
-      // Start the carousel
       const interval = setInterval(() => {
         setCurrentIndex((prevIndex) => (prevIndex + DISPLAY_COUNT) % images.length);
       }, INTERVAL_MS);
@@ -51,8 +52,8 @@ function DynamicMoodCarousel() {
     [images]
   );
 
+  // Update visible images whenever the currentIndex changes
   useEffect(() => {
-    // Update the visible images whenever the currentIndex changes
     if (validImages.length > 0) {
       const newVisibleImages = [];
       for (let i = 0; i < DISPLAY_COUNT; i++) {
@@ -76,13 +77,17 @@ function DynamicMoodCarousel() {
   }
 
   return (
-    <div className="mood-carousel-container">
+    <div
+      className="mood-carousel-container"
+      style={{ minHeight: "500px" }} // Fixed height to prevent layout shifts
+    >
       <h2 className="text-white text-center mb-4 text-lg font-semibold">Dalle AI Images</h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4 p-4">
         {visibleImages.map((image) => (
           <div
             key={image.id}
-            className="p-2 border border-gray-700 rounded-lg bg-gray-800 animate-slide-in"
+            className="p-2 border border-gray-700 rounded-lg bg-gray-800"
+            style={{ minHeight: "200px" }} // Fixed height for each image container
           >
             <FullscreenImage
               src={image.imageUrl}

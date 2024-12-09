@@ -62,14 +62,14 @@ function CommentBox({ imageId }) {
 
   return (
     <div className="mt-6">
-      <h2 className="text-xl mb-4">Comments</h2>
+      <h2 className="text-xl mb-4 bg-gray-200 text-black ">Comments</h2>
       
       {/* Display existing comments */}
       {comments.length > 0 ? (
         comments.map((comment) => (
-          <div key={comment.id} className="p-2 mb-2 border-b border-gray-700">
-            <p className="font-bold">{comment.displayName || "Anonymous"}</p>
-            <p>{comment.text}</p>
+          <div key={comment.id} className="p-2 mb-2 border-b  border-gray-700">
+            <p className="font-bold bg-gray-500 max-w-fit p-1  text-black ">{comment.displayName || "Anonymous"}</p>
+            <p className="bg-gray-200 text-black max-w-fit p-1 ">{comment.text}</p>
             <p className="text-xs italic">
               {comment.timestamp?.toDate().toLocaleString()}
             </p>
