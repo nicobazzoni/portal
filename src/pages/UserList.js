@@ -1,21 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
-
 import { auth } from "../firebase";
 import { Link } from "react-router-dom";
 
-const UserList = ({userId,user}) => {   
+const UserList = () => {   
   const [users, setUsers] = useState([]);
-  const [count, setCount] = useState(0);
-  const [lastVisible, setLastVisible] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const { currentUser } = auth;
-  const profileId = user?.split("@")[0];
-  console.log(profileId)
-  console.log("All Users:", users);
 
   useEffect(() => {
     const getUsersData = async () => {
@@ -24,64 +16,51 @@ const UserList = ({userId,user}) => {
       const first = query(usersRef, orderBy("displayName"), limit(50));
       const docSnapshot = await getDocs(first);
       setUsers(docSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-      setCount(docSnapshot.size);
-      setLastVisible(docSnapshot.docs[docSnapshot.docs.length - 1]);
       setLoading(false);
     };
 
     getUsersData();
-   
   }, []);
-
-  const handleUserClick = (user) => {
-    setSelectedUser(user);
-  
-  };
-
-  const closeChatModal = () => {
-    setSelectedUser(null);
-  };
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
 
   const filteredUsers = users.filter((user) =>
-    user.displayName.toLowerCase().includes(searchQuery.toLowerCase())
+    user.displayName?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
-    <div className="h-screen">
-      <h2  className="text-white mt-2">User List</h2>
+    <div className="h-screen p-4 bg-gray-900 text-white">
+      <h2 className="text-xl font-semibold mb-2 text-center">User List</h2>
       <input
         type="text"
-        placeholder="Search users"
+        placeholder="Search users..."
         value={searchQuery}
         onChange={handleSearchChange}
-        className="p-2 m-2 w-full rounded-md"
+        className="w-full p-2 mb-4 border border-gray-700 bg-gray-800 rounded-md text-white placeholder-gray-400"
       />
+      
       {loading ? (
-        <p>Loading...</p>
+        <p className="text-center">Loading...</p>
       ) : (
-        <ul className="no-bullet">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {filteredUsers.map((user) => (
-            <li className="no-bullet   border-opacity-25 "
+            <Link
               key={user.id}
-              onClick={() => handleUserClick(user)}
-              style={{ cursor: "pointer", color: "blue", listStyleType: "none"  }}
-            >
-               <Link
               to={`/profile/${user.id}`}
-              className="text-blue-500 no-bullet no-underline hover:lime-300"
+              className="block text-center bg-gray-800 p-3 rounded-lg hover:bg-gray-700 transition duration-200"
             >
-              {user.displayName}
+              <img
+                src={user.profilePicURL || "/default-avatar.png"}
+                alt={user.displayName}
+                className="w-20 h-20 object-cover rounded-full mx-auto"
+              />
+              <p className="mt-2 text-sm">{user.displayName || "Anonymous"}</p>
             </Link>
-            </li>
           ))}
-        </ul>
+        </div>
       )}
-
-  
     </div>
   );
 };

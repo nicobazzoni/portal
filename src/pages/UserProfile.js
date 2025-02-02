@@ -77,47 +77,44 @@ const navigate = useNavigate();
   };
 
   // Handle Profile Picture Change
-  const handleProfilePicChange = (e) => {
-    if (currentUser && currentUser.uid === id) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
+  const handleProfilePicChange = async (e) => {
+    if (!currentUser || currentUser.uid !== id) {
+        console.log("Unauthorized to edit this profile");
+        return;
+    }
 
-      reader.onloadend = () => {
-        setPreviewImage(reader.result);
-      };
+    const file = e.target.files[0];
+    if (!file) return;
 
-      if (file) {
-        reader.readAsDataURL(file);
-      }
+    setPreviewImage(URL.createObjectURL(file)); // Show preview before upload
 
-      const storageRef = ref(storage, "profile_pics/" + id);
-      const uploadTask = uploadBytesResumable(storageRef, file);
+    // Upload to Firebase Storage
+    const storageRef = ref(storage, `profile_pics/${id}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
 
-      uploadTask.on(
+    uploadTask.on(
         "state_changed",
         null,
         (error) => {
-          console.error("Error uploading profile picture:", error);
+            console.error("🔥 Error uploading profile picture:", error);
         },
         async () => {
-          const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
-          setProfile((prev) => ({ ...prev, profilePicURL: downloadUrl }));
+            // ✅ Get the file URL after upload
+            const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
 
-          if (currentUser) {
-            currentUser
-              .updateProfile({ photoURL: downloadUrl })
-              .then(() => console.log("Profile picture updated"))
-              .catch((error) =>
-                console.error("Error updating profile picture:", error)
-              );
-          }
+            console.log("✅ Uploaded! File available at:", downloadUrl);
+
+            // ✅ Update Firestore User Profile with new profilePicURL
+            try {
+                await setDoc(doc(db, "users", id), { profilePicURL: downloadUrl }, { merge: true });
+                setProfile((prev) => ({ ...prev, profilePicURL: downloadUrl }));
+                console.log("✅ Profile picture URL updated in Firestore!");
+            } catch (error) {
+                console.error("🔥 Error updating Firestore user profile:", error);
+            }
         }
-      );
-    } else {
-      console.log("Unauthorized to edit this profile");
-    }
-  };
-
+    );
+};
   // Handle Profile Update
   const handleProfileUpdate = async () => {
     if (currentUser && currentUser.uid === id) {
