@@ -3,7 +3,7 @@ import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { auth } from "../firebase";
 import { Link } from "react-router-dom";
-
+import brainIcon from "/Users/nico/Desktop/apps/portal/src/components/assets/Plogo.svg"
 const UserList = () => {   
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -52,7 +52,7 @@ const UserList = () => {
               className="block text-center bg-gray-800 p-3 rounded-lg hover:bg-gray-700 transition duration-200"
             >
               <img
-                src={user.profilePicURL || "/default-avatar.png"}
+                src={user.profilePicURL || brainIcon}
                 alt={user.displayName}
                 className="w-20 h-20 object-cover rounded-full mx-auto"
               />
