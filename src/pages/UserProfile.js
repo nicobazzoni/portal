@@ -53,8 +53,7 @@ const navigate = useNavigate();
   useEffect(() => {
     const imagesQuery = query(
       collection(db, "images"),
-      where("userId", "==", id),
-      orderBy("uploadedAt", "desc")
+      where("userId", "==", id) // Ensure field exists
     );
 
     const unsubscribe = onSnapshot(imagesQuery, (snapshot) => {
@@ -218,8 +217,8 @@ const navigate = useNavigate();
                 <p className="text-white text-sm italic mt-2 text-center">
                   {image.prompt || "No prompt available"}
                 </p>
-                <p className="text-white text-xs text-center">
-                  {image.uploadedAt?.toDate().toLocaleString() || "Unknown date"}
+                <p className="text-white text-xs">
+                  {image.timestamp?.toDate().toLocaleString() || "Unknown date"}
                 </p>
               </div>
             ))}

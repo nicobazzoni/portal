@@ -34,10 +34,10 @@ function DalleGenerator() {
             if (!userId) {
                 throw new Error("User not authenticated");
             }
-
+        
             const user = auth.currentUser;
             const idToken = await user.getIdToken();
-
+        
             const response = await fetch(
                 "https://us-central1-mediaman-a8ba1.cloudfunctions.net/generateImageHttps",
                 {
@@ -49,40 +49,41 @@ function DalleGenerator() {
                     body: JSON.stringify({ prompt, userId }),
                 }
             );
-
+        
             if (!response.ok) {
-                let errorResponse;
-                try {
-                    errorResponse = await response.json();
-                } catch {
-                    errorResponse = { error: "Unexpected error occurred" };
-                }
+                const errorResponse = await response.json();
                 throw new Error(errorResponse.error || `Request failed with status ${response.status}`);
             }
-
+        
             const data = await response.json();
-            if (!data.imageUrl) {
-                throw new Error("The response did not contain an image URL");
-            }
-            console.log("[Generate Image] Success:", data);
-            return data;
+console.log("[DEBUG] API Response:", data);
+
+if (!data.imageUrl) {  // 🔥 Check if the response has `imageUrl`
+    throw new Error("The response did not contain an imageUrl");
+}
+return { imageUrl: data.imageUrl };
+        
+            const publicUrl = `https://storage.googleapis.com/[bucket-name]/${data.fileName}`;
+            return { imageUrl: publicUrl };
         } catch (error) {
             console.error("[Generate Image] Error:", error.message);
             setErrorMessage(error.message);
             throw error;
         }
     };
-
     const handleGenerateClick = async () => {
         if (!inputValue.trim()) {
             setErrorMessage("Please enter a prompt to generate an image.");
             return;
         }
-
+    
         setLoading(true);
+        setImageUrl(null); // ✅ Reset preview before generating new image
+    
         try {
             const data = await generateImage(inputValue);
-            setImageUrl(data.imageUrl);
+            console.log("[DEBUG] Setting new image URL:", data.imageUrl);
+            setImageUrl(data.imageUrl); // ✅ Immediately update state with the new URL
         } catch (error) {
             // Error already handled in generateImage
         } finally {

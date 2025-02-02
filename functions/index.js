@@ -16,7 +16,7 @@ const OPENAI_API_KEY = defineSecret("OPENAI_API_KEY");
 
 export const generateImageHttps = onRequest(
   {
-    secrets: [OPENAI_API_KEY], // Add secrets here if using Firebase Secrets
+    secrets: [OPENAI_API_KEY],
   },
   async (req, res) => {
     // Set CORS headers
@@ -24,19 +24,15 @@ export const generateImageHttps = onRequest(
     res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
     res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-    // Handle preflight requests
     if (req.method === "OPTIONS") {
       return res.status(204).send("");
     }
 
     try {
-      // Extract request data
       const { prompt, userId } = req.body;
 
       if (!prompt || !userId) {
-        return res.status(400).json({
-          error: "Missing required fields: 'prompt' or 'userId'",
-        });
+        return res.status(400).json({ error: "Missing 'prompt' or 'userId'" });
       }
 
       console.log(`[generateImage] UserID: ${userId}, Prompt: "${prompt}"`);
@@ -46,9 +42,7 @@ export const generateImageHttps = onRequest(
         process.env.OPENAI_API_KEY || OPENAI_API_KEY.value();
 
       if (!openaiApiKey) {
-        return res.status(500).json({
-          error: "OpenAI API key is missing",
-        });
+        return res.status(500).json({ error: "OpenAI API key is missing" });
       }
 
       // Call OpenAI API to generate image
@@ -98,11 +92,8 @@ export const generateImageHttps = onRequest(
         },
       });
 
-      // Generate a public URL for the uploaded file
-      const [publicUrl] = await file.getSignedUrl({
-        action: "read",
-        expires: "03-01-2500", // Adjust expiration as needed
-      });
+      // ✅ Generate permanent Firebase Storage URL
+      const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media`;
 
       console.log("[generateImage] Uploaded image to Storage:", publicUrl);
 
@@ -118,12 +109,11 @@ export const generateImageHttps = onRequest(
       await db.collection("images").add({
         userId,
         prompt,
-        imageUrl: publicUrl, // Use Firebase Storage URL
+        imageUrl: publicUrl, // ✅ Use permanent public URL
         displayName,
         timestamp: new Date(),
       });
 
-      // Send response
       res.status(200).json({ imageUrl: publicUrl });
     } catch (error) {
       console.error("[generateImage] Error:", error.message);
