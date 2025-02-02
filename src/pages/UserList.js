@@ -3,7 +3,7 @@ import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { auth } from "../firebase";
 import { Link } from "react-router-dom";
-import brainIcon from "/Users/nico/Desktop/apps/portal/src/components/assets/Plogo.svg"
+import brainIcon from "../components/assets/Plogo.svg"
 const UserList = () => {   
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
