@@ -2,7 +2,7 @@ import React from 'react';
 
 const ShareToFacebook = ({ imageId }) => {
   // Point to the Next.js app for sharing
-  const previewUrl = `https://https://portl-shar-fspjan8oj-nicobazzonis-projects.vercel.app/image/${imageId}`;
+  const previewUrl = `https://portl-shar-fspjan8oj-nicobazzonis-projects.vercel.app/image/${imageId}`;
 
   // Share function to open the Facebook share dialog
   const handleShare = () => {
