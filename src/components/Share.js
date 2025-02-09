@@ -1,10 +1,8 @@
 import React from 'react';
 
 const ShareToFacebook = ({ imageId }) => {
-  // Point to the Next.js app for sharing
-  const previewUrl = `https://portl.life/image/${imageId}`;
+  const previewUrl = `https://portl-shar.vercel.app/image/${imageId}`;
 
-  // Share function to open the Facebook share dialog
   const handleShare = () => {
     const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(previewUrl)}`;
     window.open(facebookShareUrl, '_blank', 'width=600,height=400');
@@ -13,7 +11,7 @@ const ShareToFacebook = ({ imageId }) => {
   return (
     <button 
       onClick={handleShare} 
-      className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700"
+      className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-400"
     >
       Share to Facebook
     </button>
