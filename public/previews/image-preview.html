@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- Default Meta Tags -->
+        <meta property="og:title" content="Portl - AI Image Gallery" id="og-title">
+        <meta property="og:description" content="Explore AI-generated images on Portl!" id="og-description">
+        <meta property="og:image" content="https://your-default-image.jpg" id="og-image">
+        <meta property="og:url" content="https://www.portl.life" id="og-url">
+        <meta property="og:type" content="website">
+      
+        <!-- Script to dynamically set meta tags for each post -->
+        <script>
+          const params = new URLSearchParams(window.location.search);
+          const imageUrl = params.get('imageUrl');
+          const title = params.get('title');
+          const imageId = params.get('imageId');
+      
+          // If the URL has query parameters, update meta tags
+          if (imageUrl && title && imageId) {
+            document.querySelector('meta[property="og:title"]').setAttribute('content', title);
+            document.querySelector('meta[property="og:image"]').setAttribute('content', imageUrl);
+            document.querySelector('meta[property="og:url"]').setAttribute('content', `https://www.portl.life/image/${imageId}`);
+          }
+        </script>
+      </head>
+<body>
+  <p>Redirecting you to the image...</p>
+</body>
+</html>

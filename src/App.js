@@ -25,6 +25,7 @@ import UserProfile from "./pages/UserProfile";
 import UserList from "./pages/UserList";
 import Dalle from "./components/Dalle";
 import DalleImagePage from "./pages/DalleImagePage";
+import ImageDetailPage from "./pages/ImageDetailPage";
 
 // Import ChatContext
 
@@ -70,6 +71,7 @@ function App() {
           <Route path="/dalle" element={<Dalle user={user} />} />
           <Route path="/dalleimagery" element={<DalleImagePage />} />
           <Route path="/image/:id" element={<DalleImageDetail />} />
+          <Route path="/image/:id" element={<ImageDetailPage />} />  {/* ✅ Add this route */}
      
           <Route path="/profile/:id" element={user?.uid ? <UserProfile user={user} setActive={setActive} /> : <Navigate to="/" />} />
           <Route path="/auth" element={<Auth setActive={setActive} setUser={setUser} />} />

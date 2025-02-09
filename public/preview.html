@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portl Image Preview</title>
+
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Loading image..." id="og-title">
+  <meta property="og:description" content="Check out this AI-generated image on Portl!" id="og-description">
+  <meta property="og:image" content="Plogo.svg" id="og-image">
+  <meta property="og:url" content="https://portl.life" id="og-url">
+  <meta property="og:type" content="website">
+
+  <!-- Script to Dynamically Update Meta Tags Based on URL Parameters -->
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const imageUrl = params.get('imageUrl');
+    const title = params.get('title');
+    const imageId = params.get('imageId');
+  
+    if (imageUrl && title && imageId) {
+      document.querySelector('meta[property="og:title"]').setAttribute('content', title);
+      document.querySelector('meta[property="og:image"]').setAttribute('content', imageUrl);
+      document.querySelector('meta[property="og:url"]').setAttribute('content', `https://portl.life/image/${imageId}`);
+    }
+  
+    // Redirect to the actual image detail page after Facebook scrapes
+    setTimeout(() => {
+      window.location.href = `https://portl.life/image/${imageId}`;
+    }, 1000);  // Delay to allow Facebook to scrape
+  </script>
+</head>
+<body>
+  <p>Redirecting to your image...</p>
+</body>
+</html>

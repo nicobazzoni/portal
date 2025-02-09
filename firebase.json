@@ -8,6 +8,10 @@
     ],
     "rewrites": [
       {
+        "source": "/image/**",
+        "function": "ssrApp"  // This points to the Firebase Function for serving meta tags
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
