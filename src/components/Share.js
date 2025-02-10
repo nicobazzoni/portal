@@ -1,7 +1,8 @@
 import React from 'react';
 
 const ShareToFacebook = ({ imageId }) => {
-  const previewUrl = `https://portl-shar.vercel.app/image/${imageId}`;
+  // This will just share the page URL without any fancy previews
+  const previewUrl = `https://portl.life/image/${imageId}`;
 
   const handleShare = () => {
     const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(previewUrl)}`;
@@ -11,7 +12,7 @@ const ShareToFacebook = ({ imageId }) => {
   return (
     <button 
       onClick={handleShare} 
-      className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-400"
+      className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700"
     >
       Share to Facebook
     </button>
