@@ -121,3 +121,47 @@ export const generateImageHttps = onRequest(
     }
   }
 );
+
+export const serveImageMetadata = onRequest(async (req, res) => {
+  res.set("Access-Control-Allow-Origin", "*");
+  res.set("Cache-Control", "public, max-age=300, s-maxage=600");
+
+  const imageId = req.path.split("/").pop(); // Extract ID from URL
+  if (!imageId) {
+    return res.status(400).send("Invalid request: No image ID provided.");
+  }
+
+  try {
+    const docRef = db.collection("images").doc(imageId);
+    const docSnap = await docRef.get();
+
+    if (!docSnap.exists) {
+      return res.status(404).send("Image not found");
+    }
+
+    const imageData = docSnap.data();
+    const imageUrl = imageData.imageUrl || "https://via.placeholder.com/300";
+    const prompt = imageData.prompt || "AI Generated Image";
+    const displayName = imageData.displayName || "Anonymous User";
+
+    res.send(`
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta property="og:title" content="${prompt}" />
+          <meta property="og:image" content="${imageUrl}" />
+          <meta property="og:url" content="https://portl.life/image/${imageId}" />
+          <meta property="og:type" content="website" />
+          <meta property="og:description" content="Created by ${displayName} on Portl" />
+        </head>
+        <body>
+          <h1>${prompt}</h1>
+          <img src="${imageUrl}" alt="${prompt}" style="max-width:100%;" />
+        </body>
+      </html>
+    `);
+  } catch (error) {
+    console.error("[serveImageMetadata] Error:", error.message);
+    res.status(500).send("Internal Server Error");
+  }
+});

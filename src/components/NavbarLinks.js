@@ -35,21 +35,21 @@ const NavbarLinks = ({ user, handleLogout }) => {
     <>
       <Link
         to="/home"
-        className="text-white hover:bg-slate-400 rounded-e-md p-2 block"
+        className="text-black hover:bg-slate-400 rounded-e-md p-2 block"
       >
         <HomeOutlined style={{ fontSize: "30px" }} />
       </Link>
 
       <Link
         to="/userlist"
-        className="text-white hover:bg-slate-400 rounded-e-md p-2 block no-underline"
+        className="text-black hover:bg-slate-400 rounded-e-md p-2 block no-underline"
       >
         <CommentOutlined style={{ fontSize: "30px", padding: "2px" }} />
         <h6 className="font-xs">people</h6>
       </Link>
       <Link
         to="dalleimagery"
-        className="text-white hover:bg-slate-400 rounded-e-md p-2 block no-underline"
+        className="text-black hover:bg-slate-400 rounded-e-md p-2 block no-underline"
       >
         <i
           className="bi bi-robot"
@@ -60,7 +60,7 @@ const NavbarLinks = ({ user, handleLogout }) => {
       {userId && (
         <Link
           to="/dalle"
-          className="flex flex-col items-center justify-center text-white hover:bg-slate-400 mr-2 rounded-md p-2 no-underline"
+          className="flex flex-col items-center justify-center text-black hover:bg-slate-400 mr-2 rounded-md p-2 no-underline"
         >
           <img
             src={dalle}
@@ -75,7 +75,7 @@ const NavbarLinks = ({ user, handleLogout }) => {
         <div className="flex flex-col items-center space-y-4 mt-2 lg:flex-row lg:space-y-0 lg:space-x-4">
           <Link
             to={`/profile/${userId}`}
-            className="text-white text-xs bg-black p-1 no-underline block"
+            className="text-black text-xs bg-white p-1 no-underline block"
           >
             {user?.displayName}
           </Link>
@@ -101,7 +101,7 @@ const NavbarLinks = ({ user, handleLogout }) => {
     <>
       {/* Mobile Menu Button */}
       <button
-        className="lg:hidden flex flex-col justify-between h-10 w-12 border-none bg-transparent text-white p-2"
+        className="lg:hidden flex flex-col justify-between h-10 w-12 border-none  text-black p-2"
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className="block w-full h-1 bg-white rounded-sm"></span>
@@ -113,7 +113,7 @@ const NavbarLinks = ({ user, handleLogout }) => {
       {isOpen && (
         <div
           ref={menuRef}
-          className="transition-transform transform translate-x-0 fixed top-0 left-0 h-full w-64 bg-black z-10"
+          className="transition-transform transform bg-opacity-5 translate-x-0 fixed top-0 left-0 h-full w-64 bg-white z-10"
         >
           <button
             className="text-black hover:bg-slate-400 border-none rounded-e-md p-2 absolute top-0 right-0"

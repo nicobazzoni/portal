@@ -7,161 +7,114 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
-import { addDoc, doc, setDoc  } from "firebase/firestore";
-import { collection } from "firebase/firestore";
-import portal from '../components/assets/PortalLogo.png';
-
-
-const initialState = {
-  username: "",
-  email: "",
-  password: "",
-  confirmPassword: "",
-};
+import { doc, setDoc } from "firebase/firestore";
+import portal from "../components/assets/PortalLogo.png";
 
 const Auth = ({ setActive, setUser }) => {
-  const [state, setState] = useState(initialState);
   const [signUp, setSignUp] = useState(false);
-  const navigate = useNavigate();
-  
+  const [state, setState] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
 
-  
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(name, value);
     setState((prevState) => ({ ...prevState, [name]: value }));
   };
-  
-  
-  
-    const handleAuth = async (e) => {
+
+  const handleAuth = async (e) => {
     e.preventDefault();
-  
-    // For Sign In
-    if (!signUp) {
-      if (email && password) {
-        const { user } = await signInWithEmailAndPassword(auth, email, password);
-        setUser(user);
-        setActive("home");
-      } else {
-        toast.error("Please fill out all fields");
-      }
+    const { username, email, password, confirmPassword } = state;
+
+    if (!email || !password) {
+      return toast.error("Please fill out all fields");
     }
-    // For Sign Up
-    else {
+
+    if (signUp) {
       if (password !== confirmPassword) {
         return toast.error("Passwords don't match");
       }
-      if (username && email && password) {
+      if (username) {
         const { user } = await createUserWithEmailAndPassword(auth, email, password);
-        
-        // Setting default values for new fields
-        await updateProfile(user, { displayName: username, photoURL: "path/to/default/profile.png", bio: "This user hasn't added a bio yet." });
-  
-        // Add user data to Firestore
-        const userDocRef = doc(db, 'users', user.uid);
-        await setDoc(userDocRef, {
-            bio: "bio",
-            displayName: user.displayName,
-            email: user.email,
-            photoURL: 'photoURL',
+        await updateProfile(user, { displayName: username });
+
+        await setDoc(doc(db, "users", user.uid), {
+          displayName: username,
+          email: user.email,
         });
+
         setUser(user);
-        setActive("home");
-      } else {
-        toast.error("All fields are mandatory to fill");
       }
+    } else {
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
+      setUser(user);
     }
+
+    setActive("home");
     navigate("/");
   };
 
-
-
-  // ... rest of the component remains the same
-  const { username, email, password, confirmPassword } = state;
-
-  
-
-
   return (
-    <div className="container-fluid mb-4 h-screen relative">
-  
-    <div className="text-white">
-      <h1 className="text-blue-400 text-xs font-bold tracking-widest hover:text-slate-300">create Dalle AI images</h1>
-      <hr />
-      <span className="text-yellow-200 hover:text-slate-300 tracking-widest font-bold">with your own text prompts</span>
-      <hr />
-      <h1 className="text-red-300 hover:text-slate-300 tracking-widest font-bold">share with friends! </h1>
-    </div>
-      <div className="container">
-        
-        <div className="col-12 text-center">
-          <div className="text-center heading py-2">
-            {signUp ? "Sign-Up" : "Sign-In"}
-          </div>
+    <div className="h-screen flex justify-center items-center bg-white">
+      <div className="w-full max-w-md p-6 rounded-lg shadow-lg">
+        <div className="flex flex-col items-center">
+          <img src={portal} alt="Portal Logo" className="h-16 mb-4" />
+          <h2 className="text-xl font-bold mb-4">{signUp ? "Sign Up to Portl" : "Sign In To Portl"}</h2>
         </div>
-        <div className="row h-100 justify-content-center align-items-center">
-          <div className="col-10 col-md-8 col-lg-6">
-            <img src={portal} alt="portal" className="img-fluid h-24 mb-2 rounded-full" />
-            <form className="row" onSubmit={handleAuth}>
-              {signUp && (
-                <input
-                  type="text"
-                  placeholder="Username"
-                  name="username"
-                  value={username}
-                  onChange={handleChange}
-                />
-              )}
-              <input
-                type="email"
-                placeholder="Email"
-                name="email"
-                value={email}
-                onChange={handleChange}
-                  className="rounded-md  border-none mb-2"
-
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                name="password"
-                value={password}
-                onChange={handleChange}
-  className="rounded  border-none mb-2"
-              />
-              {signUp && (
-                <input
-                  type="password"
-                  placeholder="Confirm Password"
-                  name="confirmPassword"
-                  value={confirmPassword}
-                  onChange={handleChange}
-                />
-              )}
-              <div className="col-12 py-3 text-center">
-                <button className={`btn ${signUp ? "btn-sign-up" : "btn-sign-in"}`} type="submit">
-                  {signUp ? "Sign-up" : "Sign-in"}
-                </button>
-              </div>
-            </form>
-            <div className="text-center justify-content-center mt-2 pt-2">
-              <p className="small fw-bold text-yellow-300 mt-2 pt-1 mb-0">
-                {signUp
-                  ? "Already have an account?"
-                  : "Don't have an account?"}
-                &nbsp;
-                <span
-                  className={signUp ? "link-primary" : "link-danger"}
-                  style={{ textDecoration: "none", cursor: "pointer" }}
-                  onClick={() => setSignUp(!signUp)}
-                >
-                  {signUp ? "Sign In" : "Sign Up"}
-                </span>
-              </p>
-            </div>
-          </div>
-        </div>
+        <form onSubmit={handleAuth} className="flex flex-col space-y-3">
+          {signUp && (
+            <input
+              type="text"
+              name="username"
+              placeholder="Username"
+              value={state.username}
+              onChange={handleChange}
+              className="p-2 border rounded"
+            />
+          )}
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={state.email}
+            onChange={handleChange}
+            className="p-2 border rounded"
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={state.password}
+            onChange={handleChange}
+            className="p-2 border rounded"
+          />
+          {signUp && (
+            <input
+              type="password"
+              name="confirmPassword"
+              placeholder="Confirm Password"
+              value={state.confirmPassword}
+              onChange={handleChange}
+              className="p-2 border rounded"
+            />
+          )}
+          <button type="submit" className="bg-blue-500 text-white py-2 rounded mt-2">
+            {signUp ? "Sign Up" : "Sign In"}
+          </button>
+        </form>
+        <p className="text-center text-sm mt-4">
+          {signUp ? "Already have an account?" : "Don't have an account?"}{" "}
+          <span
+            className="text-blue-500 cursor-pointer"
+            onClick={() => setSignUp(!signUp)}
+          >
+            {signUp ? "Sign In" : "Sign Up"}
+          </span>
+        </p>
       </div>
     </div>
   );

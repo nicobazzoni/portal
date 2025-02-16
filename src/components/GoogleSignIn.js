@@ -20,7 +20,7 @@ const GoogleSignIn = ({ onSuccess }) => {
       }
 
       // Navigate to the root path
-      navigate("/"); // Corrected this line
+      navigate("/"); 
 
     } catch (error) {
       console.error("Google Sign-In Error:", error);

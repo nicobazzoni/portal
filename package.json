@@ -38,6 +38,7 @@
     "react-firebase-hooks": "^5.1.1",
     "react-fontawesome": "^1.7.1",
     "react-helmet": "^6.1.0",
+    "react-helmet-async": "^2.0.5",
     "react-owl-carousel": "^2.3.3",
     "react-quill": "^2.0.0",
     "react-responsive-masonry": "^2.1.7",

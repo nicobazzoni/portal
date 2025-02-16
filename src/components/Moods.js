@@ -81,7 +81,7 @@ function DynamicMoodCarousel() {
       className="mood-carousel-container"
       style={{ minHeight: "500px" }} // Fixed height to prevent layout shifts
     >
-      <h2 className="text-white text-center mb-4 text-lg font-semibold">Dalle AI Images</h2>
+
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4 p-4">
         {visibleImages.map((image) => (
           <div

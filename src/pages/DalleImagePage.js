@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import DalleLike from "../components/DalleLike";
 import ShareToFacebook from "../components/Share";
 import { getStorage } from "firebase/storage";
+import DownloadImage from "../components/DownloadImage";
 
 function DalleImagePage() {
   const [images, setImages] = useState([]);
@@ -75,7 +76,7 @@ function DalleImagePage() {
 
   return (
     <>
-      <h2 className="text-white text-center">User Images</h2>
+      <h2 className="  text-black text-center">User Images</h2>
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 p-2 gap-4 overflow-y-auto">
         {images
           .filter(
@@ -90,17 +91,11 @@ function DalleImagePage() {
             const displayName = image.displayName || "Anonymous User";
 
             return (
-              <div key={image.id} className="p-2 border border-gray-700 rounded-lg bg-gray-800">
+              <div key={image.id} className="p-2 border  border-gray-700 rounded-lg bg-stone-800">
                 <Link to={`/image/${image.id}`}>
                   <LazyImage src={image.imageUrl} alt={prompt} onError={() => handleImageError(image.id)} />
                 </Link>
-                <DalleLike
-                  className="mt-2"
-                  handleLike={() => handleLike(image.id)}
-                  likes={image.likes || 0}
-                  userId={userId}
-                  imageId={image.id}
-                />
+               
                 <p className="text-white text-sm italic mt-2 text-center">{prompt}</p>
                 <Link to={`/profile/${image.userId}`}>
                   <p className="text-white hover:bg-slate-700">{displayName}</p>
@@ -108,7 +103,16 @@ function DalleImagePage() {
                 <p className="text-white text-xs">
                   {image.timestamp?.toDate().toLocaleString() || "Unknown date"}
                 </p>
-                <ShareToFacebook imageUrl={image.imageUrl} imageId={image.id} title={prompt} />
+                <div className=" relative items-center text-white flex space-between justify-between">
+                <DalleLike
+                  className="mt-2 text-white"
+                  handleLike={() => handleLike(image.id)}
+                  likes={image.likes || 0}
+                  userId={userId}
+                  imageId={image.id}
+                />
+                <DownloadImage imagePath={image.imageUrl} fileName={`PortlImage_${image.id}.png`} />
+                </div>
               </div>
             );
           })}

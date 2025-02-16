@@ -37,7 +37,7 @@ const DalleLike = ({ likes = {}, userId, imageId }) => {
   return (
     <button
       type="button"
-      className="btn btn-primary mt-2"
+      className="bg-transparent text-inherit border-none text-xl  mt-2"
       onClick={handleLike}
       disabled={loading} // Disable button when loading
     >
