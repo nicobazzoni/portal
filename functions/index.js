@@ -55,33 +55,57 @@ export const generateImageHttps = onRequest(
             Authorization: `Bearer ${openaiApiKey}`,
           },
           body: JSON.stringify({
+            model: "gpt-image-1.5",
             prompt,
             n: 1,
             size: "1024x1024",
+            output_format: "png",
+            user: userId,
           }),
         }
       );
 
       if (!openaiResponse.ok) {
-        throw new Error(`OpenAI API Error: ${openaiResponse.statusText}`);
+        const errorText = await openaiResponse.text();
+        console.error("[generateImage] OpenAI error response:", errorText);
+        let errorMessage = errorText;
+
+        try {
+          const parsedError = JSON.parse(errorText);
+          errorMessage =
+            parsedError.error?.message ||
+            parsedError.message ||
+            errorText;
+        } catch {
+          // Keep the raw text if OpenAI did not return JSON.
+        }
+
+        throw new Error(`OpenAI API Error: ${errorMessage}`);
       }
 
       const data = await openaiResponse.json();
-      const imageUrl = data.data[0]?.url;
+      const generatedImage = data.data?.[0];
+      const temporaryImageUrl = generatedImage?.url;
+      const base64Image = generatedImage?.b64_json;
 
-      if (!imageUrl) {
+      if (!temporaryImageUrl && !base64Image) {
         throw new Error("Image generation failed, no URL received");
       }
 
-      console.log("[generateImage] Generated Image URL:", imageUrl);
+      console.log("[generateImage] Generated image received from OpenAI");
 
-      // Fetch the generated image and upload to Firebase Storage
-      const response = await fetch(imageUrl);
-      if (!response.ok) {
-        throw new Error("Failed to fetch generated image from OpenAI");
+      let buffer;
+      if (base64Image) {
+        buffer = Buffer.from(base64Image, "base64");
+      } else {
+        // Older DALL·E responses can return a temporary URL instead of base64.
+        const response = await fetch(temporaryImageUrl);
+        if (!response.ok) {
+          throw new Error("Failed to fetch generated image from OpenAI");
+        }
+        buffer = await response.buffer();
       }
 
-      const buffer = await response.buffer();
       const bucket = storage.bucket("mediaman-a8ba1.appspot.com");
       const fileName = `moods/${uuidv4()}.png`;
       const file = bucket.file(fileName);
