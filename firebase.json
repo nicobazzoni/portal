@@ -9,7 +9,7 @@
     "rewrites": [
       {
         "source": "/image/**",
-        "function": "ssrApp"  // This points to the Firebase Function for serving meta tags
+        "function": "ssrApp"
       },
       {
         "source": "**",
@@ -22,7 +22,7 @@
   },
   "functions": {
     "source": "functions",
-    "runtime": "nodejs18",
+    "runtime": "nodejs22",
     "ignore": [
       "node_modules",
       ".git",
