@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
-import { db } from "../firebase";
-import { auth } from "../firebase";
+import { db, storage } from "../firebase";
+import { getDownloadURL, ref } from "firebase/storage";
 import { Link } from "react-router-dom";
 import brainIcon from "../components/assets/Plogo.svg"
 const UserList = () => {   
@@ -12,11 +12,65 @@ const UserList = () => {
   useEffect(() => {
     const getUsersData = async () => {
       setLoading(true);
-      const usersRef = collection(db, "users");
-      const first = query(usersRef, orderBy("displayName"), limit(50));
-      const docSnapshot = await getDocs(first);
-      setUsers(docSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-      setLoading(false);
+      try {
+        const publicProfilesQuery = query(
+          collection(db, "publicProfiles"),
+          orderBy("displayName"),
+          limit(50)
+        );
+        const imagesQuery = query(
+          collection(db, "images"),
+          orderBy("timestamp", "desc"),
+          limit(500)
+        );
+        const [profilesSnapshot, imagesSnapshot] = await Promise.all([
+          getDocs(publicProfilesQuery),
+          getDocs(imagesQuery),
+        ]);
+
+        const peopleById = new Map();
+        imagesSnapshot.docs.forEach((imageDoc) => {
+          const image = imageDoc.data();
+          if (!image.userId || peopleById.has(image.userId)) return;
+          peopleById.set(image.userId, {
+            id: image.userId,
+            displayName: image.displayName || "Anonymous",
+          });
+        });
+        profilesSnapshot.docs.forEach((profileDoc) => {
+          peopleById.set(profileDoc.id, {
+            ...peopleById.get(profileDoc.id),
+            id: profileDoc.id,
+            ...profileDoc.data(),
+          });
+        });
+
+        const discoveredPeople = Array.from(peopleById.values())
+          .sort((a, b) =>
+            (a.displayName || "").localeCompare(b.displayName || "")
+          )
+          .slice(0, 50);
+
+        const peopleWithAvatars = await Promise.all(
+          discoveredPeople.map(async (person) => {
+            if (person.profilePicURL) return person;
+            try {
+              const profilePicURL = await getDownloadURL(
+                ref(storage, `profile_pics/${person.id}`)
+              );
+              return { ...person, profilePicURL };
+            } catch {
+              return person;
+            }
+          })
+        );
+        setUsers(peopleWithAvatars);
+      } catch (error) {
+        console.error("Unable to load public profiles:", error);
+        setUsers([]);
+      } finally {
+        setLoading(false);
+      }
     };
 
     getUsersData();

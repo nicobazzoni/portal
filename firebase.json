@@ -8,8 +8,8 @@
     ],
     "rewrites": [
       {
-        "source": "/image/**",
-        "function": "ssrApp"
+        "source": "/share/image/**",
+        "function": "serveImageMetadata"
       },
       {
         "source": "**",
@@ -19,6 +19,12 @@
   },
   "database": {
     "rules": "database.rules.json"
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "storage": {
+    "rules": "storage.rules"
   },
   "functions": {
     "source": "functions",

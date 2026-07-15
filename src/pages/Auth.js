@@ -7,7 +7,7 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import portal from "../components/assets/PortalLogo.png";
 
 const Auth = ({ setActive, setUser }) => {
@@ -43,14 +43,29 @@ const Auth = ({ setActive, setUser }) => {
         await updateProfile(user, { displayName: username });
 
         await setDoc(doc(db, "users", user.uid), {
-          displayName: username,
           email: user.email,
+          createdAt: serverTimestamp(),
         });
+        try {
+          await setDoc(doc(db, "publicProfiles", user.uid), {
+            displayName: username.trim().slice(0, 80),
+            bio: "",
+          });
+        } catch (profileError) {
+          console.info("Public profile creation is waiting for the new rules deployment.");
+        }
 
         setUser(user);
       }
     } else {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
+      try {
+        await setDoc(doc(db, "publicProfiles", user.uid), {
+          displayName: (user.displayName || "Anonymous").slice(0, 80),
+        }, { merge: true });
+      } catch (profileError) {
+        console.info("Public profile migration is waiting for the new rules deployment.");
+      }
       setUser(user);
     }
 

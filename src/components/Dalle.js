@@ -46,7 +46,7 @@ function DalleGenerator() {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${idToken}`,
                     },
-                    body: JSON.stringify({ prompt, userId }),
+                    body: JSON.stringify({ prompt }),
                 }
             );
         
@@ -62,9 +62,6 @@ if (!data.imageUrl) {  // 🔥 Check if the response has `imageUrl`
     throw new Error("The response did not contain an imageUrl");
 }
 return { imageUrl: data.imageUrl };
-        
-            const publicUrl = `https://storage.googleapis.com/[bucket-name]/${data.fileName}`;
-            return { imageUrl: publicUrl };
         } catch (error) {
             console.error("[Generate Image] Error:", error.message);
             setErrorMessage(error.message);

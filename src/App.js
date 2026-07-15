@@ -7,7 +7,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { auth } from "./firebase";
 import { signOut } from "firebase/auth";
-import { Link } from "react-router-dom";
 import DalleImageDetail from "./pages/DalleImageDetail";
 
 import Home from "./pages/Home";
@@ -15,7 +14,6 @@ import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import Header from "./components/Header";
 import Auth from "./pages/Auth";
-import Footer from "./components/Footer";
 
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -25,7 +23,6 @@ import UserProfile from "./pages/UserProfile";
 import UserList from "./pages/UserList";
 import Dalle from "./components/Dalle";
 import DalleImagePage from "./pages/DalleImagePage";
-import ImageDetailPage from "./pages/ImageDetailPage";
 import { HelmetProvider } from "react-helmet-async";
 // Import ChatContext
 
@@ -86,4 +83,4 @@ function App() {
   );
 }
 
-export default App 
+export default App

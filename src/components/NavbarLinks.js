@@ -2,15 +2,11 @@ import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
   HomeOutlined,
-  PlusCircleOutlined,
-  GlobalOutlined,
   CommentOutlined,
   LogoutOutlined,
   LoginOutlined,
 } from "@ant-design/icons";
 import dalle from "../components/assets/dalle.png";
-import { auth } from "../firebase";
-import { signOut } from "firebase/auth";
 import { useEffect } from "react";
 
 const NavbarLinks = ({ user, handleLogout }) => {

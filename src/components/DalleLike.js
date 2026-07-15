@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, runTransaction } from "firebase/firestore";
 import { db } from "../firebase";
 
 const DalleLike = ({ likes = {}, userId, imageId }) => {
@@ -18,13 +18,18 @@ const DalleLike = ({ likes = {}, userId, imageId }) => {
     setLoading(true); // Set loading state
     try {
       const imageRef = doc(db, "images", imageId);
-      const updatedLikes = { ...likes, [userId]: !isLiked };
+      let updatedLikes;
+      await runTransaction(db, async (transaction) => {
+        const snapshot = await transaction.get(imageRef);
+        if (!snapshot.exists()) throw new Error("Image not found");
 
-      // Update Firestore
-      await setDoc(imageRef, { likes: updatedLikes }, { merge: true });
+        const currentLikes = snapshot.data().likes || {};
+        updatedLikes = { ...currentLikes, [userId]: !currentLikes[userId] };
+        transaction.update(imageRef, { likes: updatedLikes });
+      });
 
       // Update local state
-      setIsLiked(!isLiked);
+      setIsLiked(Boolean(updatedLikes[userId]));
       setLikesCount(Object.values(updatedLikes).filter((like) => like).length);
     } catch (error) {
       console.error("Error updating likes:", error);

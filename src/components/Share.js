@@ -1,5 +1,5 @@
 const ShareToFacebook = ({ imageId }) => {
-  const shareUrl = `https://us-central1-YOUR_PROJECT_ID.cloudfunctions.net/serveImageMetadata/${imageId}`;
+  const shareUrl = `https://portl.life/share/image/${imageId}`;
 
   const handleShare = () => {
     const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;

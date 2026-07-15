@@ -1,43 +1,55 @@
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { db, auth } from "../firebase";
-import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import { collection, getDocs, limit, orderBy, query, startAfter } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import DalleLike from "../components/DalleLike";
-import ShareToFacebook from "../components/Share";
-import { getStorage } from "firebase/storage";
 import DownloadImage from "../components/DownloadImage";
 
 function DalleImagePage() {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [invalidImages, setInvalidImages] = useState(new Set());
+  const [lastDocument, setLastDocument] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const user = auth.currentUser;
   const userId = user?.uid || null;
-  const storage = getStorage(); // Initialize Firebase Storage
 
-  // Fetch images from Firestore
-  useEffect(() => {
+  const fetchImages = useCallback(async (cursor = null) => {
     const imagesRef = collection(db, "images");
-    const q = query(imagesRef, orderBy("timestamp", "desc"));
+    const constraints = [orderBy("timestamp", "desc")];
+    if (cursor) constraints.push(startAfter(cursor));
+    constraints.push(limit(20));
 
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const fetchedImages = snapshot.docs.map((doc) => {
-          let data = { id: doc.id, ...doc.data() };
-          return data;
-        });
-        setImages(fetchedImages);
-        setLoading(false);
-      },
-      (error) => {
-        console.error("Error fetching images:", error);
-        setLoading(false);
-      }
-    );
-
-    return () => unsubscribe();
+    const snapshot = await getDocs(query(imagesRef, ...constraints));
+    const fetchedImages = snapshot.docs.map((imageDoc) => ({
+      id: imageDoc.id,
+      ...imageDoc.data(),
+    }));
+    setImages((current) => cursor ? [...current, ...fetchedImages] : fetchedImages);
+    setLastDocument(snapshot.docs.at(-1) || null);
+    setHasMore(snapshot.size === 20);
   }, []);
+
+  useEffect(() => {
+    fetchImages().catch((error) => {
+      console.error("Error fetching images:", error);
+    }).finally(() => {
+      setLoading(false);
+    });
+  }, [fetchImages]);
+
+  const handleLoadMore = async () => {
+    if (!lastDocument || loadingMore) return;
+    setLoadingMore(true);
+    try {
+      await fetchImages(lastDocument);
+    } catch (error) {
+      console.error("Error loading more images:", error);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   // Handle image loading errors
   const handleImageError = (imageId) => {
@@ -52,6 +64,7 @@ function DalleImagePage() {
         src={src}
         alt={alt}
         className="h-38 w-full object-cover mb-1 cursor-pointer"
+        loading="lazy"
         onError={(e) => {
           e.target.src = "/fallback.png";
           onError();
@@ -81,6 +94,7 @@ function DalleImagePage() {
         {images
           .filter(
             (image) =>
+              !invalidImages.has(image.id) &&
               image.imageUrl?.startsWith("http") &&
               image.prompt &&
               image.displayName &&
@@ -117,6 +131,13 @@ function DalleImagePage() {
             );
           })}
       </div>
+      {hasMore && (
+        <div className="text-center pb-6">
+          <button className="btn btn-primary" onClick={handleLoadMore} disabled={loadingMore}>
+            {loadingMore ? "Loading..." : "Load more"}
+          </button>
+        </div>
+      )}
     </>
   );
 }

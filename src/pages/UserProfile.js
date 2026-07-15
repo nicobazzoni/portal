@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { db, storage, auth } from "../firebase";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import {
@@ -6,13 +6,13 @@ import {
   getDoc,
   setDoc,
   query,
-  orderBy,
   onSnapshot,
   where,
   collection,
 } from "firebase/firestore";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import FullscreenImage from "../components/FullScreenImage";
+import { deleteImage } from "../utils/imageApi";
 
 const UserProfile = () => {
   const [profile, setProfile] = useState({});
@@ -24,26 +24,54 @@ const UserProfile = () => {
   const { id } = useParams(); // Get user ID from URL
 const navigate = useNavigate();
   // Fetch user data
-  const fetchUserData = async () => {
+  const fetchUserData = useCallback(async () => {
     try {
-      const docRef = doc(db, "users", id);
-      const snapshot = await getDoc(docRef);
+      const publicSnapshot = await getDoc(doc(db, "publicProfiles", id));
 
-      if (snapshot.exists()) {
-        setProfile(snapshot.data());
+      if (publicSnapshot.exists()) {
+        setProfile(publicSnapshot.data());
+      } else if (auth.currentUser?.uid === id) {
+        const privateSnapshot = await getDoc(doc(db, "users", id));
+        const fallbackProfile = {
+          displayName:
+            auth.currentUser.displayName ||
+            privateSnapshot.data()?.displayName ||
+            "Anonymous",
+          bio: "",
+        };
+        try {
+          fallbackProfile.profilePicURL = await getDownloadURL(
+            ref(storage, `profile_pics/${id}`)
+          );
+        } catch {
+          // A profile picture is optional.
+        }
+        try {
+          await setDoc(doc(db, "publicProfiles", id), fallbackProfile, { merge: true });
+        } catch (migrationError) {
+          console.info("Public profile migration will complete after rules are deployed.");
+        }
+        setProfile(fallbackProfile);
       } else {
-        console.error(`No user data found in Firestore for ID: ${id}`);
-        setProfile({});
+        // Compatibility with the currently deployed, pre-migration data model.
+        try {
+          const profilePicURL = await getDownloadURL(
+            ref(storage, `profile_pics/${id}`)
+          );
+          setProfile({ profilePicURL });
+        } catch {
+          setProfile({});
+        }
       }
     } catch (error) {
       console.error("Error fetching user data from Firestore:", error);
       setProfile({});
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchUserData();
-  }, [id]);
+  }, [fetchUserData]);
 
   useEffect(() => {
     console.log("Profile ID from useParams:", id);
@@ -62,6 +90,17 @@ const navigate = useNavigate();
         ...doc.data(),
       }));
       setImages(fetchedImages);
+      if (fetchedImages[0]?.displayName) {
+        setProfile((currentProfile) =>
+          currentProfile.displayName
+            ? currentProfile
+            : {
+                ...currentProfile,
+                displayName: fetchedImages[0].displayName,
+                bio: currentProfile.bio || "",
+              }
+        );
+      }
       setLoading(false);
     });
 
@@ -106,7 +145,7 @@ const navigate = useNavigate();
 
             // ✅ Update Firestore User Profile with new profilePicURL
             try {
-                await setDoc(doc(db, "users", id), { profilePicURL: downloadUrl }, { merge: true });
+                await setDoc(doc(db, "publicProfiles", id), { profilePicURL: downloadUrl }, { merge: true });
                 setProfile((prev) => ({ ...prev, profilePicURL: downloadUrl }));
                 console.log("✅ Profile picture URL updated in Firestore!");
             } catch (error) {
@@ -124,7 +163,12 @@ const navigate = useNavigate();
       }
 
       try {
-        await setDoc(doc(db, "users", id), profile, { merge: true });
+        const publicProfile = {
+          displayName: profile.displayName.trim().slice(0, 80),
+          bio: profile.bio.trim().slice(0, 500),
+          ...(profile.profilePicURL ? { profilePicURL: profile.profilePicURL } : {}),
+        };
+        await setDoc(doc(db, "publicProfiles", id), publicProfile, { merge: true });
         setIsEditMode(false); // Exit edit mode
         console.log("Profile updated!");
       } catch (error) {
@@ -132,6 +176,21 @@ const navigate = useNavigate();
       }
     } else {
       console.log("Unauthorized to edit this profile");
+    }
+  };
+
+  const handleDeleteImage = async (imageId) => {
+    if (!currentUser || currentUser.uid !== id) return;
+    if (!window.confirm("Permanently delete this image and its comments?")) return;
+
+    try {
+      await deleteImage(imageId);
+      setImages((currentImages) =>
+        currentImages.filter((image) => image.id !== imageId)
+      );
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      window.alert(error.message);
     }
   };
 
@@ -144,9 +203,9 @@ const navigate = useNavigate();
 
       </div>
       
-      {profile.profilePicURL && (
+      {(previewImage || profile.profilePicURL) && (
         <img
-          src={profile.profilePicURL}
+          src={previewImage || profile.profilePicURL}
           alt="Profile"
           className="rounded-full w-32 h-32 mx-auto mb-4 object-cover"
         />
@@ -217,6 +276,14 @@ const navigate = useNavigate();
                 <p className="text-white text-xs">
                   {image.timestamp?.toDate().toLocaleString() || "Unknown date"}
                 </p>
+                {currentUser?.uid === id && (
+                  <button
+                    className="btn btn-danger mt-2"
+                    onClick={() => handleDeleteImage(image.id)}
+                  >
+                    Delete image
+                  </button>
+                )}
               </div>
             ))}
           </div>

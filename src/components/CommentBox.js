@@ -31,16 +31,16 @@ function CommentBox({ imageId }) {
 
   // Add a new comment
   const handleAddComment = async () => {
-    if (!newComment.trim()) return; // Prevent empty comments
+    const commentText = newComment.trim();
+    if (!user || !commentText || commentText.length > 1000) return;
 
-    // Determine user details
-    const userId = user ? user.uid : "guest_" + Math.random().toString(36).substr(2, 9);
-    const displayName = user ? (user.displayName || "Anonymous") : "Guest";
+    const userId = user.uid;
+    const displayName = user.displayName || "Anonymous";
 
     try {
       const commentsRef = collection(db, "images", imageId, "comments");
       await addDoc(commentsRef, {
-        text: newComment,
+        text: commentText,
         userId,
         displayName,
         timestamp: serverTimestamp(),
@@ -87,21 +87,22 @@ function CommentBox({ imageId }) {
           placeholder={user ? "Write a comment..." : "Sign in to comment..."}
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
-          disabled={!user && false} // Allow guest comments
+          maxLength={1000}
+          disabled={!user}
         ></textarea>
         <button
           className={`mt-2 px-4 py-2 rounded ${
             user ? "bg-blue-500 hover:bg-blue-600 text-white" : "bg-gray-500 text-gray-300 cursor-not-allowed"
           }`}
           onClick={handleAddComment}
-          disabled={!user && false} // Allow guest comments
+          disabled={!user || !newComment.trim()}
           title={!user ? "Sign in to comment" : "Add Comment"}
         >
           Add Comment
         </button>
         {!user && (
           <p className="text-sm text-gray-400 mt-2">
-            <Link to="/signin" className="underline">
+            <Link to="/auth" className="underline">
               Sign in
             </Link>{" "}
             to leave a comment.

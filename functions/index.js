@@ -1,10 +1,12 @@
 import { onRequest } from "firebase-functions/v2/https";
-import { getFirestore } from "firebase-admin/firestore";
+import { FieldPath, getFirestore } from "firebase-admin/firestore";
 import { getStorage } from "firebase-admin/storage";
 import { initializeApp } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
 import fetch from "node-fetch";
 import { v4 as uuidv4 } from "uuid";
 import { defineSecret } from "firebase-functions/params";
+import { timingSafeEqual } from "node:crypto";
 
 // Initialize Firebase Admin SDK
 initializeApp();
@@ -13,29 +15,116 @@ const storage = getStorage();
 
 // Define secrets (if you're using Firebase Secrets Manager)
 const OPENAI_API_KEY = defineSecret("OPENAI_API_KEY");
+const ADMIN_MIGRATION_KEY = defineSecret("ADMIN_MIGRATION_KEY");
+const MAX_PROMPT_LENGTH = 2000;
+const DAILY_GENERATION_LIMIT = 20;
+const ALLOWED_ORIGINS = new Set([
+  "https://portl.life",
+  "https://www.portl.life",
+  "https://mediaman-a8ba1.web.app",
+  "https://mediaman-a8ba1.firebaseapp.com",
+  "http://localhost:3000",
+  "http://localhost:5000",
+]);
+
+function setCorsHeaders(req, res) {
+  const origin = req.get("origin");
+  if (origin && ALLOWED_ORIGINS.has(origin)) {
+    res.set("Access-Control-Allow-Origin", origin);
+    res.set("Vary", "Origin");
+  }
+  res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+}
+
+async function getAuthenticatedUser(req) {
+  const authorization = req.get("authorization") || "";
+  const match = authorization.match(/^Bearer (.+)$/);
+  if (!match) {
+    throw Object.assign(new Error("Authentication required"), { status: 401 });
+  }
+
+  try {
+    return await getAuth().verifyIdToken(match[1]);
+  } catch {
+    throw Object.assign(new Error("Invalid or expired authentication token"), {
+      status: 401,
+    });
+  }
+}
+
+async function consumeDailyGeneration(userId) {
+  const day = new Date().toISOString().slice(0, 10);
+  const quotaRef = db.collection("generationQuotas").doc(`${userId}_${day}`);
+
+  await db.runTransaction(async (transaction) => {
+    const quota = await transaction.get(quotaRef);
+    const count = quota.exists ? quota.data().count || 0 : 0;
+    if (count >= DAILY_GENERATION_LIMIT) {
+      throw Object.assign(
+        new Error(`Daily image limit of ${DAILY_GENERATION_LIMIT} reached`),
+        { status: 429 }
+      );
+    }
+    transaction.set(
+      quotaRef,
+      { userId, day, count: count + 1, updatedAt: new Date() },
+      { merge: true }
+    );
+  });
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+function migrationKeyIsValid(req) {
+  const supplied = req.get("x-migration-key") || "";
+  const expected = ADMIN_MIGRATION_KEY.value() || "";
+  const suppliedBuffer = Buffer.from(supplied);
+  const expectedBuffer = Buffer.from(expected);
+  return suppliedBuffer.length === expectedBuffer.length
+    && suppliedBuffer.length > 0
+    && timingSafeEqual(suppliedBuffer, expectedBuffer);
+}
+
 
 export const generateImageHttps = onRequest(
   {
     secrets: [OPENAI_API_KEY],
   },
   async (req, res) => {
-    // Set CORS headers
-    res.set("Access-Control-Allow-Origin", "*");
-    res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    setCorsHeaders(req, res);
 
     if (req.method === "OPTIONS") {
       return res.status(204).send("");
     }
+    if (req.method !== "POST") {
+      return res.status(405).json({ error: "Method not allowed" });
+    }
 
     try {
-      const { prompt, userId } = req.body;
+      const decodedToken = await getAuthenticatedUser(req);
+      const userId = decodedToken.uid;
+      const prompt = typeof req.body?.prompt === "string" ? req.body.prompt.trim() : "";
 
-      if (!prompt || !userId) {
-        return res.status(400).json({ error: "Missing 'prompt' or 'userId'" });
+      if (!prompt) {
+        return res.status(400).json({ error: "Prompt is required" });
       }
+      if (prompt.length > MAX_PROMPT_LENGTH) {
+        return res.status(400).json({
+          error: `Prompt must be ${MAX_PROMPT_LENGTH} characters or fewer`,
+        });
+      }
+      await consumeDailyGeneration(userId);
+      const userDocPromise = db.collection("publicProfiles").doc(userId).get();
 
-      console.log(`[generateImage] UserID: ${userId}, Prompt: "${prompt}"`);
+      console.log(`[generateImage] UserID: ${userId}, Prompt length: ${prompt.length}`);
 
       // Retrieve OpenAI API key
       const openaiApiKey =
@@ -80,7 +169,10 @@ export const generateImageHttps = onRequest(
           // Keep the raw text if OpenAI did not return JSON.
         }
 
-        throw new Error(`OpenAI API Error: ${errorMessage}`);
+        console.error("[generateImage] OpenAI request failed:", errorMessage);
+        throw Object.assign(new Error("Image generation provider rejected the request"), {
+          status: 502,
+        });
       }
 
       const data = await openaiResponse.json();
@@ -113,6 +205,7 @@ export const generateImageHttps = onRequest(
       await file.save(buffer, {
         metadata: {
           contentType: "image/png",
+          cacheControl: "public, max-age=31536000, immutable",
         },
       });
 
@@ -122,7 +215,7 @@ export const generateImageHttps = onRequest(
       console.log("[generateImage] Uploaded image to Storage:", publicUrl);
 
       // Retrieve user display name from Firestore
-      const userDoc = await db.collection("users").doc(userId).get();
+      const userDoc = await userDocPromise;
       const displayName = userDoc.exists
         ? userDoc.data()?.displayName || "Anonymous"
         : "Anonymous";
@@ -130,25 +223,153 @@ export const generateImageHttps = onRequest(
       console.log(`[generateImage] Retrieved Display Name: ${displayName}`);
 
       // Save metadata to Firestore
-      await db.collection("images").add({
-        userId,
-        prompt,
-        imageUrl: publicUrl, // ✅ Use permanent public URL
-        displayName,
-        timestamp: new Date(),
-      });
+      try {
+        await db.collection("images").add({
+          userId,
+          prompt,
+          imageUrl: publicUrl,
+          displayName,
+          timestamp: new Date(),
+          model: "gpt-image-1.5",
+          status: "ready",
+          likes: {},
+        });
+      } catch (firestoreError) {
+        await file.delete({ ignoreNotFound: true }).catch((cleanupError) => {
+          console.error("[generateImage] Orphan cleanup failed:", cleanupError.message);
+        });
+        throw firestoreError;
+      }
 
       res.status(200).json({ imageUrl: publicUrl });
     } catch (error) {
       console.error("[generateImage] Error:", error.message);
-      res.status(500).json({ error: error.message });
+      const status = Number.isInteger(error.status) ? error.status : 500;
+      res.status(status).json({
+        error: status === 500 ? "Unable to generate image" : error.message,
+      });
+    }
+  }
+);
+
+export const deleteImageHttps = onRequest(async (req, res) => {
+  setCorsHeaders(req, res);
+  if (req.method === "OPTIONS") return res.status(204).send("");
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  try {
+    const decodedToken = await getAuthenticatedUser(req);
+    const imageId = typeof req.body?.imageId === "string" ? req.body.imageId : "";
+    if (!/^[A-Za-z0-9]{10,40}$/.test(imageId)) {
+      return res.status(400).json({ error: "Invalid image ID" });
+    }
+
+    const imageRef = db.collection("images").doc(imageId);
+    const imageSnapshot = await imageRef.get();
+    if (!imageSnapshot.exists) {
+      return res.status(404).json({ error: "Image not found" });
+    }
+    if (imageSnapshot.data().userId !== decodedToken.uid) {
+      return res.status(403).json({ error: "You do not own this image" });
+    }
+
+    const imageUrl = imageSnapshot.data().imageUrl;
+    try {
+      const url = new URL(imageUrl);
+      const encodedPath = url.pathname.match(/\/o\/(.+)$/)?.[1];
+      const filePath = encodedPath ? decodeURIComponent(encodedPath) : "";
+      if (filePath.startsWith("moods/")) {
+        await storage.bucket("mediaman-a8ba1.appspot.com").file(filePath).delete({
+          ignoreNotFound: true,
+        });
+      }
+    } catch (storageError) {
+      console.error("[deleteImage] Storage cleanup failed:", storageError.message);
+      throw Object.assign(new Error("Could not remove image file"), { status: 500 });
+    }
+
+    await db.recursiveDelete(imageRef);
+    return res.status(200).json({ deleted: true });
+  } catch (error) {
+    console.error("[deleteImage] Error:", error.message);
+    const status = Number.isInteger(error.status) ? error.status : 500;
+    return res.status(status).json({
+      error: status === 500 ? "Unable to delete image" : error.message,
+    });
+  }
+});
+
+// One-time, secret-protected migration for profiles created before publicProfiles.
+// It intentionally copies only fields that are safe to display publicly.
+export const migratePublicProfilesHttps = onRequest(
+  {
+    secrets: [ADMIN_MIGRATION_KEY],
+    timeoutSeconds: 300,
+  },
+  async (req, res) => {
+    if (req.method !== "POST") {
+      return res.status(405).json({ error: "Method not allowed" });
+    }
+    if (!migrationKeyIsValid(req)) {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+    try {
+      let lastDocument = null;
+      let scanned = 0;
+      let migrated = 0;
+
+      while (true) {
+        let usersQuery = db.collection("users").orderBy(FieldPath.documentId()).limit(400);
+        if (lastDocument) usersQuery = usersQuery.startAfter(lastDocument);
+        const usersSnapshot = await usersQuery.get();
+        if (usersSnapshot.empty) break;
+
+        const publicRefs = usersSnapshot.docs.map((userDoc) =>
+          db.collection("publicProfiles").doc(userDoc.id)
+        );
+        const existingProfiles = await db.getAll(...publicRefs);
+        const batch = db.batch();
+
+        usersSnapshot.docs.forEach((userDoc, index) => {
+          if (existingProfiles[index].exists) return;
+          const user = userDoc.data();
+          const publicProfile = {
+            displayName:
+              typeof user.displayName === "string" && user.displayName.trim()
+                ? user.displayName.trim().slice(0, 80)
+                : "Anonymous",
+            bio: typeof user.bio === "string" ? user.bio.trim().slice(0, 500) : "",
+          };
+          if (
+            typeof user.profilePicURL === "string"
+            && user.profilePicURL.startsWith("https://")
+          ) {
+            publicProfile.profilePicURL = user.profilePicURL;
+          }
+          batch.set(publicRefs[index], publicProfile);
+          migrated += 1;
+        });
+
+        await batch.commit();
+        scanned += usersSnapshot.size;
+        lastDocument = usersSnapshot.docs.at(-1);
+      }
+
+      return res.status(200).json({ scanned, migrated });
+    } catch (error) {
+      console.error("[migratePublicProfiles] Error:", error.message);
+      return res.status(500).json({ error: "Migration failed" });
     }
   }
 );
 
 export const serveImageMetadata = onRequest(async (req, res) => {
-  res.set("Access-Control-Allow-Origin", "*");
   res.set("Cache-Control", "public, max-age=300, s-maxage=600");
+  res.set("Content-Security-Policy", "default-src 'none'; img-src https:; style-src 'unsafe-inline'");
+  res.set("X-Content-Type-Options", "nosniff");
 
   const imageId = req.path.split("/").pop(); // Extract ID from URL
   if (!imageId) {
@@ -164,9 +385,13 @@ export const serveImageMetadata = onRequest(async (req, res) => {
     }
 
     const imageData = docSnap.data();
-    const imageUrl = imageData.imageUrl || "https://via.placeholder.com/300";
-    const prompt = imageData.prompt || "AI Generated Image";
-    const displayName = imageData.displayName || "Anonymous User";
+    const rawImageUrl = imageData.imageUrl || "https://via.placeholder.com/300";
+    const imageUrl = /^https:\/\//.test(rawImageUrl)
+      ? escapeHtml(rawImageUrl)
+      : "https://via.placeholder.com/300";
+    const prompt = escapeHtml(imageData.prompt || "AI Generated Image");
+    const displayName = escapeHtml(imageData.displayName || "Anonymous User");
+    const safeImageId = escapeHtml(imageId);
 
     res.send(`
       <!DOCTYPE html>
@@ -174,7 +399,7 @@ export const serveImageMetadata = onRequest(async (req, res) => {
         <head>
           <meta property="og:title" content="${prompt}" />
           <meta property="og:image" content="${imageUrl}" />
-          <meta property="og:url" content="https://portl.life/image/${imageId}" />
+          <meta property="og:url" content="https://portl.life/image/${safeImageId}" />
           <meta property="og:type" content="website" />
           <meta property="og:description" content="Created by ${displayName} on Portl" />
         </head>
