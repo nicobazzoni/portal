@@ -9,10 +9,12 @@ import {
   onSnapshot,
   where,
   collection,
+  orderBy,
 } from "firebase/firestore";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import FullscreenImage from "../components/FullScreenImage";
 import { deleteImage } from "../utils/imageApi";
+import ObserveButton from "../components/ObserveButton";
 
 const UserProfile = () => {
   const [profile, setProfile] = useState({});
@@ -81,7 +83,8 @@ const navigate = useNavigate();
   useEffect(() => {
     const imagesQuery = query(
       collection(db, "images"),
-      where("userId", "==", id) // Ensure field exists
+      where("userId", "==", id),
+      orderBy("timestamp", "desc")
     );
 
     const unsubscribe = onSnapshot(imagesQuery, (snapshot) => {
@@ -254,6 +257,8 @@ const navigate = useNavigate();
           )}
         </>
       )}
+
+      <ObserveButton profileId={id} />
 
       <div className="mt-4">
         <h3 className="text-xl font-bold text-white mb-4">User's Images</h3>

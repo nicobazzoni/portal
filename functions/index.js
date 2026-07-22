@@ -93,6 +93,21 @@ function migrationKeyIsValid(req) {
     && timingSafeEqual(suppliedBuffer, expectedBuffer);
 }
 
+async function deleteOwnedDraft(draftId, userId) {
+  if (!/^[A-Za-z0-9]{10,40}$/.test(draftId || "")) return;
+  const draftRef = db.collection("imageDrafts").doc(draftId);
+  const draftSnapshot = await draftRef.get();
+  if (!draftSnapshot.exists || draftSnapshot.data().userId !== userId) return;
+
+  const fileName = draftSnapshot.data().fileName;
+  if (typeof fileName === "string" && fileName.startsWith("moods/")) {
+    await storage.bucket("mediaman-a8ba1.appspot.com").file(fileName).delete({
+      ignoreNotFound: true,
+    });
+  }
+  await draftRef.delete();
+}
+
 
 export const generateImageHttps = onRequest(
   {
@@ -112,6 +127,8 @@ export const generateImageHttps = onRequest(
       const decodedToken = await getAuthenticatedUser(req);
       const userId = decodedToken.uid;
       const prompt = typeof req.body?.prompt === "string" ? req.body.prompt.trim() : "";
+      const previousDraftId =
+        typeof req.body?.previousDraftId === "string" ? req.body.previousDraftId : "";
 
       if (!prompt) {
         return res.status(400).json({ error: "Prompt is required" });
@@ -222,17 +239,18 @@ export const generateImageHttps = onRequest(
 
       console.log(`[generateImage] Retrieved Display Name: ${displayName}`);
 
-      // Save metadata to Firestore
+      // Keep the generated image private from the feed until the user posts it.
+      const draftRef = db.collection("imageDrafts").doc();
       try {
-        await db.collection("images").add({
+        await draftRef.set({
           userId,
           prompt,
           imageUrl: publicUrl,
+          fileName,
           displayName,
-          timestamp: new Date(),
+          createdAt: new Date(),
+          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
           model: "gpt-image-1.5",
-          status: "ready",
-          likes: {},
         });
       } catch (firestoreError) {
         await file.delete({ ignoreNotFound: true }).catch((cleanupError) => {
@@ -241,7 +259,13 @@ export const generateImageHttps = onRequest(
         throw firestoreError;
       }
 
-      res.status(200).json({ imageUrl: publicUrl });
+      if (previousDraftId && previousDraftId !== draftRef.id) {
+        await deleteOwnedDraft(previousDraftId, userId).catch((cleanupError) => {
+          console.error("[generateImage] Previous draft cleanup failed:", cleanupError.message);
+        });
+      }
+
+      res.status(200).json({ imageUrl: publicUrl, draftId: draftRef.id });
     } catch (error) {
       console.error("[generateImage] Error:", error.message);
       const status = Number.isInteger(error.status) ? error.status : 500;
@@ -251,6 +275,54 @@ export const generateImageHttps = onRequest(
     }
   }
 );
+
+export const publishImageHttps = onRequest(async (req, res) => {
+  setCorsHeaders(req, res);
+  if (req.method === "OPTIONS") return res.status(204).send("");
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  try {
+    const decodedToken = await getAuthenticatedUser(req);
+    const draftId = typeof req.body?.draftId === "string" ? req.body.draftId : "";
+    if (!/^[A-Za-z0-9]{10,40}$/.test(draftId)) {
+      return res.status(400).json({ error: "Invalid draft ID" });
+    }
+
+    const draftRef = db.collection("imageDrafts").doc(draftId);
+    const imageRef = db.collection("images").doc();
+    await db.runTransaction(async (transaction) => {
+      const draftSnapshot = await transaction.get(draftRef);
+      if (!draftSnapshot.exists) {
+        throw Object.assign(new Error("Draft not found or already posted"), { status: 404 });
+      }
+      const draft = draftSnapshot.data();
+      if (draft.userId !== decodedToken.uid) {
+        throw Object.assign(new Error("You do not own this draft"), { status: 403 });
+      }
+      transaction.set(imageRef, {
+        userId: draft.userId,
+        prompt: draft.prompt,
+        imageUrl: draft.imageUrl,
+        displayName: draft.displayName,
+        timestamp: new Date(),
+        model: draft.model || "gpt-image-1.5",
+        status: "ready",
+        likes: {},
+      });
+      transaction.delete(draftRef);
+    });
+
+    return res.status(200).json({ imageId: imageRef.id, imageUrl: null });
+  } catch (error) {
+    console.error("[publishImage] Error:", error.message);
+    const status = Number.isInteger(error.status) ? error.status : 500;
+    return res.status(status).json({
+      error: status === 500 ? "Unable to post image" : error.message,
+    });
+  }
+});
 
 export const deleteImageHttps = onRequest(async (req, res) => {
   setCorsHeaders(req, res);

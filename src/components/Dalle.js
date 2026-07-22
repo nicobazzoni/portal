@@ -11,6 +11,8 @@ function DalleGenerator() {
     const [userId, setUserId] = useState(null);
     const [authChecked, setAuthChecked] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [draftId, setDraftId] = useState(null);
+    const [posting, setPosting] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -46,7 +48,10 @@ function DalleGenerator() {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${idToken}`,
                     },
-                    body: JSON.stringify({ prompt }),
+                    body: JSON.stringify({
+                        prompt,
+                        ...(draftId ? { previousDraftId: draftId } : {}),
+                    }),
                 }
             );
         
@@ -58,10 +63,10 @@ function DalleGenerator() {
             const data = await response.json();
 console.log("[DEBUG] API Response:", data);
 
-if (!data.imageUrl) {  // 🔥 Check if the response has `imageUrl`
-    throw new Error("The response did not contain an imageUrl");
+if (!data.imageUrl || !data.draftId) {
+    throw new Error("The response did not contain a complete image draft");
 }
-return { imageUrl: data.imageUrl };
+return { imageUrl: data.imageUrl, draftId: data.draftId };
         } catch (error) {
             console.error("[Generate Image] Error:", error.message);
             setErrorMessage(error.message);
@@ -75,16 +80,47 @@ return { imageUrl: data.imageUrl };
         }
     
         setLoading(true);
-        setImageUrl(null); // ✅ Reset preview before generating new image
+        if (!draftId) setImageUrl(null);
     
         try {
             const data = await generateImage(inputValue);
             console.log("[DEBUG] Setting new image URL:", data.imageUrl);
-            setImageUrl(data.imageUrl); // ✅ Immediately update state with the new URL
+            setImageUrl(data.imageUrl);
+            setDraftId(data.draftId);
         } catch (error) {
             // Error already handled in generateImage
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handlePost = async () => {
+        if (!draftId || !auth.currentUser || posting) return;
+        setPosting(true);
+        setErrorMessage('');
+        try {
+            const idToken = await auth.currentUser.getIdToken();
+            const response = await fetch(
+                "https://us-central1-mediaman-a8ba1.cloudfunctions.net/publishImageHttps",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${idToken}`,
+                    },
+                    body: JSON.stringify({ draftId }),
+                }
+            );
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || `Post failed with status ${response.status}`);
+            }
+            navigate(`/image/${data.imageId}`);
+        } catch (error) {
+            console.error("[Post Image] Error:", error.message);
+            setErrorMessage(error.message);
+        } finally {
+            setPosting(false);
         }
     };
 
@@ -100,7 +136,7 @@ return { imageUrl: data.imageUrl };
                 placeholder="A cute turtle blowing bubbles..."
                 className="w-full max-w-lg p-2 mb-4 border border-gray-300 rounded-md"
             />
-            <div>
+            {!imageUrl && <div>
                 <button
                     className="btn btn-success px-4 py-2 rounded-lg disabled:opacity-50"
                     onClick={handleGenerateClick}
@@ -108,7 +144,7 @@ return { imageUrl: data.imageUrl };
                 >
                     {loading ? "Generating..." : "Generate"}
                 </button>
-            </div>
+            </div>}
             {errorMessage && (
                 <div className="mt-4 text-red-600 bg-red-100 p-2 rounded-md">
                     <p>Error: {errorMessage}</p>
@@ -119,6 +155,22 @@ return { imageUrl: data.imageUrl };
                 <div className="mt-4">
                     <h4 className="font-medium">Preview Generated Image:</h4>
                     <img src={imageUrl} alt="Generated" className="rounded-md mt-2 h-72" />
+                    <div className="flex gap-3 mt-4">
+                        <button
+                            className="btn btn-success px-4 py-2"
+                            onClick={handlePost}
+                            disabled={posting || loading}
+                        >
+                            {posting ? "Posting..." : "Post"}
+                        </button>
+                        <button
+                            className="btn btn-outline-light px-4 py-2"
+                            onClick={handleGenerateClick}
+                            disabled={posting || loading || !inputValue.trim()}
+                        >
+                            Try Again
+                        </button>
+                    </div>
                 </div>
             )}
         </div>

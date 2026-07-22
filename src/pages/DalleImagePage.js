@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { db, auth } from "../firebase";
-import { collection, getDocs, limit, orderBy, query, startAfter } from "firebase/firestore";
+import { collection, getDocs, limit, orderBy, query, startAfter, where } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import DalleLike from "../components/DalleLike";
 import DownloadImage from "../components/DownloadImage";
@@ -12,8 +12,11 @@ function DalleImagePage() {
   const [lastDocument, setLastDocument] = useState(null);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  const user = auth.currentUser;
-  const userId = user?.uid || null;
+  const [currentUser, setCurrentUser] = useState(auth.currentUser);
+  const [feedMode, setFeedMode] = useState("community");
+  const userId = currentUser?.uid || null;
+
+  useEffect(() => auth.onAuthStateChanged(setCurrentUser), []);
 
   const fetchImages = useCallback(async (cursor = null) => {
     const imagesRef = collection(db, "images");
@@ -51,6 +54,71 @@ function DalleImagePage() {
     }
   };
 
+  const fetchObservingImages = async () => {
+    if (!currentUser) {
+      setImages([]);
+      setHasMore(false);
+      return;
+    }
+
+    const observingSnapshot = await getDocs(
+      collection(db, "publicProfiles", currentUser.uid, "observing")
+    );
+    const creatorIds = observingSnapshot.docs.map((creatorDoc) => creatorDoc.id);
+    if (creatorIds.length === 0) {
+      setImages([]);
+      setHasMore(false);
+      return;
+    }
+
+    const chunks = [];
+    for (let index = 0; index < creatorIds.length; index += 30) {
+      chunks.push(creatorIds.slice(index, index + 30));
+    }
+    const snapshots = await Promise.all(
+      chunks.map((creatorChunk) =>
+        getDocs(query(
+          collection(db, "images"),
+          where("userId", "in", creatorChunk),
+          orderBy("timestamp", "desc"),
+          limit(50)
+        ))
+      )
+    );
+    const uniqueImages = new Map();
+    snapshots.forEach((snapshot) => {
+      snapshot.docs.forEach((imageDoc) => {
+        uniqueImages.set(imageDoc.id, { id: imageDoc.id, ...imageDoc.data() });
+      });
+    });
+    setImages(
+      Array.from(uniqueImages.values())
+        .sort((a, b) =>
+          (b.timestamp?.toMillis?.() || 0) - (a.timestamp?.toMillis?.() || 0)
+        )
+        .slice(0, 100)
+    );
+    setHasMore(false);
+  };
+
+  const changeFeed = async (nextMode) => {
+    if (nextMode === feedMode) return;
+    setFeedMode(nextMode);
+    setLoading(true);
+    setImages([]);
+    try {
+      if (nextMode === "observing") {
+        await fetchObservingImages();
+      } else {
+        await fetchImages();
+      }
+    } catch (error) {
+      console.error(`Unable to load ${nextMode} feed:`, error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Handle image loading errors
   const handleImageError = (imageId) => {
     console.error(`Image failed to load: ${imageId}`);
@@ -77,10 +145,6 @@ function DalleImagePage() {
     return <div className="text-white text-center">Loading images...</div>;
   }
 
-  if (images.length === 0) {
-    return <div className="text-white text-center">No images found.</div>;
-  }
-
   // Handle likes (placeholder logic)
   const handleLike = async (imageId) => {
     console.log(`Liked image ID: ${imageId}`);
@@ -89,7 +153,30 @@ function DalleImagePage() {
 
   return (
     <>
-      <h2 className="  text-black text-center">User Images</h2>
+      <h2 className="text-black text-center">Explore Portl</h2>
+      <div className="flex justify-center gap-2 mb-4">
+        <button
+          className={`btn ${feedMode === "community" ? "btn-primary" : "btn-outline-primary"}`}
+          onClick={() => changeFeed("community")}
+        >
+          Community
+        </button>
+        <button
+          className={`btn ${feedMode === "observing" ? "btn-primary" : "btn-outline-primary"}`}
+          onClick={() => changeFeed("observing")}
+        >
+          Observing
+        </button>
+      </div>
+      {images.length === 0 && (
+        <div className="text-black text-center py-8">
+          {feedMode === "observing"
+            ? currentUser
+              ? "Observe creators to build your personal feed."
+              : "Sign in to see your Observing feed."
+            : "No images found."}
+        </div>
+      )}
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 p-2 gap-4 overflow-y-auto">
         {images
           .filter(
@@ -131,7 +218,7 @@ function DalleImagePage() {
             );
           })}
       </div>
-      {hasMore && (
+      {feedMode === "community" && hasMore && (
         <div className="text-center pb-6">
           <button className="btn btn-primary" onClick={handleLoadMore} disabled={loadingMore}>
             {loadingMore ? "Loading..." : "Load more"}
